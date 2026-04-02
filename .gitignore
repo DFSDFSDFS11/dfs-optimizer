@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.csv
+historical_slates/cached_pools/
+historical_slates/backtest_report.txt
+historical_slates/data_export/
+backtest_output.txt
+test_output.csv

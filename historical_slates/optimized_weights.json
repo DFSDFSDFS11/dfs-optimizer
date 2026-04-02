@@ -1,0 +1,15 @@
+{
+  "projectionScore": 0.185,
+  "ownershipScore": 0.00,
+  "uniquenessScore": 0.00,
+  "projectionEdgeScore": 0.00,
+  "ceilingRatioScore": 0.00,
+  "gameEnvironmentScore": 0.00,
+  "ceilingScore": 0.26,
+  "varianceScore": 0.185,
+  "salaryEfficiencyScore": 0.093,
+  "relativeValueScore": 0.277,
+  "simulationScore": 0.00,
+  "projGateThreshold": 0.50,
+  "ceilGateThreshold": 0.40
+}

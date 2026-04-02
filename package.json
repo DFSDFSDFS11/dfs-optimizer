@@ -1,0 +1,36 @@
+{
+  "name": "dfs-optimizer-cli",
+  "version": "1.0.0",
+  "description": "Professional-grade DFS lineup optimizer and game theory selector",
+  "main": "dist/run.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/run.js",
+    "dev": "ts-node src/run.ts",
+    "clean": "rimraf dist",
+    "backtest": "ts-node src/run.ts --backtest"
+  },
+  "keywords": [
+    "dfs",
+    "draftkings",
+    "fanduel",
+    "optimizer",
+    "fantasy sports"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "commander": "^11.1.0",
+    "csv-parse": "^5.5.3",
+    "csv-stringify": "^6.4.5",
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.7",
+    "@types/node": "^20.11.0",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
