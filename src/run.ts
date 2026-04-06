@@ -235,7 +235,28 @@ async function main(): Promise<void> {
     });
 
     // Merge pools
-    const mergedLineups = [...optimizationResult.lineups, ...edgeBoostedResult.lineups];
+    let mergedLineups = [...optimizationResult.lineups, ...edgeBoostedResult.lineups];
+
+    // MLB: filter merged pool for min 4-man batter stack
+    if (options.sport === 'mlb') {
+      const beforeCount = mergedLineups.length;
+      mergedLineups = mergedLineups.filter(l => {
+        const batterTeams = new Map<string, number>();
+        for (const p of l.players) {
+          if (!p.positions.includes('P')) {
+            batterTeams.set(p.team, (batterTeams.get(p.team) || 0) + 1);
+          }
+        }
+        let maxStack = 0;
+        for (const count of batterTeams.values()) {
+          if (count > maxStack) maxStack = count;
+        }
+        return maxStack >= 4;
+      });
+      const rejected = beforeCount - mergedLineups.length;
+      if (rejected > 0) console.log(`  MLB stack filter (merged): removed ${rejected} lineups without 4+ batter stack`);
+    }
+
     console.log(`Merged pool: ${mergedLineups.length.toLocaleString()} lineups (${optimizationResult.lineups.length.toLocaleString()} pass 1 + ${edgeBoostedResult.lineups.length.toLocaleString()} edge-boosted)`);
 
     // Phase 2: Selection

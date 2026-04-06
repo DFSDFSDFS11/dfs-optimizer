@@ -9,6 +9,22 @@ import { Lineup, ScoredLineup, Player, PlayerPercentiles, ContestConfig, Contest
 import { extractPrimaryCombo } from '../scoring/field-analysis';
 
 // ============================================================
+// SPORT-SPECIFIC SIMULATION CONFIG
+// ============================================================
+// Module-level config set once before simulation begins.
+// Controls tail fatness and position-specific loading.
+
+let _simSportTailMult = 1.0;
+
+export function setSimSportConfig(sport?: string): void {
+  // NBA: fatter right tail (overtime, triple-doubles, 50-pt explosions)
+  // NFL/MLB: moderately fatter (TDs are lumpy, multi-HR games)
+  _simSportTailMult = sport === 'nba' ? 1.5
+    : (sport === 'nfl' || sport === 'mlb') ? 1.3
+    : 1.0;
+}
+
+// ============================================================
 // SEEDED PRNG (for deterministic field generation)
 // ============================================================
 
@@ -747,7 +763,7 @@ function sampleFromPercentiles(pcts: PlayerPercentiles): number {
   // Extrapolate tails from the data
   const iqr = pcts.p75 - pcts.p25;
   const floor = Math.max(0, pcts.p25 - iqr);                 // ~0th percentile
-  const tailExtent = pcts.p99 + (pcts.p99 - pcts.p95);       // ~100th percentile
+  const tailExtent = pcts.p99 + (pcts.p99 - pcts.p95) * _simSportTailMult; // ~100th percentile (fatter for NBA)
 
   // Fritsch-Carlson monotone cubic Hermite interpolation
   // Same 8 knot points as before, but smooth curvature eliminates artificial
@@ -830,7 +846,7 @@ function buildCDFLookupTable(pcts: PlayerPercentiles): Float32Array {
 
   const iqr = pcts.p75 - pcts.p25;
   const floor = Math.max(0, pcts.p25 - iqr);
-  const tailExtent = pcts.p99 + (pcts.p99 - pcts.p95);
+  const tailExtent = pcts.p99 + (pcts.p99 - pcts.p95) * _simSportTailMult;
 
   const Q = [0.00,  0.25,     0.50,     0.75,     0.85,     0.95,     0.99,     1.00];
   const V = [floor, pcts.p25, pcts.p50, pcts.p75, pcts.p85, pcts.p95, pcts.p99, tailExtent];
@@ -1097,7 +1113,8 @@ export function generateFieldPool(
   expandedConfig?: ExpandedFieldConfig,
   ownershipScenarios?: Array<{ playerOwnerships: Map<string, number> }>,
   optimizerProxies?: FieldLineup[],
-  salaryCap: number = 50000
+  salaryCap: number = 50000,
+  sport?: string
 ): FieldLineup[] {
   const rng = seed !== undefined ? createSeededRandom(seed) : Math.random;
   const fieldLineups: FieldLineup[] = [];
@@ -1130,11 +1147,11 @@ export function generateFieldPool(
   ): FieldLineup | null => {
     const maxRetries = 3;
     for (let retry = 0; retry <= maxRetries; retry++) {
-      const lineup = generateExpandedFieldLineup(playersToUse, rosterSize, archetype, iteration + retry * 10000, rng, selectionBoosts, salaryCap);
+      const lineup = generateExpandedFieldLineup(playersToUse, rosterSize, archetype, iteration + retry * 10000, rng, selectionBoosts, salaryCap, sport);
       if (!lineup) return null;
       if (!isTooSimilar(lineup, recentLineups)) return lineup;
     }
-    return generateExpandedFieldLineup(playersToUse, rosterSize, archetype, iteration + 99999, rng, selectionBoosts, salaryCap);
+    return generateExpandedFieldLineup(playersToUse, rosterSize, archetype, iteration + 99999, rng, selectionBoosts, salaryCap, sport);
   };
 
   // Use expanded 9-archetype config if provided, otherwise fall back to defaults
@@ -1207,7 +1224,7 @@ export function generateFieldPool(
         // Only apply boost to non-contrarian archetypes (contrarian deliberately deviates)
         const archBoosts = arch === 'contrarian' ? undefined : activePilotBoosts;
         const lineup = generateExpandedFieldLineup(
-          players, rosterSize, arch, round * PILOT_SIZE + i, rng, archBoosts, salaryCap
+          players, rosterSize, arch, round * PILOT_SIZE + i, rng, archBoosts, salaryCap, sport
         );
         if (lineup) pilotLineups.push(lineup);
       }
@@ -1391,7 +1408,7 @@ export function generateFieldPool(
         const isContrarianReplacement = oldLineup.archetype === 'contrarian';
         const replacementBoosts = isContrarianReplacement ? undefined : nonContrarianBoosts;
         const replacement = generateExpandedFieldLineup(
-          adjustedPlayers, rosterSize, oldLineup.archetype, 50000 + calPass * 10000 + replaced, rng, replacementBoosts, salaryCap
+          adjustedPlayers, rosterSize, oldLineup.archetype, 50000 + calPass * 10000 + replaced, rng, replacementBoosts, salaryCap, sport
         );
         if (replacement && !replacement.playerIds.some(pid => overExposed.has(pid))) {
           fieldLineups[idx] = replacement;
@@ -1613,6 +1630,215 @@ export function validateFieldCalibration(
     recommendedBalancedRatio,
     recommendedContrarianRatio,
   };
+}
+
+// DraftKings MLB Classic roster slots (position-aware stacked field generation)
+const DK_MLB_POSITION_SLOTS = [
+  { name: 'P',  eligible: ['P'] },
+  { name: 'P',  eligible: ['P'] },
+  { name: 'C',  eligible: ['C'] },
+  { name: '1B', eligible: ['1B'] },
+  { name: '2B', eligible: ['2B'] },
+  { name: '3B', eligible: ['3B'] },
+  { name: 'SS', eligible: ['SS'] },
+  { name: 'OF', eligible: ['OF'] },
+  { name: 'OF', eligible: ['OF'] },
+  { name: 'OF', eligible: ['OF'] },
+];
+
+/**
+ * Generate a single MLB field lineup: position-valid AND stacked (4+ batters from one team).
+ *
+ * Approach:
+ * 1. Pick a primary stack team (weighted by archetype: chalk→high-owned, contrarian→low-owned)
+ * 2. Select 4-5 batters from that team, assigned to matching position slots
+ * 3. Pick 2 pitchers
+ * 4. Fill remaining batter slots with best available (greedy by effectiveValue)
+ * 5. Verify salary cap
+ */
+function generateMLBFieldLineup(
+  playersWithValue: Array<{ player: Player; effectiveValue: number }>,
+  archetype: FieldArchetype,
+  maxEV: number,
+  rng: () => number = Math.random,
+  selectionBoosts?: Map<string, number>,
+  fieldSalaryCap: number = 50000,
+): FieldLineup | null {
+  const salaryCap = fieldSalaryCap;
+  const slots = DK_MLB_POSITION_SLOTS;
+
+  // Separate pitchers and batters
+  const pitchers = playersWithValue.filter(pv => pv.player.positions.some(pos => pos === 'P'));
+  const batters = playersWithValue.filter(pv => !pv.player.positions.some(pos => pos === 'P'));
+
+  if (pitchers.length < 2 || batters.length < 8) return null;
+
+  // Group batters by team
+  const teamBatters = new Map<string, Array<{ player: Player; effectiveValue: number }>>();
+  for (const pv of batters) {
+    if (!teamBatters.has(pv.player.team)) teamBatters.set(pv.player.team, []);
+    teamBatters.get(pv.player.team)!.push(pv);
+  }
+
+  // Filter to teams with 4+ batters that can fill distinct position slots
+  const viableTeams = [...teamBatters.entries()].filter(([, tb]) => tb.length >= 4);
+  if (viableTeams.length === 0) return null;
+
+  // Weight teams by archetype
+  const teamWeights = viableTeams.map(([team, tb]) => {
+    const avgOwn = tb.reduce((s, pv) => s + pv.player.ownership, 0) / tb.length;
+    const avgEV = tb.reduce((s, pv) => s + pv.effectiveValue, 0) / tb.length;
+    const gameTotal = tb[0]?.player.gameTotal || 9;
+
+    let weight: number;
+    switch (archetype) {
+      case 'chalk':
+      case 'semiChalk':
+        // Chalk: favor high-owned teams
+        weight = avgOwn * avgEV * gameTotal;
+        break;
+      case 'stackChalk':
+        // Stack chalk: favor high game total
+        weight = gameTotal * gameTotal * avgEV;
+        break;
+      case 'contrarian':
+        // Contrarian: favor low-owned teams
+        weight = (1 / Math.max(avgOwn, 1)) * avgEV * 100;
+        break;
+      case 'sharpOptimizer':
+      case 'leverageOptimizer':
+        // Sharp: balance EV with moderate ownership penalty
+        weight = avgEV * (1 - avgOwn / 200) * gameTotal;
+        break;
+      case 'stackBuilder':
+        // Stack builder: heavy game total weighting
+        weight = Math.pow(gameTotal, 2) * avgEV;
+        break;
+      default:
+        // Balanced/casual/ceiling: projection-weighted
+        weight = avgEV * gameTotal;
+    }
+    return { team, batters: tb, weight: Math.max(0.1, weight) };
+  });
+
+  // Pick primary stack team
+  const totalWeight = teamWeights.reduce((s, tw) => s + tw.weight, 0);
+  let r = rng() * totalWeight;
+  let stackTeam = teamWeights[0];
+  for (const tw of teamWeights) {
+    r -= tw.weight;
+    if (r <= 0) { stackTeam = tw; break; }
+  }
+
+  // Determine stack depth: 4 (50%) or 5 (50%) batters from this team
+  const stackDepth = rng() < 0.50 ? 5 : 4;
+  const actualDepth = Math.min(stackDepth, stackTeam.batters.length);
+
+  // Pick stack batters weighted by effectiveValue
+  const stackBatters: Array<{ player: Player; effectiveValue: number }> = [];
+  const availStackBatters = [...stackTeam.batters];
+  for (let i = 0; i < actualDepth && availStackBatters.length > 0; i++) {
+    const weights = availStackBatters.map(pv => Math.max(0.1, pv.effectiveValue));
+    const total = weights.reduce((a, b) => a + b, 0);
+    let pick = rng() * total;
+    let pickIdx = 0;
+    for (let j = 0; j < weights.length; j++) {
+      pick -= weights[j];
+      if (pick <= 0) { pickIdx = j; break; }
+    }
+    stackBatters.push(availStackBatters[pickIdx]);
+    availStackBatters.splice(pickIdx, 1);
+  }
+
+  // Assign all players to slots: pitchers first, then stack batters, then fill
+  const assignments: (typeof playersWithValue[0] | null)[] = new Array(10).fill(null);
+  const usedIds = new Set<string>();
+  const usedNames = new Set<string>();
+  let usedSalary = 0;
+
+  // Pick 2 pitchers weighted by effectiveValue
+  const availPitchers = [...pitchers];
+  for (let pSlot = 0; pSlot < 2; pSlot++) {
+    const eligible = availPitchers.filter(pv =>
+      !usedIds.has(pv.player.id) && !usedNames.has(pv.player.name)
+    );
+    if (eligible.length === 0) return null;
+    const weights = eligible.map(pv => Math.max(0.1, pv.effectiveValue));
+    const total = weights.reduce((a, b) => a + b, 0);
+    let pick = rng() * total;
+    let pickIdx = 0;
+    for (let j = 0; j < weights.length; j++) {
+      pick -= weights[j];
+      if (pick <= 0) { pickIdx = j; break; }
+    }
+    assignments[pSlot] = eligible[pickIdx];
+    usedIds.add(eligible[pickIdx].player.id);
+    usedNames.add(eligible[pickIdx].player.name);
+    usedSalary += eligible[pickIdx].player.salary;
+  }
+
+  // Assign stack batters to matching position slots (slots 2-9: C,1B,2B,3B,SS,OF,OF,OF)
+  for (const sb of stackBatters) {
+    let assigned = false;
+    for (let si = 2; si < 10; si++) {
+      if (assignments[si]) continue;
+      const slot = slots[si];
+      if (sb.player.positions.some(pos => slot.eligible.includes(pos))) {
+        assignments[si] = sb;
+        usedIds.add(sb.player.id);
+        usedNames.add(sb.player.name);
+        usedSalary += sb.player.salary;
+        assigned = true;
+        break;
+      }
+    }
+    if (!assigned) {
+      // Stack batter can't fit remaining slots — skip
+    }
+  }
+
+  // Fill remaining batter slots greedily
+  const remainingSlots = [];
+  for (let si = 2; si < 10; si++) {
+    if (!assignments[si]) remainingSlots.push(si);
+  }
+
+  for (const si of remainingSlots) {
+    const slot = slots[si];
+    const remaining = 10 - [...assignments].filter(a => a !== null).length - 1;
+    const minNeeded = remaining * 3000; // rough min salary per remaining player
+
+    const eligible = batters.filter(pv =>
+      !usedIds.has(pv.player.id) &&
+      !usedNames.has(pv.player.name) &&
+      pv.player.positions.some(pos => slot.eligible.includes(pos)) &&
+      usedSalary + pv.player.salary + minNeeded <= salaryCap
+    );
+
+    if (eligible.length === 0) return null; // Can't fill this slot
+
+    const weights = eligible.map(pv => Math.max(0.1, pv.effectiveValue));
+    const total = weights.reduce((a, b) => a + b, 0);
+    let pick = rng() * total;
+    let pickIdx = 0;
+    for (let j = 0; j < weights.length; j++) {
+      pick -= weights[j];
+      if (pick <= 0) { pickIdx = j; break; }
+    }
+    assignments[si] = eligible[pickIdx];
+    usedIds.add(eligible[pickIdx].player.id);
+    usedNames.add(eligible[pickIdx].player.name);
+    usedSalary += eligible[pickIdx].player.salary;
+  }
+
+  // Verify all slots filled and salary valid
+  if (assignments.some(a => a === null)) return null;
+  if (usedSalary > salaryCap) return null;
+
+  const playerIds = assignments.map(a => a!.player.id);
+  const salaries = assignments.map(a => a!.player.salary);
+
+  return { playerIds, salaries, archetype };
 }
 
 // DraftKings NBA Classic roster slots (position-aware field generation)
@@ -1923,7 +2149,8 @@ function generateExpandedFieldLineup(
   iteration: number,
   rng: () => number = Math.random,
   selectionBoosts?: Map<string, number>,
-  fieldSalaryCap: number = 50000
+  fieldSalaryCap: number = 50000,
+  sport?: string
 ): FieldLineup | null {
   const salaryCap = fieldSalaryCap;
 
@@ -2120,6 +2347,11 @@ function generateExpandedFieldLineup(
     // Map expanded archetypes to selection behavior
     const selectionArchetype = getSelectionArchetype(archetype);
     return generatePositionAwareFieldLineupExpanded(playersWithValue, archetype, selectionArchetype, maxEV, rng, selectionBoosts, salaryCap);
+  }
+
+  // MLB: position-valid, stacked field lineups (P,P,C,1B,2B,3B,SS,OF,OF,OF)
+  if (sport === 'mlb' && rosterSize === 10) {
+    return generateMLBFieldLineup(playersWithValue, archetype, maxEV, rng, selectionBoosts, salaryCap);
   }
 
   // Position-agnostic path (showdown/other)

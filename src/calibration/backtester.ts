@@ -1938,6 +1938,38 @@ function runFullPipelineBacktest(
   // Collect contest entries per slate for pro comparison
   const allSlateContestEntries: Array<{ date: string; entries: ContestEntry[] }> = [];
 
+  // Hit/miss profile collection for pattern analysis
+  interface HitProfile {
+    date: string;
+    actualPts: number;
+    projPts: number;
+    percentile: number;
+    rank: number;
+    isTop1: boolean;
+    isTop5: boolean;
+    isTop10: boolean;
+    isCash: boolean;
+    // Player characteristics
+    avgOwnership: number;
+    geoMeanOwnership: number;
+    avgSalary: number;
+    salaryUsed: number;
+    numPlayersAboveProj: number;    // players scoring above their projection
+    biggestBoom: number;            // max (actual - proj) for any player
+    biggestBoomOwn: number;         // ownership of biggest boom player
+    biggestBoomSalary: number;      // salary of biggest boom player
+    biggestBoomPos: string;         // position of biggest boom player
+    // Stack structure
+    maxSameTeam: number;            // largest same-team group
+    numTeams: number;               // distinct teams in lineup
+    numGames: number;               // distinct games in lineup
+    // Ceiling profile
+    projPctOfOptimal: number;       // projection / slate optimal
+    ceilingSum: number;             // sum of player ceilings
+    ceilingRatio: number;           // ceiling / projection
+  }
+  const allProfiles: HitProfile[] = [];
+
   const slateResults: Array<{
     date: string;
     poolSize: number;
@@ -2184,6 +2216,60 @@ function runFullPipelineBacktest(
       const percentile = (1 - (rank - 1) / contestPoints.length) * 100;
 
       lineupActuals.push({ actualPoints: actualTotal, rank, percentile });
+
+      // Build hit profile for pattern analysis
+      const optimalProj = optResult.lineups.reduce((m, l) => Math.max(m, l.projection), 0);
+      let biggestBoom = -Infinity, biggestBoomOwn = 0, biggestBoomSalary = 0, biggestBoomPos = '';
+      let numAboveProj = 0;
+      let ceilSum = 0;
+      const teamCounts = new Map<string, number>();
+      const gameCounts = new Set<string>();
+      let ownSum = 0, ownProduct = 1, salarySum = 0;
+
+      for (const p of lineup.players) {
+        const pActual = actualsById.get(p.id) ?? actualsByName.get(p.name.toLowerCase()) ?? 0;
+        const boom = pActual - p.projection;
+        if (boom > biggestBoom) {
+          biggestBoom = boom;
+          biggestBoomOwn = p.ownership;
+          biggestBoomSalary = p.salary;
+          biggestBoomPos = p.positions?.[0] || p.position || '?';
+        }
+        if (pActual > p.projection) numAboveProj++;
+        ceilSum += (p.ceiling || p.projection * 1.25);
+        teamCounts.set(p.team, (teamCounts.get(p.team) || 0) + 1);
+        gameCounts.add(p.gameInfo || p.team);
+        ownSum += p.ownership;
+        ownProduct *= Math.max(0.1, p.ownership) / 100;
+        salarySum += p.salary;
+      }
+      const n = lineup.players.length;
+      allProfiles.push({
+        date: slate.date,
+        actualPts: actualTotal,
+        projPts: lineup.projection,
+        percentile,
+        rank,
+        isTop1: percentile >= 99,
+        isTop5: percentile >= 95,
+        isTop10: percentile >= 90,
+        isCash: percentile >= 78,
+        avgOwnership: ownSum / n,
+        geoMeanOwnership: Math.pow(ownProduct, 1 / n) * 100,
+        avgSalary: salarySum / n,
+        salaryUsed: salarySum,
+        numPlayersAboveProj: numAboveProj,
+        biggestBoom,
+        biggestBoomOwn,
+        biggestBoomSalary,
+        biggestBoomPos,
+        maxSameTeam: Math.max(...teamCounts.values()),
+        numTeams: teamCounts.size,
+        numGames: gameCounts.size,
+        projPctOfOptimal: lineup.projection / optimalProj,
+        ceilingSum: ceilSum,
+        ceilingRatio: ceilSum / Math.max(1, lineup.projection),
+      });
     }
 
     if (lineupActuals.length === 0) {
@@ -2255,6 +2341,91 @@ function runFullPipelineBacktest(
   console.log(`    Best finish:      #${overallBestFinish}`);
   console.log(`    Avg actual pts:   ${avgActualPts.toFixed(1)} vs field avg ${avgFieldPts.toFixed(1)} (+${(avgActualPts - avgFieldPts).toFixed(1)})`);
   console.log(`    Unique players:   ${allUniquePlayerIds.size} across ${totalSelected} lineups`);
+
+  // ============================================================
+  // HIT/MISS PATTERN ANALYSIS
+  // ============================================================
+  if (allProfiles.length > 0) {
+    const hits = allProfiles.filter(p => p.isTop1);
+    const top5hits = allProfiles.filter(p => p.isTop5 && !p.isTop1);
+    const misses = allProfiles.filter(p => !p.isTop10);
+    const n = allProfiles.length;
+
+    console.log(`\n  ========================================`);
+    console.log(`  HIT/MISS PATTERN ANALYSIS (${n} lineups)`);
+    console.log(`  ========================================`);
+    console.log(`  Top 1% hits: ${hits.length} | Top 5%: ${top5hits.length} | Below top 10%: ${misses.length}\n`);
+
+    const avg = (arr: number[]) => arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    const pct = (arr: boolean[]) => arr.length > 0 ? arr.filter(Boolean).length / arr.length * 100 : 0;
+
+    const metrics: Array<{ name: string; hitVal: number; missVal: number; format: string }> = [
+      { name: 'Proj % of optimal', hitVal: avg(hits.map(h => h.projPctOfOptimal * 100)), missVal: avg(misses.map(m => m.projPctOfOptimal * 100)), format: '.1' },
+      { name: 'Actual - Proj delta', hitVal: avg(hits.map(h => h.actualPts - h.projPts)), missVal: avg(misses.map(m => m.actualPts - m.projPts)), format: '.1' },
+      { name: 'Ceiling ratio', hitVal: avg(hits.map(h => h.ceilingRatio)), missVal: avg(misses.map(m => m.ceilingRatio)), format: '.3' },
+      { name: 'Avg ownership', hitVal: avg(hits.map(h => h.avgOwnership)), missVal: avg(misses.map(m => m.avgOwnership)), format: '.1' },
+      { name: 'GeoMean ownership', hitVal: avg(hits.map(h => h.geoMeanOwnership)), missVal: avg(misses.map(m => m.geoMeanOwnership)), format: '.1' },
+      { name: 'Salary used', hitVal: avg(hits.map(h => h.salaryUsed)), missVal: avg(misses.map(m => m.salaryUsed)), format: '.0' },
+      { name: 'Players above proj', hitVal: avg(hits.map(h => h.numPlayersAboveProj)), missVal: avg(misses.map(m => m.numPlayersAboveProj)), format: '.1' },
+      { name: 'Biggest boom (pts)', hitVal: avg(hits.map(h => h.biggestBoom)), missVal: avg(misses.map(m => m.biggestBoom)), format: '.1' },
+      { name: 'Biggest boom own%', hitVal: avg(hits.map(h => h.biggestBoomOwn)), missVal: avg(misses.map(m => m.biggestBoomOwn)), format: '.1' },
+      { name: 'Biggest boom salary', hitVal: avg(hits.map(h => h.biggestBoomSalary)), missVal: avg(misses.map(m => m.biggestBoomSalary)), format: '.0' },
+      { name: 'Max same-team count', hitVal: avg(hits.map(h => h.maxSameTeam)), missVal: avg(misses.map(m => m.maxSameTeam)), format: '.1' },
+      { name: 'Distinct teams', hitVal: avg(hits.map(h => h.numTeams)), missVal: avg(misses.map(m => m.numTeams)), format: '.1' },
+      { name: 'Distinct games', hitVal: avg(hits.map(h => h.numGames)), missVal: avg(misses.map(m => m.numGames)), format: '.1' },
+    ];
+
+    console.log(`  ${'Metric'.padEnd(28)} ${'Top1% Hits'.padStart(12)} ${'Below T10%'.padStart(12)} ${'Delta'.padStart(10)} ${'Signal'.padStart(8)}`);
+    console.log(`  ${'─'.repeat(72)}`);
+    for (const m of metrics) {
+      const delta = m.hitVal - m.missVal;
+      const pctDelta = m.missVal !== 0 ? Math.abs(delta / m.missVal) * 100 : 0;
+      const signal = pctDelta > 15 ? '***' : pctDelta > 8 ? '**' : pctDelta > 3 ? '*' : '';
+      const fmt = (v: number) => m.format === '.0' ? v.toFixed(0) : m.format === '.1' ? v.toFixed(1) : v.toFixed(3);
+      console.log(`  ${m.name.padEnd(28)} ${fmt(m.hitVal).padStart(12)} ${fmt(m.missVal).padStart(12)} ${(delta >= 0 ? '+' : '') + fmt(delta)}`.padEnd(65) + signal.padStart(8));
+    }
+
+    // Boom player position breakdown
+    console.log(`\n  Biggest boom player position distribution:`);
+    const hitBoomPos = new Map<string, number>();
+    const missBoomPos = new Map<string, number>();
+    for (const h of hits) { hitBoomPos.set(h.biggestBoomPos, (hitBoomPos.get(h.biggestBoomPos) || 0) + 1); }
+    for (const m of misses) { missBoomPos.set(m.biggestBoomPos, (missBoomPos.get(m.biggestBoomPos) || 0) + 1); }
+    const allPositions = new Set([...hitBoomPos.keys(), ...missBoomPos.keys()]);
+    for (const pos of [...allPositions].sort()) {
+      const hitPct = hits.length > 0 ? (hitBoomPos.get(pos) || 0) / hits.length * 100 : 0;
+      const missPct = misses.length > 0 ? (missBoomPos.get(pos) || 0) / misses.length * 100 : 0;
+      if (hitPct > 0 || missPct > 0) {
+        console.log(`    ${pos.padEnd(10)} hits: ${hitPct.toFixed(0).padStart(3)}% | misses: ${missPct.toFixed(0).padStart(3)}%${hitPct > missPct + 5 ? ' ← MORE IN HITS' : ''}`);
+      }
+    }
+
+    // Boom player salary bucket breakdown
+    console.log(`\n  Biggest boom player salary distribution:`);
+    const salaryBuckets = ['$3K-5K', '$5K-7K', '$7K-9K', '$9K+'];
+    const getBucket = (s: number) => s < 5000 ? '$3K-5K' : s < 7000 ? '$5K-7K' : s < 9000 ? '$7K-9K' : '$9K+';
+    for (const bucket of salaryBuckets) {
+      const hitPct = hits.length > 0 ? hits.filter(h => getBucket(h.biggestBoomSalary) === bucket).length / hits.length * 100 : 0;
+      const missPct = misses.length > 0 ? misses.filter(m => getBucket(m.biggestBoomSalary) === bucket).length / misses.length * 100 : 0;
+      console.log(`    ${bucket.padEnd(10)} hits: ${hitPct.toFixed(0).padStart(3)}% | misses: ${missPct.toFixed(0).padStart(3)}%${hitPct > missPct + 5 ? ' ← MORE IN HITS' : ''}`);
+    }
+
+    // Projection tier of winning lineups
+    console.log(`\n  Projection tier of top-1% hits:`);
+    const projTiers = [
+      { label: '97-100%', min: 0.97, max: 1.01 },
+      { label: '94-97%', min: 0.94, max: 0.97 },
+      { label: '91-94%', min: 0.91, max: 0.94 },
+      { label: '88-91%', min: 0.88, max: 0.91 },
+      { label: '<88%', min: 0, max: 0.88 },
+    ];
+    for (const tier of projTiers) {
+      const hitCount = hits.filter(h => h.projPctOfOptimal >= tier.min && h.projPctOfOptimal < tier.max).length;
+      const poolCount = allProfiles.filter(p => p.projPctOfOptimal >= tier.min && p.projPctOfOptimal < tier.max).length;
+      const hitRate = poolCount > 0 ? hitCount / poolCount * 100 : 0;
+      console.log(`    ${tier.label.padEnd(10)} ${hitCount} hits from ${poolCount} lineups (${hitRate.toFixed(2)}% hit rate)`);
+    }
+  }
 
   // ============================================================
   // PRO COMPARISON

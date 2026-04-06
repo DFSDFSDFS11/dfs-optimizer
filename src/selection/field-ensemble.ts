@@ -168,7 +168,7 @@ export function generateFieldEnsemble(
     // Generate field with unique seed per sample
     const seed = 42 + si * 7919;  // Different prime offsets for independence
     const fieldLineups = generateFieldPool(
-      players, rosterSize, cfg.size, seed, undefined, expandedConfig, undefined, undefined, salaryCap,
+      players, rosterSize, cfg.size, seed, undefined, expandedConfig, undefined, undefined, salaryCap, sport,
     );
 
     // Analyze combo frequencies for this sample

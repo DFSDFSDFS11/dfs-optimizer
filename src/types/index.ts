@@ -10,7 +10,7 @@
 // ============================================================
 
 export type DFSSite = 'dk' | 'fd';
-export type Sport = 'nba' | 'nfl' | 'mma' | 'nascar' | 'golf';
+export type Sport = 'nba' | 'nfl' | 'mlb' | 'mma' | 'nascar' | 'golf';
 export type ContestType = 'classic' | 'showdown';
 
 /**

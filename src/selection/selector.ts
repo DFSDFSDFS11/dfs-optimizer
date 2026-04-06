@@ -2047,39 +2047,27 @@ function calculateGameStackScore(lineup: Lineup, numGames: number): number {
     gameGroups.set(gameId, group);
   }
 
+  // Moderate stack bonus — reward natural stacking without forcing it
   let stackBonus = 0;
 
   for (const [, group] of gameGroups) {
-    // Scale bonus by game total relative to slate average
     const gameTotalScaler = group.gameTotal / slateAvgGameTotal;
 
-    if (group.count >= 5) {
-      stackBonus += 0.08 * gameTotalScaler;
+    if (group.count >= 4) {
+      stackBonus += 0.03 * gameTotalScaler;
       if (group.teams.size >= 2) {
-        stackBonus += 0.25 * gameTotalScaler; // BB is king — 93% of pro top-1%
-      }
-    } else if (group.count >= 4) {
-      stackBonus += 0.06 * gameTotalScaler;
-      if (group.teams.size >= 2) {
-        stackBonus += 0.22 * gameTotalScaler;
+        stackBonus += 0.10 * gameTotalScaler;
       }
     } else if (group.count >= 3) {
-      // 3+BB is the dominant pro pattern (71% of winning stacks)
-      stackBonus += 0.04 * gameTotalScaler;
+      stackBonus += 0.02 * gameTotalScaler;
       if (group.teams.size >= 2) {
-        stackBonus += 0.20 * gameTotalScaler; // 3+BB = best structure
+        stackBonus += 0.08 * gameTotalScaler;
       }
     }
   }
 
-  // Slate scaling: larger slates → stacking is rarer and more differentiating
-  // Small slates (3-4 games): stacking is nearly universal (99% of pros), less differentiating
-  // Medium slates (5-6 games): stacking separates pros from field
-  // Large slates (7-8 games): stacking is most differentiating (83% pro vs 74% field)
   const slateScaler = numGames <= 3 ? 0.80 : numGames <= 4 ? 0.90 : numGames <= 6 ? 1.00 : 1.10;
-
-  const maxStackBonus = 0.50;
-  return Math.min(maxStackBonus, stackBonus * slateScaler);
+  return Math.min(0.20, stackBonus * slateScaler);
 }
 
 

@@ -152,7 +152,7 @@ class LineupHeap {
 // 3. CONTRARIAN: Maximize (projection - heavy_ownership_penalty)
 // ============================================================
 
-type IterationType = 'projection' | 'field-mimic' | 'leverage' | 'balanced' | 'contrarian' | 'game-stack' | 'ceiling' | 'formula-blend' | 'anti-overlap' | 'salary-value' | 'frontier-sweep' | 'anti-chalk';
+type IterationType = 'projection' | 'field-mimic' | 'leverage' | 'balanced' | 'contrarian' | 'game-stack' | 'ceiling' | 'formula-blend' | 'anti-overlap' | 'salary-value' | 'frontier-sweep' | 'anti-chalk' | 'shallow-chalk' | 'no-chalk-stack';
 
 /**
  * Apply ownership penalty to player projections
@@ -273,7 +273,9 @@ function generateGameWorld(players: Player[]): GameWorldScenario {
 
   // Generate game-level pace factors using lognormal: exp(N(0, sigma))
   // E[exp(N(0,s))] = exp(s²/2), so to get E=1.0 we use: exp(z*s - s²/2)
-  const GAME_PACE_SIGMA = games.size <= 3 ? 0.30 : 0.20;
+  // NBA gets higher pace variance — real NBA game-to-game scoring variance is ±20%+
+  const isNBASport = players.some(p => p.positions.some(pos => pos === 'PG' || pos === 'SG'));
+  const GAME_PACE_SIGMA = games.size <= 3 ? 0.30 : (isNBASport ? 0.28 : 0.20);
   const gamePaceFactors = new Map<string, number>();
   for (const gameId of games.keys()) {
     const z = poolBoxMullerZ();
@@ -906,6 +908,26 @@ function constructStackFirstLineups(
           if (allCurrent.some(p => p.name === player.opponent)) continue;
         }
 
+        // MLB: batter vs opposing pitcher — only on 2-game slates
+        if (config.sport === 'mlb') {
+          const allCurrent = [...stackPlayers, ...miniCurrentPlayers];
+          const localGames = new Set(pool.players.map(p => p.gameInfo || p.team));
+          const localMaxBvP = localGames.size <= 2 ? 1 : 0;
+          let mlbSkip = false;
+          if (player.positions.includes('P')) {
+            const battersVs = allCurrent.filter(s => !s.positions.includes('P') && s.team === player.opponent);
+            if (battersVs.length > localMaxBvP) mlbSkip = true;
+          } else {
+            for (const s of allCurrent) {
+              if (s.positions.includes('P') && s.team === player.opponent) {
+                const existing = allCurrent.filter(cp => !cp.positions.includes('P') && cp.team === player.team);
+                if (existing.length >= localMaxBvP) { mlbSkip = true; break; }
+              }
+            }
+          }
+          if (mlbSkip) continue;
+        }
+
         // Mark used
         const nameIndices = miniNameMap.nameToIndices.get(player.name)!;
         for (let m = 0; m < nameIndices.length; m++) miniUsedBitmap[nameIndices[m]] = 1;
@@ -1226,6 +1248,26 @@ function enumerateStackedLineups(
                   if (allCurrent.some(p => p.name === player.opponent)) continue;
                 }
 
+                // MLB: batter vs opposing pitcher — only on 2-game slates
+                if (config.sport === 'mlb') {
+                  const allCurrent = [...stackPlayers, ...currentFill];
+                  const localGames2 = new Set(pool.players.map(p => p.gameInfo || p.team));
+                  const localMaxBvP2 = localGames2.size <= 2 ? 1 : 0;
+                  let mlbSkip = false;
+                  if (player.positions.includes('P')) {
+                    const battersVs = allCurrent.filter(s => !s.positions.includes('P') && s.team === player.opponent);
+                    if (battersVs.length > localMaxBvP2) mlbSkip = true;
+                  } else {
+                    for (const s of allCurrent) {
+                      if (s.positions.includes('P') && s.team === player.opponent) {
+                        const existing = allCurrent.filter(cp => !cp.positions.includes('P') && cp.team === player.team);
+                        if (existing.length >= localMaxBvP2) { mlbSkip = true; break; }
+                      }
+                    }
+                  }
+                  if (mlbSkip) continue;
+                }
+
                 // Mark used
                 const nameIndices = nameMap.nameToIndices.get(player.name)!;
                 for (const idx of nameIndices) usedBitmap[idx] = 1;
@@ -1355,6 +1397,9 @@ export function optimizeLineups(
   // AND more aggressive contrarian iterations to generate low-owned lineups
   const isSmallSlate = playerCount < 40 || isShowdown;
   const isShortSlate = gameSet.size <= 3 && !isSingleGame && !['mma', 'nascar', 'golf'].includes(config.sport);
+  // MLB batter vs pitcher: only allowed on 2-game slates (need bring-back for game total correlation)
+  // On 3+ game slates, enough games to avoid rostering batters against your own pitcher
+  const mlbMaxBattersVsPitcher = gameSet.size <= 2 ? 1 : 0;
   // Generate more lineups for larger pool (50K+)
   // Same iteration count for showdown and classic - thorough exploration for both
   // Plan 9: Slate-size adaptive — large slates (7+ games) get 20% more iterations
@@ -1500,7 +1545,7 @@ export function optimizeLineups(
   if (!isNonTeamSportForChalk && pool.players.length > 10) {
     try {
       const preScanLineups = generateFieldPoolForPreScan(
-        pool.players, config.rosterSize, 2000, 12345, undefined, undefined, undefined, undefined, config.salaryCap,
+        pool.players, config.rosterSize, 2000, 12345, undefined, undefined, undefined, undefined, config.salaryCap, config.sport,
       );
       // Extract primary combos and count frequencies
       const comboCountMap = new Map<string, { playerIds: string[]; count: number }>();
@@ -1558,6 +1603,119 @@ export function optimizeLineups(
     });
   }
 
+  // Helper: limit chalk team depth by keeping only top N batters per chalk team.
+  // Players beyond the limit get a severe projection penalty (70%) so B&B avoids them.
+  // Pitchers are never penalized (they don't contribute to stack combos).
+  function applyChalkTeamDepthLimit(
+    players: Player[],
+    chalkTeamsSet: Set<string>,
+    maxPerTeam: number,
+    sport: string,
+  ): Player[] {
+    if (chalkTeamsSet.size === 0) return players;
+
+    // For each chalk team, rank batters by projection and mark top N as "allowed"
+    const allowedIds = new Set<string>();
+    for (const team of chalkTeamsSet) {
+      const batters = players
+        .filter(p => p.team === team && !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP'))
+        .sort((a, b) => b.projection - a.projection);
+      for (let i = 0; i < Math.min(maxPerTeam, batters.length); i++) {
+        allowedIds.add(batters[i].id);
+      }
+    }
+
+    return players.map(p => {
+      // Non-chalk team players: no change
+      if (!chalkTeamsSet.has(p.team)) return p;
+      // Pitchers: no change (don't contribute to batter stack combos)
+      if (p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) return p;
+      // Allowed (top N): no change
+      if (allowedIds.has(p.id)) return p;
+      // Beyond limit: severe projection penalty makes B&B avoid them
+      return { ...p, projection: p.projection * 0.30 };
+    });
+  }
+
+  // --- Chalk Team Identification ---
+  // Identify teams where average batter ownership exceeds threshold.
+  // Used by shallow-chalk and no-chalk-stack iterations to limit team depth.
+  const chalkTeams = new Set<string>();
+  const teamBatterOwnership = new Map<string, number>();
+  if (!isNonTeamSportForChalk) {
+    const adjustedThreshold = gameSet.size <= 3 ? 25 : gameSet.size <= 5 ? 20 : 18;
+    for (const [team, teamPlayers] of pool.byTeam) {
+      const batters = teamPlayers.filter(p =>
+        !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP') &&
+        p.projection > 0
+      );
+      if (batters.length < 3) continue;
+      const avgOwn = batters.reduce((s, p) => s + p.ownership, 0) / batters.length;
+      teamBatterOwnership.set(team, avgOwn);
+      if (avgOwn >= adjustedThreshold) {
+        chalkTeams.add(team);
+      }
+    }
+    if (chalkTeams.size > 0) {
+      console.log(`  Chalk teams (avg batter own > threshold):`);
+      for (const team of chalkTeams) {
+        console.log(`    ${team}: avg batter own ${teamBatterOwnership.get(team)?.toFixed(1)}%`);
+      }
+    }
+  }
+
+  // --- Team Stack Quality Scoring ---
+  // Score each team's desirability as a non-chalk stack target.
+  // Used to weight forced stack generation and log insights.
+  const teamStackQuality = new Map<string, number>();
+  const viableStackTeams: string[] = []; // Teams with 5+ rosterable batters
+  if (!isNonTeamSportForChalk) {
+    // Compute slate median game/team totals
+    const allGameTotals: number[] = [];
+    const allTeamTotals: number[] = [];
+    for (const p of pool.players) {
+      if (p.gameTotal && p.gameTotal > 0) allGameTotals.push(p.gameTotal);
+      if (p.teamTotal && p.teamTotal > 0) allTeamTotals.push(p.teamTotal);
+    }
+    const medianGameTotal = allGameTotals.length > 0
+      ? allGameTotals.sort((a, b) => a - b)[Math.floor(allGameTotals.length / 2)] : 9.0;
+    const medianTeamTotal = allTeamTotals.length > 0
+      ? allTeamTotals.sort((a, b) => a - b)[Math.floor(allTeamTotals.length / 2)] : 4.5;
+
+    for (const [team, teamPlayers] of pool.byTeam) {
+      const batters = teamPlayers.filter(p =>
+        !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP') &&
+        p.projection > 0
+      );
+      if (batters.length < 4) continue;
+      if (batters.length >= 5) viableStackTeams.push(team);
+
+      const gameTotal = batters[0]?.gameTotal || medianGameTotal;
+      const teamTotal = batters[0]?.teamTotal || medianTeamTotal;
+      const avgOwn = batters.reduce((s, p) => s + p.ownership, 0) / batters.length;
+
+      const gameEnvScore = Math.max(0.5, Math.min(2.0, gameTotal / medianGameTotal));
+      const teamTotalScore = Math.max(0.5, Math.min(2.0, teamTotal / medianTeamTotal));
+      const ownLeverage = Math.pow(20 / Math.max(avgOwn, 1.5), 0.7);
+      const top5 = batters.sort((a, b) => b.projection - a.projection).slice(0, 5);
+      const avgCeilRatio = top5.reduce((s, p) => s + (p.ceiling || p.projection) / Math.max(p.projection, 1), 0) / top5.length;
+      const ceilScore = Math.max(0.5, avgCeilRatio);
+
+      const quality = gameEnvScore * teamTotalScore * ownLeverage * ceilScore;
+      teamStackQuality.set(team, quality);
+    }
+
+    if (viableStackTeams.length > 0) {
+      const sortedByQ = [...teamStackQuality.entries()]
+        .sort((a, b) => b[1] - a[1]);
+      console.log(`  Stack quality scores (${viableStackTeams.length} viable teams):`);
+      for (const [team, q] of sortedByQ.slice(0, 10)) {
+        const isChalk = chalkTeams.has(team) ? ' [CHALK]' : '';
+        console.log(`    ${team}: ${q.toFixed(2)}${isChalk}`);
+      }
+    }
+  }
+
   // - Field-mimic (8%): Calibration — understand what field builds.
   // Iteration mix shifted toward quality for 500-lineup target:
   // Projection (+0.235) and ceiling (+0.236) are strongest predictors.
@@ -1609,15 +1767,29 @@ export function optimizeLineups(
   // Stack enumeration handles stacking for team sports; no iteration-based stacking needed
   const gameStackIterations = 0;
 
-  const ceilingIterations = isTeamSportMultiGame
-    ? Math.floor(NUM_ITERATIONS * 0.15)  // 15% ceiling (reduced from 20% to make room for anti-chalk)
-    : Math.floor(NUM_ITERATIONS * (isNonTeamSport ? 0.20 : (isShortSlate ? 0.25 : 0.07)));
+  // NBA gets more ceiling iterations — ceiling correlation drives the 14-pt gap to pros
+  const ceilingPct = isTeamSportMultiGame
+    ? (config.sport === 'nba' ? 0.22 : 0.15)
+    : (isNonTeamSport ? 0.20 : (isShortSlate ? 0.25 : 0.07));
+  const ceilingIterations = Math.floor(NUM_ITERATIONS * ceilingPct);
 
   // Anti-chalk iterations: penalize players anchoring the field's most common combos.
   // Forces the B&B to find lineups built around DIFFERENT cores than the field.
   // Only for team sports — non-team sports have no meaningful team stacks to avoid.
   const antiChalkIterations = (isTeamSportMultiGame && chalkCombosForAntiChalk.length > 0)
     ? Math.floor(NUM_ITERATIONS * 0.10)  // 10% anti-chalk combo avoidance
+    : 0;
+
+  // Shallow-chalk iterations: limit to max 2 players per chalk team.
+  // Creates lineups with individual chalk studs in unique non-chalk combos.
+  const shallowChalkIterations = (isTeamSportMultiGame && chalkTeams.size > 0)
+    ? Math.floor(NUM_ITERATIONS * 0.12)  // 12% shallow-chalk (max 2 per chalk team)
+    : 0;
+
+  // No-chalk-stack iterations: limit to max 1 player per chalk team.
+  // Creates lineups where a single chalk stud anchors a unique non-chalk build.
+  const noChalkStackIterations = (isTeamSportMultiGame && chalkTeams.size > 0)
+    ? Math.floor(NUM_ITERATIONS * 0.10)  // 10% no-chalk-stack (max 1 per chalk team)
     : 0;
 
   const formulaBlendIterations = isTeamSportMultiGame
@@ -1642,7 +1814,7 @@ export function optimizeLineups(
   const contrarianIterations = isTeamSportMultiGame
     ? (NUM_ITERATIONS - 1 - fieldMimicIterations - balancedIterations - leverageIterations
        - ceilingIterations - formulaBlendIterations - antiOverlapIterations - salaryValueIterations
-       - frontierSweepIterations - antiChalkIterations)
+       - frontierSweepIterations - antiChalkIterations - shallowChalkIterations - noChalkStackIterations)
     : (NUM_ITERATIONS
     - projectionIterations - fieldMimicIterations
     - balancedIterations - leverageIterations - gameStackIterations
@@ -1662,6 +1834,8 @@ export function optimizeLineups(
     console.log(`  - ${antiOverlapIterations} anti-overlap (3%: penalize pool-frequent)`);
     console.log(`  - ${salaryValueIterations} salary-value (3%: pts/$ optimization)`);
     console.log(`  - ${frontierSweepIterations} frontier-sweep (15%: proj/own/boom efficient frontier)`);
+    if (shallowChalkIterations > 0) console.log(`  - ${shallowChalkIterations} shallow-chalk (12%: max 2 per chalk team)`);
+    if (noChalkStackIterations > 0) console.log(`  - ${noChalkStackIterations} no-chalk-stack (10%: max 1 per chalk team)`);
     console.log(`  - ${contrarianIterations} contrarian (remainder: deep fades + ceiling)`);
   } else {
     console.log(`Running ${NUM_ITERATIONS} iterations for FRONTIER EXPLORATION:`);
@@ -1690,6 +1864,8 @@ export function optimizeLineups(
   const frontierSweepLineups: Lineup[] = [];
   const contrarianLineups: Lineup[] = [];
   const antiChalkLineups: Lineup[] = [];
+  const shallowChalkLineups: Lineup[] = [];
+  const noChalkStackLineups: Lineup[] = [];
 
   const seenHashes = new Set<string>();
   let totalEvaluated = 0;
@@ -1709,6 +1885,8 @@ export function optimizeLineups(
   let frontierSweepIterCount = 0;
   let contrarianIterCount = 0;
   let antiChalkIterCount = 0;
+  let shallowChalkIterCount = 0;
+  let noChalkStackIterCount = 0;
 
   // Track player frequency across all generated lineups (for anti-overlap iterations)
   const playerPoolFrequency = new Map<string, number>();
@@ -1750,13 +1928,15 @@ export function optimizeLineups(
   let remainingFrontierSweep = frontierSweepIterations;
   let remainingContrarian = contrarianIterations;
   let remainingAntiChalk = antiChalkIterations;
+  let remainingShallowChalk = shallowChalkIterations;
+  let remainingNoChalkStack = noChalkStackIterations;
 
   // Track lineups produced per type since last rebalance
   let newSinceRebalance = {
     projection: 0, fieldMimic: 0, balanced: 0,
     leverage: 0, gameStack: 0, ceiling: 0, formulaBlend: 0,
     antiOverlap: 0, salaryValue: 0, frontierSweep: 0, contrarian: 0,
-    antiChalk: 0,
+    antiChalk: 0, shallowChalk: 0, noChalkStack: 0,
   };
 
   // Determine iteration type dynamically based on remaining allocations
@@ -1770,7 +1950,8 @@ export function optimizeLineups(
     const totalRemaining = remainingProjection + remainingFieldMimic +
       remainingBalanced + remainingLeverage + remainingGameStack +
       remainingCeiling + remainingFormulaBlend + antiOverlapAvail +
-      remainingSalaryValue + remainingFrontierSweep + remainingAntiChalk + remainingContrarian;
+      remainingSalaryValue + remainingFrontierSweep + remainingAntiChalk +
+      remainingShallowChalk + remainingNoChalkStack + remainingContrarian;
     if (totalRemaining <= 0) return 'leverage'; // fallback
 
     const r = Math.random() * totalRemaining;
@@ -1797,6 +1978,10 @@ export function optimizeLineups(
     if (r < acc && remainingFrontierSweep > 0) { remainingFrontierSweep--; return 'frontier-sweep'; }
     acc += remainingAntiChalk;
     if (r < acc && remainingAntiChalk > 0) { remainingAntiChalk--; return 'anti-chalk'; }
+    acc += remainingShallowChalk;
+    if (r < acc && remainingShallowChalk > 0) { remainingShallowChalk--; return 'shallow-chalk'; }
+    acc += remainingNoChalkStack;
+    if (r < acc && remainingNoChalkStack > 0) { remainingNoChalkStack--; return 'no-chalk-stack'; }
     if (remainingContrarian > 0) { remainingContrarian--; return 'contrarian'; }
 
     // Fallback: pick whichever has remaining
@@ -1831,6 +2016,8 @@ export function optimizeLineups(
       salaryValue: salaryValueIterCount > 0 ? total.salaryValue / salaryValueIterCount : 0,
       frontierSweep: frontierSweepIterCount > 0 ? total.frontierSweep / frontierSweepIterCount : 0,
       antiChalk: antiChalkIterCount > 0 ? total.antiChalk / antiChalkIterCount : 0,
+      shallowChalk: shallowChalkIterCount > 0 ? total.shallowChalk / shallowChalkIterCount : 0,
+      noChalkStack: noChalkStackIterCount > 0 ? total.noChalkStack / noChalkStackIterCount : 0,
       contrarian: contrarianIterCount > 0 ? total.contrarian / contrarianIterCount : 0,
     };
 
@@ -1863,6 +2050,8 @@ export function optimizeLineups(
       salaryValue: { remaining: remainingSalaryValue, prod: itersByType.salaryValue },
       frontierSweep: { remaining: remainingFrontierSweep, prod: itersByType.frontierSweep },
       antiChalk: { remaining: remainingAntiChalk, prod: itersByType.antiChalk },
+      shallowChalk: { remaining: remainingShallowChalk, prod: itersByType.shallowChalk },
+      noChalkStack: { remaining: remainingNoChalkStack, prod: itersByType.noChalkStack },
       contrarian: { remaining: remainingContrarian, prod: itersByType.contrarian },
     };
 
@@ -1893,6 +2082,8 @@ export function optimizeLineups(
           case 'salaryValue': remainingSalaryValue -= amount; break;
           case 'frontierSweep': remainingFrontierSweep -= amount; break;
           case 'antiChalk': remainingAntiChalk -= amount; break;
+          case 'shallowChalk': remainingShallowChalk -= amount; break;
+          case 'noChalkStack': remainingNoChalkStack -= amount; break;
           case 'contrarian': remainingContrarian -= amount; break;
         }
       }
@@ -1915,6 +2106,8 @@ export function optimizeLineups(
           case 'salaryValue': remainingSalaryValue += boost; break;
           case 'frontierSweep': remainingFrontierSweep += boost; break;
           case 'antiChalk': remainingAntiChalk += boost; break;
+          case 'shallowChalk': remainingShallowChalk += boost; break;
+          case 'noChalkStack': remainingNoChalkStack += boost; break;
           case 'contrarian': remainingContrarian += boost; break;
         }
       }
@@ -1927,7 +2120,7 @@ export function optimizeLineups(
       projection: 0, fieldMimic: 0, balanced: 0,
       leverage: 0, gameStack: 0, ceiling: 0, formulaBlend: 0,
       antiOverlap: 0, salaryValue: 0, frontierSweep: 0, contrarian: 0,
-      antiChalk: 0,
+      antiChalk: 0, shallowChalk: 0, noChalkStack: 0,
     };
   }
 
@@ -2241,6 +2434,47 @@ export function optimizeLineups(
       const antiChalkPlayers = applyChalkComboPenaltyToPlayers(worldPlayers, chalkCombosForAntiChalk);
       iterPlayers = applyCeilingBlend(antiChalkPlayers, 0.25);
       antiChalkIterCount++;
+    } else if (iterationType === 'shallow-chalk') {
+      // Shallow-chalk iterations: limit chalk teams + BOOST a rotating non-chalk team.
+      // Forces the B&B to find deep stacks from non-chalk teams (TB, MIA, NYM, NYY, etc.)
+      // that pure projection iterations miss because those teams have lower projected totals.
+      const worldPlayers = applyGameWorld(pool.players, gameWorld!);
+      const maxPerChalkTeam = 2;
+      let limited = applyChalkTeamDepthLimit(worldPlayers, chalkTeams, maxPerChalkTeam, config.sport);
+
+      // Rotate through non-chalk teams and boost one per iteration
+      const nonChalkTeams = [...pool.byTeam.keys()].filter(t => !chalkTeams.has(t));
+      if (nonChalkTeams.length > 0) {
+        const boostTeam = nonChalkTeams[shallowChalkIterCount % nonChalkTeams.length];
+        limited = limited.map(p => {
+          if (p.team === boostTeam && !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) {
+            return { ...p, projection: p.projection * 1.20 }; // 20% boost to force deep stack
+          }
+          return p;
+        });
+      }
+      iterPlayers = applyCeilingBlend(limited, 0.20);
+      shallowChalkIterCount++;
+    } else if (iterationType === 'no-chalk-stack') {
+      // No-chalk-stack iterations: limit chalk to 1 + BOOST a rotating non-chalk team.
+      // Creates lineups where a single chalk stud anchors a deep non-chalk stack.
+      const worldPlayers = applyGameWorld(pool.players, gameWorld!);
+      const maxPerChalkTeam = 1;
+      let limited = applyChalkTeamDepthLimit(worldPlayers, chalkTeams, maxPerChalkTeam, config.sport);
+
+      // Rotate through non-chalk teams and boost one per iteration
+      const nonChalkTeams = [...pool.byTeam.keys()].filter(t => !chalkTeams.has(t));
+      if (nonChalkTeams.length > 0) {
+        const boostTeam = nonChalkTeams[noChalkStackIterCount % nonChalkTeams.length];
+        limited = limited.map(p => {
+          if (p.team === boostTeam && !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) {
+            return { ...p, projection: p.projection * 1.25 }; // 25% boost for deeper non-chalk stacks
+          }
+          return p;
+        });
+      }
+      iterPlayers = applyCeilingBlend(limited, 0.25);
+      noChalkStackIterCount++;
     } else {
       // Contrarian iterations: NO EXCLUSIONS - heavy ownership penalty + ceiling blend
       // Creates low-ownership lineups with upside potential
@@ -2365,6 +2599,8 @@ export function optimizeLineups(
       : iterationType === 'salary-value' ? salaryValueLineups
       : iterationType === 'frontier-sweep' ? frontierSweepLineups
       : iterationType === 'anti-chalk' ? antiChalkLineups
+      : iterationType === 'shallow-chalk' ? shallowChalkLineups
+      : iterationType === 'no-chalk-stack' ? noChalkStackLineups
       : contrarianLineups;
 
     // Collect unique lineups - NO per-iteration filters.
@@ -2410,6 +2646,8 @@ export function optimizeLineups(
         else if (iterationType === 'salary-value') newSinceRebalance.salaryValue++;
         else if (iterationType === 'frontier-sweep') newSinceRebalance.frontierSweep++;
         else if (iterationType === 'anti-chalk') newSinceRebalance.antiChalk++;
+        else if (iterationType === 'shallow-chalk') newSinceRebalance.shallowChalk++;
+        else if (iterationType === 'no-chalk-stack') newSinceRebalance.noChalkStack++;
         else if (isContrarianType) newSinceRebalance.contrarian++;
 
         // Track player frequency for anti-overlap iterations
@@ -2442,7 +2680,7 @@ export function optimizeLineups(
     // TEAM-SPORT MULTI-GAME: After iter 0, systematically enumerate ALL stacked lineups
     // above a projection floor. No random sampling, no modified projections — just
     // exhaustive combinatorial search with real projections and pruning.
-    if (iter === 0 && isTeamSportMultiGame && maxProjectionFound > 0) {
+    if (false && iter === 0 && isTeamSportMultiGame && maxProjectionFound > 0) {
       const projFloorPct = 0.94;  // 94% of optimal
       const projFloor = maxProjectionFound * projFloorPct;
       console.log(`\n  Stack enumeration: all stacked lineups with proj >= ${projFloor.toFixed(1)} (${(projFloorPct*100).toFixed(0)}% of ${maxProjectionFound.toFixed(1)})`);
@@ -2470,7 +2708,7 @@ export function optimizeLineups(
     }
 
     // Per-iteration progress logging
-    const totalLineups = projectionLineups.length + fieldMimicLineups.length + leverageLineups.length + balancedLineups.length + gameStackLineups.length + ceilingLineups.length + formulaBlendLineups.length + antiOverlapLineups.length + salaryValueLineups.length + antiChalkLineups.length + contrarianLineups.length;
+    const totalLineups = projectionLineups.length + fieldMimicLineups.length + leverageLineups.length + balancedLineups.length + gameStackLineups.length + ceilingLineups.length + formulaBlendLineups.length + antiOverlapLineups.length + salaryValueLineups.length + antiChalkLineups.length + shallowChalkLineups.length + noChalkStackLineups.length + contrarianLineups.length;
     if (iter % 10 === 0 || iter === NUM_ITERATIONS - 1) {
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
       console.log(`  Iter ${(iter + 1).toString().padStart(3)}/${NUM_ITERATIONS} [${(iterationType as string).padEnd(18)}] ${totalLineups.toLocaleString().padStart(7)} lineups (${elapsed}s)`);
@@ -2481,6 +2719,210 @@ export function optimizeLineups(
         Math.floor(((iter + 1) / NUM_ITERATIONS) * 100),
         `Iteration ${iter + 1}/${NUM_ITERATIONS}: ${totalLineups} unique lineups`
       );
+    }
+  }
+
+  // ============================================================
+  // FORCED TEAM STACK GENERATION
+  // ============================================================
+  // Generate 5-man and 4-man stacks for EVERY viable team on the slate.
+  // Weighted by team stack quality — high-quality environments get more.
+  // This ensures the pool contains deep stacks from TB, MIA, NYY, NYM, etc.
+  // that the B&B naturally misses because those teams have lower projections.
+  const forcedStackLineups: Lineup[] = [];
+  if (isTeamSportMultiGame && viableStackTeams.length > 0 && maxProjectionFound > 0) {
+    console.log(`\n  --- FORCED TEAM STACK GENERATION ---`);
+
+    // Compute allocation per team weighted by quality (min 3 attempts, max 20)
+    const totalQuality = viableStackTeams.reduce((s, t) => s + (teamStackQuality.get(t) || 1), 0);
+    const TOTAL_FORCED_ATTEMPTS = Math.min(viableStackTeams.length * 15, 200);
+
+    for (const team of viableStackTeams) {
+      const quality = teamStackQuality.get(team) || 1.0;
+      const qualityPct = Math.max(0.04, Math.min(0.15, quality / totalQuality));
+      const attempts = Math.max(4, Math.round(TOTAL_FORCED_ATTEMPTS * qualityPct));
+
+      const teamBatters = pool.players.filter(p =>
+        p.team === team &&
+        !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP') &&
+        p.projection > 0
+      ).sort((a, b) => b.projection - a.projection);
+
+      if (teamBatters.length < 4) continue;
+
+      // For each attempt, boost this team's batters heavily and run B&B
+      let teamNew = 0;
+      for (let a = 0; a < attempts; a++) {
+        const gameWorld = generateGameWorld(pool.players);
+        const worldPlayers = applyGameWorld(pool.players, gameWorld);
+
+        // Boost target team batters by 50-80% (vary per attempt for different combos)
+        const boostFactor = 1.50 + (a % 4) * 0.10;
+        const boosted = worldPlayers.map(p => {
+          if (p.team === team && !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) {
+            return { ...p, projection: p.projection * boostFactor };
+          }
+          return p;
+        });
+
+        // Apply ceiling blend for variety
+        const blended = applyCeilingBlend(boosted, 0.15 + (a % 3) * 0.10);
+
+        const iterPool: PlayerPool = {
+          players: blended,
+          byId: new Map(blended.map(p => [p.id, p])),
+          byPosition: new Map(),
+          byTeam: new Map(),
+        };
+        for (const p of blended) {
+          for (const pos of p.positions) {
+            if (!iterPool.byPosition.has(pos)) iterPool.byPosition.set(pos, []);
+            iterPool.byPosition.get(pos)!.push(p);
+          }
+          if (!iterPool.byTeam.has(p.team)) iterPool.byTeam.set(p.team, []);
+          iterPool.byTeam.get(p.team)!.push(p);
+        }
+
+        const result = runSingleOptimization({
+          config,
+          pool: iterPool,
+          originalPool: pool,
+          poolSize: 50, // Small batch per attempt
+          minSalary,
+          seenHashes,
+          shufflePositions: a % 2 === 1,
+        });
+
+        for (const lineup of result.lineups) {
+          // Verify this lineup actually has a deep stack from the target team
+          let teamBatterCount = 0;
+          for (const p of lineup.players) {
+            if (p.team === team && !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) {
+              teamBatterCount++;
+            }
+          }
+          if (teamBatterCount >= 4 && !seenHashes.has(lineup.hash)) {
+            lineup.constructionMethod = 'forced-stack';
+            forcedStackLineups.push(lineup);
+            seenHashes.add(lineup.hash);
+            teamNew++;
+          }
+        }
+        totalEvaluated += result.evaluatedCount;
+      }
+
+      const isChalk = chalkTeams.has(team) ? ' [CHALK]' : '';
+      const s5 = forcedStackLineups.filter(l => {
+        let ct = 0;
+        for (const p of l.players) {
+          if (p.team === team && !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) ct++;
+        }
+        return ct >= 5;
+      }).length;
+      if (teamNew > 0) {
+        console.log(`    ${team}: +${teamNew} lineups (${s5} 5-man) q=${quality.toFixed(1)}${isChalk}`);
+      }
+    }
+    console.log(`  Forced stacks total: ${forcedStackLineups.length} new lineups`);
+  }
+
+  // ============================================================
+  // PITCHER COVERAGE GUARANTEE
+  // ============================================================
+  // Every viable pitcher must appear in the pool. Force-generate lineups
+  // for any pitcher that's missing or under-represented.
+  const forcedPitcherLineups: Lineup[] = [];
+  if (isTeamSportMultiGame && config.sport === 'mlb') {
+    // Find viable pitchers: proj >= 10 OR ceiling >= 20 OR ownership >= 5%
+    const viablePitchers = pool.players.filter(p => {
+      if (!p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) return false;
+      if (p.projection <= 0) return false;
+      const ceil = p.ceiling || p.projection * 1.2;
+      return p.projection >= 10 || ceil >= 20 || p.ownership >= 5;
+    });
+
+    // Count current pitcher exposure in the pool
+    const allPoolLineups = [
+      ...projectionLineups, ...fieldMimicLineups, ...leverageLineups,
+      ...balancedLineups, ...gameStackLineups, ...ceilingLineups,
+      ...formulaBlendLineups, ...antiOverlapLineups, ...salaryValueLineups,
+      ...frontierSweepLineups, ...antiChalkLineups, ...shallowChalkLineups,
+      ...noChalkStackLineups, ...contrarianLineups, ...forcedStackLineups,
+    ];
+    const pitcherCounts = new Map<string, number>();
+    for (const lu of allPoolLineups) {
+      for (const p of lu.players) {
+        if (p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) {
+          pitcherCounts.set(p.id, (pitcherCounts.get(p.id) || 0) + 1);
+        }
+      }
+    }
+
+    const MIN_PITCHER_EXPOSURE = 0.01; // At least 1% of pool
+    const poolSize = allPoolLineups.length || 1;
+    const underCoveredPitchers = viablePitchers.filter(p => {
+      const ct = pitcherCounts.get(p.id) || 0;
+      return ct / poolSize < MIN_PITCHER_EXPOSURE;
+    });
+
+    if (underCoveredPitchers.length > 0) {
+      console.log(`\n  --- PITCHER COVERAGE GUARANTEE ---`);
+      console.log(`  Viable pitchers: ${viablePitchers.length}, under-covered: ${underCoveredPitchers.length}`);
+
+      for (const pitcher of underCoveredPitchers) {
+        // Force this pitcher by boosting their projection massively
+        const ATTEMPTS = 8;
+        let pitcherNew = 0;
+
+        for (let a = 0; a < ATTEMPTS; a++) {
+          const gameWorld = generateGameWorld(pool.players);
+          const worldPlayers = applyGameWorld(pool.players, gameWorld);
+
+          // Boost forced pitcher by 3x so B&B always includes them
+          const boosted = worldPlayers.map(p => {
+            if (p.id === pitcher.id) return { ...p, projection: p.projection * 3.0 };
+            return p;
+          });
+
+          const blended = applyCeilingBlend(boosted, 0.20 + (a % 3) * 0.10);
+          const iterPool: PlayerPool = {
+            players: blended,
+            byId: new Map(blended.map(p => [p.id, p])),
+            byPosition: new Map(),
+            byTeam: new Map(),
+          };
+          for (const p of blended) {
+            for (const pos of p.positions) {
+              if (!iterPool.byPosition.has(pos)) iterPool.byPosition.set(pos, []);
+              iterPool.byPosition.get(pos)!.push(p);
+            }
+            if (!iterPool.byTeam.has(p.team)) iterPool.byTeam.set(p.team, []);
+            iterPool.byTeam.get(p.team)!.push(p);
+          }
+
+          const result = runSingleOptimization({
+            config, pool: iterPool, originalPool: pool,
+            poolSize: 30, minSalary, seenHashes,
+            shufflePositions: a % 2 === 1,
+          });
+
+          for (const lineup of result.lineups) {
+            if (lineup.players.some(p => p.id === pitcher.id) && !seenHashes.has(lineup.hash)) {
+              lineup.constructionMethod = 'forced-pitcher';
+              forcedPitcherLineups.push(lineup);
+              seenHashes.add(lineup.hash);
+              pitcherNew++;
+            }
+          }
+          totalEvaluated += result.evaluatedCount;
+        }
+
+        if (pitcherNew > 0) {
+          const ceil = pitcher.ceiling || pitcher.projection * 1.2;
+          console.log(`    ${pitcher.name.padEnd(20)} proj=${pitcher.projection.toFixed(1)} ceil=${ceil.toFixed(1)} own=${pitcher.ownership.toFixed(1)}% → +${pitcherNew} lineups`);
+        }
+      }
+      console.log(`  Forced pitcher lineups total: ${forcedPitcherLineups.length}`);
     }
   }
 
@@ -2507,7 +2949,11 @@ export function optimizeLineups(
     ...salaryValueLineups,
     ...frontierSweepLineups,
     ...antiChalkLineups,
+    ...shallowChalkLineups,
+    ...noChalkStackLineups,
     ...contrarianLineups,
+    ...forcedStackLineups,
+    ...forcedPitcherLineups,
   ];
 
   // Deduplicate by hash
@@ -2519,7 +2965,20 @@ export function optimizeLineups(
   });
 
   // Projection floor filter — remove lineups below threshold before passing to selector
-  const floorPct = isNonTeamSport ? 0.85 : (isShortSlate ? 0.92 : 0.94);
+  // Aggressive floors to capture the low-projection, high-ceiling builds that win GPPs.
+  // Data: 70 of top 100 actual-scoring lineups on 4/4/26 projected below 80% of optimal.
+  // Winners project at 71-83% of optimal. SS pool goes down to 67%.
+  //   MLB: 68% — winning lineups project 71-83% of optimal, need full range
+  //   Team sports: 72% — similar dynamic, slightly tighter
+  //   Non-team sports: 70% — need ultra-contrarian pool depth
+  //   Short slates: 75% — fewer combos, tighter range
+  // NBA/NFL: 90% floor — tight projection ranges, low-proj lineups are just bad not contrarian
+  // MLB: 68% — winning lineups project 71-83% of optimal (backtest proven)
+  // Non-team: 70% — high variance individual sports
+  const floorPct = isNonTeamSport ? 0.70
+    : config.sport === 'mlb' ? 0.68
+    : (config.sport === 'nba' || config.sport === 'nfl') ? 0.90
+    : (isShortSlate ? 0.82 : 0.80);
   const projFloor = optimalLineup ? optimalLineup.projection * floorPct : 0;
   const floorFiltered = projFloor > 0
     ? dedupedLineups.filter(l => l.projection >= projFloor)
@@ -2529,9 +2988,59 @@ export function optimizeLineups(
   if (floorRejected > 0) {
     console.log(`  Projection floor: ${floorFiltered.length} pass (${floorRejected} below ${(floorPct * 100).toFixed(0)}% of optimal = ${projFloor.toFixed(1)})`);
   }
-  const uniqueLineups = floorFiltered;
+  // MLB: filter out lineups without min 4-man batter stack
+  let mlbFiltered = floorFiltered;
+  if (config.sport === 'mlb') {
+    mlbFiltered = floorFiltered.filter(l => {
+      const batterTeams = new Map<string, number>();
+      for (const p of l.players) {
+        if (!p.positions.includes('P')) {
+          batterTeams.set(p.team, (batterTeams.get(p.team) || 0) + 1);
+        }
+      }
+      let maxStack = 0;
+      for (const count of batterTeams.values()) {
+        if (count > maxStack) maxStack = count;
+      }
+      return maxStack >= 4;
+    });
+    const mlbRejected = floorFiltered.length - mlbFiltered.length;
+    if (mlbRejected > 0) {
+      console.log(`  MLB stack filter: ${mlbFiltered.length} pass (${mlbRejected} below min 4-man batter stack)`);
+    }
+  }
+  const uniqueLineups = mlbFiltered;
 
   const finalLineups = uniqueLineups;
+
+  // --- Pool Stack Coverage Report ---
+  if (isTeamSportMultiGame && viableStackTeams.length > 0) {
+    console.log(`\n  [PoolCoverage] === STACK COVERAGE ===`);
+    const poolStackCov = new Map<string, { s5: number; s4: number; total: number }>();
+    for (const lu of finalLineups) {
+      const teamCts = new Map<string, number>();
+      for (const p of lu.players) {
+        if (!p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) {
+          teamCts.set(p.team, (teamCts.get(p.team) || 0) + 1);
+        }
+      }
+      for (const [team, ct] of teamCts) {
+        if (!poolStackCov.has(team)) poolStackCov.set(team, { s5: 0, s4: 0, total: 0 });
+        const entry = poolStackCov.get(team)!;
+        if (ct >= 5) entry.s5++;
+        else if (ct >= 4) entry.s4++;
+        entry.total++;
+      }
+    }
+    for (const team of viableStackTeams.sort()) {
+      const cov = poolStackCov.get(team) || { s5: 0, s4: 0, total: 0 };
+      const status = cov.s5 >= 10 ? 'OK' : cov.s5 > 0 ? 'LOW' : 'MISSING';
+      const q = teamStackQuality.get(team)?.toFixed(1) || '?';
+      const chalk = chalkTeams.has(team) ? ' [CHALK]' : '';
+      console.log(`  [PoolCoverage] ${team.padEnd(5)} 5man:${String(cov.s5).padStart(4)} 4man:${String(cov.s4).padStart(4)} total:${String(cov.total).padStart(5)} q=${q} [${status}]${chalk}`);
+    }
+    console.log(`  [PoolCoverage] === END ===`);
+  }
 
   const endTime = Date.now();
 
@@ -2548,7 +3057,10 @@ export function optimizeLineups(
   console.log(`  Salary-value:    ${salaryValueLineups.length} generated`);
   console.log(`  Frontier-sweep:  ${frontierSweepLineups.length} generated`);
   console.log(`  Anti-chalk:      ${antiChalkLineups.length} generated`);
+  console.log(`  Shallow-chalk:   ${shallowChalkLineups.length} generated`);
+  console.log(`  No-chalk-stack:  ${noChalkStackLineups.length} generated`);
   console.log(`  Contrarian pool: ${contrarianLineups.length} generated`);
+  if (forcedStackLineups.length > 0) console.log(`  Forced-stacks:   ${forcedStackLineups.length} generated`);
 
   // Log pool combo diversity
   if (poolPrimaryComboFrequency.size > 0) {
@@ -2919,6 +3431,34 @@ function runSingleOptimization(params: {
       // MMA opponent exclusion
       if (player.opponent && currentPlayers.some(p => p.name === player.opponent)) continue;
 
+      // MLB constraints: batter vs opposing pitcher — only on 2-game slates
+      if (config.sport === 'mlb') {
+        const bbGames = new Set(pool.players.map(pp => pp.gameInfo || pp.team));
+        const bbMaxBvP = bbGames.size <= 2 ? 1 : 0;
+        const isPitcher = player.positions.includes('P');
+        let mlbSkip = false;
+        if (isPitcher) {
+          // Adding a pitcher: count batters from pitcher's opponent team already in lineup
+          let count = 0;
+          for (const p of currentPlayers) {
+            if (!p.positions.includes('P') && p.team === player.opponent) count++;
+          }
+          if (count > bbMaxBvP) mlbSkip = true;
+        } else {
+          // Adding a batter: check if any pitcher in lineup pitches against this batter's team
+          for (const p of currentPlayers) {
+            if (p.positions.includes('P') && p.team === player.opponent) {
+              let existing = 0;
+              for (const cp of currentPlayers) {
+                if (!cp.positions.includes('P') && cp.team === player.team) existing++;
+              }
+              if (existing >= bbMaxBvP) { mlbSkip = true; break; }
+            }
+          }
+        }
+        if (mlbSkip) continue;
+      }
+
       // Mark all indices for this player's name (handles CPT/FLEX sharing)
       const nameIndices = nameMap.nameToIndices.get(player.name)!;
       for (let m = 0; m < nameIndices.length; m++) usedBitmap[nameIndices[m]] = 1;
@@ -3141,6 +3681,23 @@ function constructOwnershipWeightedLineup(
       // MMA opponent exclusion: fighters in the same bout cannot be in the same lineup
       if (p.opponent && players.some(s => s.name === p.opponent)) return false;
 
+      // MLB: batter vs opposing pitcher — only on 2-game slates
+      if (config.sport === 'mlb') {
+        const fmGames = new Set(pool.players.map(pp => pp.gameInfo || pp.team));
+        const fmMaxBvP = fmGames.size <= 2 ? 1 : 0;
+        if (p.positions.includes('P')) {
+          const battersVs = players.filter(s => !s.positions.includes('P') && s.team === p.opponent);
+          if (battersVs.length > fmMaxBvP) return false;
+        } else {
+          for (const s of players) {
+            if (s.positions.includes('P') && s.team === p.opponent) {
+              const existing = players.filter(cp => !cp.positions.includes('P') && cp.team === p.team);
+              if (existing.length >= fmMaxBvP) return false;
+            }
+          }
+        }
+      }
+
       return true;
     });
 
@@ -3247,6 +3804,23 @@ function constructRandomLineup(
 
       // MMA opponent exclusion: fighters in the same bout cannot be in the same lineup
       if (p.opponent && selected.some(s => s.name === p.opponent)) return false;
+
+      // MLB: batter vs opposing pitcher — only on 2-game slates
+      if (config.sport === 'mlb') {
+        const crGames = new Set(pool.players.map(pp => pp.gameInfo || pp.team));
+        const crMaxBvP = crGames.size <= 2 ? 1 : 0;
+        if (p.positions.includes('P')) {
+          const battersVs = selected.filter(s => !s.positions.includes('P') && s.team === p.opponent);
+          if (battersVs.length > crMaxBvP) return false;
+        } else {
+          for (const s of selected) {
+            if (s.positions.includes('P') && s.team === p.opponent) {
+              const existing = selected.filter(cp => !cp.positions.includes('P') && cp.team === p.team);
+              if (existing.length >= crMaxBvP) return false;
+            }
+          }
+        }
+      }
 
       return true;
     });

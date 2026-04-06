@@ -31,6 +31,28 @@ import { generateFieldPool } from './simulation/tournament-sim';
 import { generateFieldEnsemble, FieldEnsemble } from './field-ensemble';
 
 // ============================================================
+// MC COMBO CROWDING DISCOUNT
+// ============================================================
+// When a lineup's combo overlaps heavily with the field, its wins
+// get split with many entries. The crowding discount estimates this
+// splitting and penalizes chalk combos mathematically, so the greedy
+// loop naturally creates a barbell without forced tier quotas.
+
+const CROWDING_ALPHA: Record<string, number> = {
+  mlb: 0.6,     // MLB stacking makes combos highly correlated
+  nfl: 0.5,
+  nba: 0.15,    // NBA has concentrated ownership (fewer players) → higher crowding scores naturally
+  mma: 0.2,
+  nascar: 0.2,
+  golf: 0.2,
+};
+
+// Weights for combining frequency signals into crowdingScore
+const CROWDING_PRIMARY_WEIGHT = 500;   // Primary combo freq (stack core — most important)
+const CROWDING_QUAD_WEIGHT = 200;      // Average 4-player combo frequency
+const CROWDING_TRIPLE_WEIGHT = 50;     // Average 3-player combo frequency
+
+// ============================================================
 // TYPES
 // ============================================================
 
@@ -62,14 +84,11 @@ export interface SimpleSelectParams {
 // GAME STACK SCORE (same formula as backtester/selector)
 // ============================================================
 
-function computeGameStackScore(lineup: Lineup, numGames: number): number {
+function computeGameStackScore(lineup: Lineup, numGames: number, sport?: string): number {
   // Pro data (63K entries, 17 slates) — top-1% hit rates by construction:
   //   3-2-2-1: 1.55% (best common),  6-1-1: 2.30% (best overall, rare)
   //   5-1-1-1: 1.53%,  4-3-1: 1.44%,  4-2-1-1: 1.36%,  5-2-1: 1.36%
   //   3-2-1-1-1: 1.25%,  3-3-2: 1.07%,  2-2-2-1-1: 0.91% (worst)
-  //
-  // Key insight: 3-man primary + multiple secondary stacks (3-2-2) is the sweet spot.
-  // Multi-stack > single big stack. Bring-back helps but isn't required.
 
   let gameTotalSum = 0;
   let gameTotalCount = 0;
@@ -80,6 +99,13 @@ function computeGameStackScore(lineup: Lineup, numGames: number): number {
     }
   }
   const slateAvgGameTotal = gameTotalCount > 0 ? gameTotalSum / gameTotalCount : 225;
+
+  // --- MLB-specific: count same-TEAM batters (not same-game players) ---
+  // MLB correlation is driven by same-team batters in the same lineup spot.
+  // Pitchers don't correlate with batters. Opposing batters anti-correlate.
+  if (sport === 'mlb') {
+    return computeMLBStackScore(lineup, numGames, slateAvgGameTotal);
+  }
 
   const gameGroups = new Map<string, { teams: Set<string>; count: number; gameTotal: number }>();
   for (const player of lineup.players) {
@@ -92,64 +118,125 @@ function computeGameStackScore(lineup: Lineup, numGames: number): number {
 
   let stackBonus = 0;
   let maxStackSize = 0;
-  const stackSizes: number[] = []; // track all stack group sizes
+  const stackSizes: number[] = [];
 
   for (const [, group] of gameGroups) {
     const gameTotalScaler = group.gameTotal / slateAvgGameTotal;
     if (group.count > maxStackSize) maxStackSize = group.count;
     const hasBB = group.teams.size >= 2;
 
-    if (group.count >= 6) {
-      // 6+ stack: 2.30% hit rate (1.71x lift) — best single-stack pattern
-      stackBonus += 0.20 * gameTotalScaler;
-      if (hasBB) stackBonus += 0.08 * gameTotalScaler;
-    } else if (group.count >= 5) {
-      // 5-stack: 1.36-1.53% hit rate
-      stackBonus += 0.14 * gameTotalScaler;
-      if (hasBB) stackBonus += 0.06 * gameTotalScaler;
-    } else if (group.count >= 4) {
-      // 4-stack: 1.36-1.44% — equal to 3-stack, not better
-      stackBonus += 0.10 * gameTotalScaler;
-      if (hasBB) stackBonus += 0.05 * gameTotalScaler;
+    if (group.count >= 4) {
+      stackBonus += 0.05 * gameTotalScaler;
+      if (hasBB) stackBonus += 0.03 * gameTotalScaler;
     } else if (group.count >= 3) {
-      // 3-stack: 1.25-1.55% — best when combined with secondary stacks
-      stackBonus += 0.10 * gameTotalScaler;
-      if (hasBB) stackBonus += 0.04 * gameTotalScaler;
-    } else if (group.count === 2) {
-      // 2-man mini-stack: small correlation bonus
-      stackBonus += 0.03 * gameTotalScaler;
+      stackBonus += 0.04 * gameTotalScaler;
       if (hasBB) stackBonus += 0.02 * gameTotalScaler;
+    } else if (group.count === 2) {
+      stackBonus += 0.01 * gameTotalScaler;
     }
 
     if (group.count >= 2) stackSizes.push(group.count);
   }
 
-  // === MULTI-STACK BONUS (THE key differentiator in pro data) ===
-  // 3-2-2-1 pattern: 1.55% hit rate (best common pattern)
-  // Multi-stack lineups outperform single-stack by ~50%
-  stackSizes.sort((a, b) => b - a); // descending
-  const numStackGroups = stackSizes.length;
-
-  if (numStackGroups >= 3) {
-    // Triple stack (e.g., 3-2-2, 2-2-2): strongest signal
-    stackBonus += 0.12;
-  } else if (numStackGroups >= 2) {
-    // Double stack (e.g., 4-2, 3-3, 5-2): solid construction
-    stackBonus += 0.07;
-  }
-
-  // Penalty for spread-out lineups (no 3+ stack, just 2-man pairs or singles)
-  if (maxStackSize <= 2 && numGames > 2) {
-    stackBonus -= 0.06; // 2-2-2-1-1: 0.91% hit rate (worst pattern)
-  }
-
-  // Penalty for isolated big stack with no secondary (e.g., 4-1-1-1-1)
-  if (numStackGroups <= 1 && maxStackSize >= 3 && numGames >= 4) {
-    stackBonus -= 0.04;
+  stackSizes.sort((a, b) => b - a);
+  if (stackSizes.length >= 3) {
+    stackBonus += 0.05;
+  } else if (stackSizes.length >= 2) {
+    stackBonus += 0.03;
   }
 
   const slateScaler = numGames <= 3 ? 0.80 : numGames <= 4 ? 0.90 : numGames <= 6 ? 1.00 : 1.10;
-  return Math.max(-0.05, Math.min(0.70, stackBonus * slateScaler));
+  return Math.max(0, Math.min(0.30, stackBonus * slateScaler));
+}
+
+/**
+ * MLB-specific stack scoring based on same-team BATTER stacks.
+ *
+ * MLB correlation is about batters on the same team in the same lineup:
+ *   - Same-team batters share game script, lineup protection, rally correlation
+ *   - 4-man batter stack is the minimum for GPP viability
+ *   - 5-man batter stack has significantly higher correlation (more shared ABs)
+ *   - Bring-back (opposing batter) captures game total correlation
+ *   - Pitchers are independent — they don't stack with batters
+ */
+function computeMLBStackScore(lineup: Lineup, numGames: number, slateAvgGameTotal: number): number {
+  // Count same-team batters (exclude pitchers)
+  const teamBatters = new Map<string, { count: number; gameTotal: number }>();
+  const pitcherTeams = new Set<string>();
+
+  for (const player of lineup.players) {
+    if (player.positions.includes('P')) {
+      pitcherTeams.add(player.team);
+      continue;
+    }
+    const existing = teamBatters.get(player.team) || { count: 0, gameTotal: player.gameTotal || slateAvgGameTotal };
+    existing.count++;
+    teamBatters.set(player.team, existing);
+  }
+
+  // Find primary batter stack
+  let maxBatterStack = 0;
+  let primaryTeam = '';
+  let primaryGameTotal = slateAvgGameTotal;
+  for (const [team, info] of teamBatters) {
+    if (info.count > maxBatterStack) {
+      maxBatterStack = info.count;
+      primaryTeam = team;
+      primaryGameTotal = info.gameTotal;
+    }
+  }
+
+  const gameTotalScaler = primaryGameTotal / slateAvgGameTotal;
+  let stackBonus = 0;
+
+  // 4-man batter stack: baseline for MLB GPP
+  if (maxBatterStack >= 4) {
+    stackBonus += 0.06 * gameTotalScaler;
+  }
+
+  // 5-man batter stack: significantly better correlation
+  // More shared ABs, more rally upside, tighter outcome coupling
+  if (maxBatterStack >= 5) {
+    stackBonus += 0.08 * gameTotalScaler; // Big bonus on top of 4-man
+  }
+
+  // 6+ man batter stack: rare but maximum correlation
+  if (maxBatterStack >= 6) {
+    stackBonus += 0.05 * gameTotalScaler;
+  }
+
+  // Bring-back bonus: batter from opposing team captures game total correlation
+  // Check if we have a batter whose team is the opponent of our primary stack
+  let hasBringBack = false;
+  for (const [team, info] of teamBatters) {
+    if (team !== primaryTeam && info.count >= 1) {
+      // Check if this team's batters are opponents of primary stack
+      // (they share the same game — opposing team means correlated game total)
+      for (const player of lineup.players) {
+        if (player.team === primaryTeam && player.opponent === team) {
+          hasBringBack = true;
+          break;
+        }
+      }
+      if (hasBringBack) break;
+    }
+  }
+
+  if (hasBringBack) {
+    stackBonus += 0.04 * gameTotalScaler;
+  }
+
+  // Secondary stack bonus (batters from a second team)
+  const secondaryStacks = [...teamBatters.entries()]
+    .filter(([team]) => team !== primaryTeam)
+    .sort((a, b) => b[1].count - a[1].count);
+
+  if (secondaryStacks.length > 0 && secondaryStacks[0][1].count >= 2) {
+    stackBonus += 0.03; // Secondary 2-man batter stack
+  }
+
+  const slateScaler = numGames <= 3 ? 0.85 : numGames <= 5 ? 0.95 : 1.00;
+  return Math.max(0, Math.min(0.35, stackBonus * slateScaler));
 }
 
 // ============================================================
@@ -193,10 +280,12 @@ export function computeConstructionMultiplier(lineup: Lineup, numGames: number, 
   // Non-team sports (MMA/NASCAR/golf): no stacking concept, return 1.0
   if (sport && ['mma', 'nascar', 'golf'].includes(sport)) return 1.0;
 
-  // Pro data (63K entries, 854 top-1%): construction patterns matter.
-  // 3-2-2-1: 1.55% (best common), 6-1-1: 2.30% (best rare), 2-2-2-1-1: 0.91% (worst)
-  // Key: 3-man stack is as good as 4-man. Multi-stack >> single big stack.
+  // MLB-specific: construction is about same-team BATTER stacks
+  if (sport === 'mlb') {
+    return computeMLBConstructionMultiplier(lineup, numGames);
+  }
 
+  // NFL/NBA: game-level stacking
   const gameGroups = new Map<string, { teams: Set<string>; count: number }>();
   for (const player of lineup.players) {
     const gameId = player.gameInfo || `${player.team}_game`;
@@ -216,39 +305,78 @@ export function computeConstructionMultiplier(lineup: Lineup, numGames: number, 
     if (group.count >= 2) stackGroupCount++;
   }
 
-  // Single-game or 2-game slates: construction doesn't differentiate as much
   if (numGames <= 2) return 1.0;
 
   let multiplier = 1.0;
+  if (maxStackSize >= 3) multiplier *= 1.05;
+  if (hasBringBack) multiplier *= 1.03;
+  if (stackGroupCount >= 2) multiplier *= 1.05;
 
-  // === PRIMARY STACK ===
-  // 3-stack and 4-stack have equal hit rates (~1.35-1.55%).
-  // 5+ stack has slightly higher hit rate when combined with secondary.
-  if (maxStackSize >= 5) {
-    multiplier *= 1.15;  // 5+ stack: strong correlation upside
-  } else if (maxStackSize >= 3) {
-    multiplier *= 1.10;  // 3 or 4 stack: equally good in pro data
-  } else if (maxStackSize === 2) {
-    multiplier *= 0.85;  // 2-man only stacks: 0.91% hit rate (underperforms)
-  } else {
-    multiplier *= 0.60;  // No stacking at all
+  return multiplier;
+}
+
+/**
+ * MLB construction multiplier based on same-team batter stacks.
+ *
+ * 4-man batter stack = minimum viable GPP construction
+ * 5-man batter stack = significantly better (more correlated outcomes)
+ * Bring-back = captures game total correlation
+ * <4 batters from same team = severe penalty (pool filter already blocks these,
+ *   but this catches edge cases in edge-boosted generation)
+ */
+function computeMLBConstructionMultiplier(lineup: Lineup, numGames: number): number {
+  if (numGames <= 1) return 1.0;
+
+  const teamBatters = new Map<string, number>();
+  for (const player of lineup.players) {
+    if (player.positions.includes('P')) continue;
+    teamBatters.set(player.team, (teamBatters.get(player.team) || 0) + 1);
   }
 
-  // === BRING-BACK BONUS (not required, but helpful) ===
-  // 90.6% of top-1% have BB vs 86.6% of all pros — small edge
-  if (hasBringBack) {
-    multiplier *= 1.05;  // Modest bonus — BB helps but isn't mandatory
+  let maxBatterStack = 0;
+  for (const count of teamBatters.values()) {
+    if (count > maxBatterStack) maxBatterStack = count;
   }
 
-  // === MULTI-STACK (THE biggest differentiator) ===
-  // 3-2-2-1: 1.55% vs 3-2-1-1-1: 1.25% — multi-stack is ~25% better
-  if (stackGroupCount >= 3) {
-    multiplier *= 1.20;  // Triple stack: elite (3+2+2, 2+2+2)
-  } else if (stackGroupCount >= 2) {
-    multiplier *= 1.10;  // Double stack: good (4+2, 3+3, 5+2)
-  } else if (numGames >= 4) {
-    // No secondary stack on 4+ game slate
-    multiplier *= 0.75;
+  let multiplier = 1.0;
+
+  // Below 4-man batter stack: significant penalty (shouldn't be in pool but safety net)
+  if (maxBatterStack < 4) {
+    multiplier *= 0.60;
+    return multiplier;
+  }
+
+  // 4-man batter stack: baseline GPP construction
+  multiplier *= 1.08;
+
+  // 5-man batter stack: strong correlation bonus
+  if (maxBatterStack >= 5) {
+    multiplier *= 1.12;
+  }
+
+  // 6+ man batter stack: maximum correlation
+  if (maxBatterStack >= 6) {
+    multiplier *= 1.06;
+  }
+
+  // Bring-back detection
+  const primaryTeam = [...teamBatters.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+  if (primaryTeam) {
+    let hasBringBack = false;
+    for (const player of lineup.players) {
+      if (player.positions.includes('P')) continue;
+      if (player.team !== primaryTeam) {
+        // Check if opposing batter shares a game with primary stack
+        for (const p2 of lineup.players) {
+          if (p2.team === primaryTeam && !p2.positions.includes('P') && p2.opponent === player.team) {
+            hasBringBack = true;
+            break;
+          }
+        }
+        if (hasBringBack) break;
+      }
+    }
+    if (hasBringBack) multiplier *= 1.05;
   }
 
   return multiplier;
@@ -270,12 +398,20 @@ function computeFormulaScore(
   salaryCap: number,
   constructionMultiplier: number,
   fieldComboFreq: number = 0,
+  sport?: string,
 ): number {
+  // NBA ceiling amplifier: pros' 14-pt avg actual advantage comes from selecting
+  // lineups whose players boom TOGETHER. Boosting ceiling weight pushes the selector
+  // toward high-ceiling correlated builds — the same lineups that score 290+ when
+  // the game script goes right.
+  const ceilingAmplifier = sport === 'nba' ? 1.3 : sport === 'nfl' ? 1.15 : 1.0;
+  const effectiveCeilingScore = ceilingScore * ceilingAmplifier;
+
   // 5-component additive score (proven formula that achieved 1.42% top-1%)
   // NO ownership in the additive score — backtests show ownership is a negative predictor (-0.24)
   const additiveScore = (
     projectionScore * (weights.projectionScore || 0.20) +
-    ceilingScore * (weights.ceilingScore || 0.20) +
+    effectiveCeilingScore * (weights.ceilingScore || 0.20) +
     varianceScore * (weights.varianceScore || 0.20) +
     salaryEfficiencyScore * (weights.salaryEfficiencyScore || 0.10) +
     relativeValueScore * (weights.relativeValueScore || 0.30)
@@ -324,23 +460,34 @@ function computeFormulaScore(
  * Smooth decay factor for a single player's exposure level.
  * Returns 1.0 when exposure is low, decays toward 0 as exposure increases.
  *
- * Relaxed threshold 20%: individual player exposure is less important than
- * COMBO diversity. Pros overlap with field on individuals — they differentiate
- * at the combo level. This just prevents extreme concentration (>50%).
+ * POSITION-SPECIFIC: Batters have a tighter cap than pitchers.
+ * - Batters: start decay at 7%, wall at 20%. On a 1500-lineup portfolio,
+ *   20% = 300 lineups per batter. Going higher concentrates too much risk.
+ *   Backtest showed 30% Raleigh (scored 0), 26% Raley (scored 0), 23% Carroll (scored 2).
+ * - Pitchers: start decay at 12%, wall at 35%. Fewer viable pitchers per slate
+ *   (12-15 vs 50+ batters), and every lineup needs 2 — so higher exposure is natural.
  *
- * Behavior:
- *   20% exposure → 1.00 (no penalty)
- *   30% exposure → 0.83
- *   40% exposure → 0.50
- *   50% exposure → 0.24
- *   60% exposure → 0.10
+ * Batter behavior:
+ *   8% exposure → 1.00, 15% → 0.70, 20% → 0.30, 25% → 0.05, 28%+ → ~0.01
+ * Pitcher behavior:
+ *   12% exposure → 1.00, 20% → 0.65, 28% → 0.18, 35% → 0.03
  */
-function playerExposureFactor(exposure: number): number {
-  // Original thresholds from 1.42% baseline: 15%→1.0, 30%→0.74, 40%→0.40, 50%→0.17
-  if (exposure <= 0.15) return 1.0;
-  const x = exposure - 0.15;
-  const penalty = x * x * 15 + x * x * x * x * 200;
-  return 1 / (1 + penalty);
+function playerExposureFactor(exposure: number, isPitcher: boolean = false): number {
+  if (isPitcher) {
+    // Pitchers: gentler curve, higher ceiling
+    if (exposure <= 0.12) return 1.0;
+    const x = exposure - 0.12;
+    const penalty = x * x * 30 + x * x * x * x * 1000;
+    return 1 / (1 + penalty);
+  } else {
+    // Batters: 25% effective cap — balances diversification (avg/cash rate) with
+    // tail upside (best lineups need some concentration). Backtest showed 20% was
+    // too tight (raised avg +1.9 but killed best lineup from 149→131).
+    if (exposure <= 0.08) return 1.0;
+    const x = exposure - 0.08;
+    const penalty = x * x * 55 + x * x * x * x * 2500;
+    return 1 / (1 + penalty);
+  }
 }
 
 /**
@@ -494,13 +641,36 @@ function calculateDiversityMultiplier(
   const players = lineup.players;
   const n = players.length;
 
-  // Player exposure (geometric mean)
+  // Player exposure (geometric mean) — position-specific decay
   let playerProduct = 1.0;
+  let worstBatterExposure = 0;
+  let worstPitcherExposure = 0;
   for (const p of players) {
     const exposure = (playerCounts.get(p.id) || 0) / selectedCount;
-    playerProduct *= playerExposureFactor(exposure);
+    const isPitcher = p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP');
+    playerProduct *= playerExposureFactor(exposure, isPitcher);
+    if (isPitcher) {
+      if (exposure > worstPitcherExposure) worstPitcherExposure = exposure;
+    } else {
+      if (exposure > worstBatterExposure) worstBatterExposure = exposure;
+    }
   }
   const playerDiversity = Math.pow(playerProduct, 1 / n);
+
+  // Worst-player exposure penalty — position-specific thresholds.
+  // Batters: hard wall at 25%. Balances diversification with tail upside.
+  // 20% was too tight (killed best lineup 149→131). 30% was too loose (Raleigh 30%, scored 0).
+  // Pitchers: wall at 30% (fewer options, need 2 per lineup).
+  let worstPlayerPenalty = 1.0;
+  if (worstBatterExposure > 0.25) {
+    const over = worstBatterExposure - 0.25;
+    // 27% → 0.55, 30% → 0.12, 33% → 0.03
+    worstPlayerPenalty *= 1 / (1 + over * over * 300 + over * over * over * over * 8000);
+  }
+  if (worstPitcherExposure > 0.30) {
+    const over = worstPitcherExposure - 0.30;
+    worstPlayerPenalty *= 1 / (1 + over * over * 200 + over * over * over * over * 5000);
+  }
 
   // Pair exposure (geometric mean)
   let pairProduct = 1.0;
@@ -517,19 +687,13 @@ function calculateDiversityMultiplier(
   }
   const pairDiversity = pairCount > 0 ? Math.pow(pairProduct, 1 / pairCount) : 1.0;
 
-  // Original 1.42% baseline formula: multiplicative blend of player + pair diversity.
-  // The triple/quad/quint components caused over-diversification that hurt performance
-  // by forcing low-quality lineups into the portfolio. The max-overlap penalty (below)
-  // already handles near-duplicates, so deep combo diversity is redundant.
-  //
-  // Geometric blend: playerDiversity^0.60 × pairDiversity^0.40
-  // This ensures BOTH player AND pair diversity must be decent — one can't compensate.
+  // Blend: player diversity × pair diversity × worst-player penalty
   const rosterSize = lineup.players.length;
-  if (rosterSize <= 6) {
-    // Small roster: pair diversity matters more (fewer unique pair combos)
-    return Math.pow(playerDiversity, 0.40) * Math.pow(pairDiversity, 0.60);
-  }
-  return Math.pow(playerDiversity, 0.60) * Math.pow(pairDiversity, 0.40);
+  const baseDiversity = rosterSize <= 6
+    ? Math.pow(playerDiversity, 0.40) * Math.pow(pairDiversity, 0.60)
+    : Math.pow(playerDiversity, 0.60) * Math.pow(pairDiversity, 0.40);
+
+  return baseDiversity * worstPlayerPenalty;
 }
 
 // ============================================================
@@ -545,7 +709,14 @@ function calculateDiversityMultiplier(
  * 4. Update player/pair counts and repeat
  */
 export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult {
-  const { lineups, targetCount, numGames, salaryCap } = params;
+  const { lineups, numGames, salaryCap } = params;
+  // Short slates (2-3 games) have fewer unique combos — cap lineup count
+  // to avoid exhausting diversity and getting stuck
+  const maxForSlate = numGames <= 2 ? 150 : numGames <= 3 ? 300 : params.targetCount;
+  const targetCount = Math.min(params.targetCount, maxForSlate);
+  if (targetCount < params.targetCount) {
+    console.log(`\n  Short slate (${numGames} games): capping lineups at ${targetCount} (requested ${params.targetCount})`);
+  }
   const weights = { ...(params.weights || loadOptimizedWeights()) };
   const cap = salaryCap || 50000;
 
@@ -563,6 +734,48 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
 
   console.log(`\n  Simple selector: ${lineups.length.toLocaleString()} candidates, target ${targetCount}`);
 
+  // --- Step 0.5: Identify chalk teams for depth quota enforcement ---
+  const chalkTeams = new Set<string>();
+  const teamBatterOwnership = new Map<string, number>();
+  const CHALK_DEEP_HEDGE_PCT = 0.10;   // 10% of portfolio for 4-5 man chalk stacks
+  const CHALK_PARTIAL_PCT = 0.08;      // 8% of portfolio for 3-man chalk combos
+
+  if (!isNonTeamSport && params.players && params.players.length > 0) {
+    const adjustedThreshold = numGames <= 3 ? 25 : numGames <= 5 ? 20 : 18;
+    const teamPlayersMap = new Map<string, Player[]>();
+    for (const p of params.players) {
+      if (!teamPlayersMap.has(p.team)) teamPlayersMap.set(p.team, []);
+      teamPlayersMap.get(p.team)!.push(p);
+    }
+    for (const [team, teamPlayers] of teamPlayersMap) {
+      const batters = teamPlayers.filter(p =>
+        !p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP') &&
+        p.projection > 0
+      );
+      if (batters.length < 3) continue;
+      const avgOwn = batters.reduce((s, p) => s + p.ownership, 0) / batters.length;
+      teamBatterOwnership.set(team, avgOwn);
+      if (avgOwn >= adjustedThreshold) {
+        chalkTeams.add(team);
+      }
+    }
+    if (chalkTeams.size > 0) {
+      console.log(`\n  [ChalkAvoid] Chalk teams (avg batter own > ${numGames <= 3 ? 25 : numGames <= 5 ? 20 : 18}%):`);
+      for (const team of chalkTeams) {
+        console.log(`  [ChalkAvoid]   ${team}: avg batter own ${teamBatterOwnership.get(team)?.toFixed(1)}%`);
+      }
+      console.log(`  [ChalkAvoid] Allocation: ${(CHALK_DEEP_HEDGE_PCT*100).toFixed(0)}% per chalk team hedge (4-5 man), ${(CHALK_PARTIAL_PCT*100).toFixed(0)}% partial (3-man)`);
+    }
+  }
+
+  // Chalk depth tracking for portfolio selection
+  const chalkHedgeCounts = new Map<string, number>();  // 4-5 man stacks per chalk team
+  const chalkPartialCounts = new Map<string, number>(); // 3-man combos per chalk team
+  for (const team of chalkTeams) {
+    chalkHedgeCounts.set(team, 0);
+    chalkPartialCounts.set(team, 0);
+  }
+
   // --- Step 1: Compute pool-level stats ---
   let minProj = Infinity, maxProj = -Infinity;
   let optIdx = 0;
@@ -574,8 +787,15 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   const optimalProjection = maxProj;
   const optimalOwnership = calculateOwnershipSum(lineups[optIdx]);
 
-  // --- Step 2: Hard projection floor — no lineup below this ever reaches output ---
-  const projFloorPct = isNonTeamSport ? 0.85 : (numGames <= 3 ? 0.92 : 0.94);
+  // --- Step 2: Projection floor — aggressive to capture winning low-proj builds ---
+  // Data: 70 of top 100 actual-scoring SS lineups projected below 80% of optimal.
+  // Winners project at 71-83% of optimal. Must allow full range for GPP upside.
+  // NBA/NFL: 90% — tight ranges, low-proj NBA lineups are just bad
+  // MLB: 68% — winners project 71-83% of optimal
+  const projFloorPct = isNonTeamSport ? 0.70
+    : params.sport === 'mlb' ? 0.68
+    : (params.sport === 'nba' || params.sport === 'nfl') ? 0.90
+    : (numGames <= 3 ? 0.82 : 0.80);
   const projFloor = optimalProjection * projFloorPct;
 
   // --- Step 2.55: Generate field ensemble for combo leverage ---
@@ -660,7 +880,7 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
     const x = Math.min(1, salaryLeft / 1800);
     const salaryEfficiencyScore = Math.max(0.1, 1 - x * x);
 
-    const gameStackScore = computeGameStackScore(l, numGames);
+    const gameStackScore = computeGameStackScore(l, numGames, params.sport);
 
     // Construction quality: multiplier for proper stacking patterns
     const constructionMult = computeConstructionMultiplier(l, numGames, params.sport);
@@ -672,6 +892,7 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
       l.salary, cap,
       constructionMult,
       candidatePrimaryComboFreqs[i],
+      params.sport,
     );
 
     const ownershipSum = l.players.reduce((s, p) => s + (p.ownership || 0), 0);
@@ -710,10 +931,102 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
     comboKeysCache[i] = precomputeComboKeys(sortedCandidates[i].lineup);
   }
 
+  // --- Step 3.5: Pre-compute max quad field frequency per candidate ---
+  // Used for combo-uniqueness tiebreaking: among candidates with similar adjusted
+  // scores, prefer the one whose worst (highest) quad combo freq in the field is lowest.
+  const candidateMaxQuadFreqs = new Float64Array(sortedCandidates.length);
+  if (ensemble) {
+    for (let i = 0; i < sortedCandidates.length; i++) {
+      let maxQuadFreq = 0;
+      for (const key of comboKeysCache[i].quadKeys) {
+        const freq = ensemble.combinedQuads.get(key) || 0;
+        if (freq > maxQuadFreq) maxQuadFreq = freq;
+      }
+      candidateMaxQuadFreqs[i] = maxQuadFreq;
+    }
+  }
+
+  // --- Step 3.6: Pre-compute crowding scores per sorted candidate ---
+  // Built on sortedCandidates index space (fixes index mismatch with candidatePrimaryComboKeys)
+  const sortedPrimaryComboKeys: string[] = new Array(sortedCandidates.length);
+  const sortedPrimaryComboFreqs = new Float64Array(sortedCandidates.length);
+  const candidateCrowdingScores = new Float64Array(sortedCandidates.length);
+
+  const crowdingAlpha = CROWDING_ALPHA[params.sport || ''] ?? 0.4;
+
+  if (ensemble) {
+    for (let i = 0; i < sortedCandidates.length; i++) {
+      // Rebuild primary combo on correct (sorted) index
+      const pc = extractPrimaryCombo(sortedCandidates[i].lineup, playerMap, params.sport);
+      sortedPrimaryComboKeys[i] = pc.comboKey;
+      sortedPrimaryComboFreqs[i] = ensemble.combinedPrimaryCombos.get(pc.comboKey) || 0;
+
+      // Average triple frequency
+      const tripleKeys = comboKeysCache[i].tripleKeys;
+      let tripleSum = 0;
+      for (const key of tripleKeys) {
+        tripleSum += ensemble.combinedTriples.get(key) || 0;
+      }
+      const avgTripleFreq = tripleKeys.length > 0 ? tripleSum / tripleKeys.length : 0;
+
+      // Average quad frequency (reuse candidateMaxQuadFreqs as proxy — already computed)
+      // For a more accurate average, compute from all quads
+      const quadKeys = comboKeysCache[i].quadKeys;
+      let quadSum = 0;
+      for (const key of quadKeys) {
+        quadSum += ensemble.combinedQuads.get(key) || 0;
+      }
+      const avgQuadFreq = quadKeys.length > 0 ? quadSum / quadKeys.length : 0;
+
+      // Composite crowding score
+      const primaryFreq = sortedPrimaryComboFreqs[i];
+      candidateCrowdingScores[i] = primaryFreq * CROWDING_PRIMARY_WEIGHT
+        + avgQuadFreq * CROWDING_QUAD_WEIGHT
+        + avgTripleFreq * CROWDING_TRIPLE_WEIGHT;
+    }
+
+    // Log crowding score distribution for the pool
+    const poolScores = [...candidateCrowdingScores].sort((a, b) => a - b);
+    const pn = poolScores.length;
+    if (pn > 0) {
+      console.log(`  Crowding scores (alpha=${crowdingAlpha}): p10=${poolScores[Math.floor(pn*0.1)].toFixed(2)}, median=${poolScores[Math.floor(pn*0.5)].toFixed(2)}, p90=${poolScores[Math.floor(pn*0.9)].toFixed(2)}`);
+      const heavyPenalty = poolScores.filter(s => 1/(1+crowdingAlpha*s) < 0.5).length;
+      console.log(`  Pool lineups with >50% crowding penalty: ${heavyPenalty}/${pn} (${(heavyPenalty/pn*100).toFixed(0)}%)`);
+    }
+  }
+
   // --- Step 4: Pre-compute candidate ID sets for speed ---
   const candidateIdSets: Set<string>[] = new Array(sortedCandidates.length);
   for (let i = 0; i < sortedCandidates.length; i++) {
     candidateIdSets[i] = new Set(sortedCandidates[i].lineup.players.map(p => p.id));
+  }
+
+  // --- Step 4.1: Pre-compute chalk depth per candidate ---
+  // For each candidate, compute max number of batters from any single chalk team.
+  // Used for chalk depth quota enforcement and tiebreaking.
+  const candidateMaxChalkDepth = new Uint8Array(sortedCandidates.length);
+  const candidateMaxChalkTeam: string[] = new Array(sortedCandidates.length).fill('');
+  if (chalkTeams.size > 0) {
+    for (let i = 0; i < sortedCandidates.length; i++) {
+      const lu = sortedCandidates[i].lineup;
+      let maxDepth = 0;
+      let maxTeam = '';
+      const chalkCounts = new Map<string, number>();
+      for (const p of lu.players) {
+        if (chalkTeams.has(p.team)) {
+          // For MLB, only count batters (not pitchers)
+          if (params.sport === 'mlb' && p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) continue;
+          const ct = (chalkCounts.get(p.team) || 0) + 1;
+          chalkCounts.set(p.team, ct);
+          if (ct > maxDepth) {
+            maxDepth = ct;
+            maxTeam = p.team;
+          }
+        }
+      }
+      candidateMaxChalkDepth[i] = maxDepth;
+      candidateMaxChalkTeam[i] = maxTeam;
+    }
   }
 
   // --- Step 4.5: Ensure absolute optimal (cash-game) lineup is first ---
@@ -733,7 +1046,7 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   }
   console.log(`  Optimal lineup: ${sortedCandidates[0].lineup.projection.toFixed(1)} pts, own ${sortedCandidates[0].ownershipSum.toFixed(0)}% (always selected as #1)`);
 
-  // --- Step 5: Greedy selection with diversity ---
+  // --- Step 5: Greedy selection with diversity + BARBELL ALLOCATION ---
   const selected: ScoredLineup[] = [];
   const playerCounts = new Map<string, number>();
   const pairCounts = new Map<string, number>();
@@ -748,35 +1061,108 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   const portfolioRosterSize = validLineups[0]?.players.length || lineups[0]?.players.length || 8;
   const overlapThreshold = portfolioRosterSize - 2;
 
+  // --- BARBELL ALLOCATION QUOTAS ---
+  // Sport-specific tier ranges:
+  // NBA/NFL: 90% floor, tight range — no junk lineups, quality throughout
+  // MLB: 68% floor, wide range — winners project at 71-83% of optimal
+  const isNBAorNFL = params.sport === 'nba' || params.sport === 'nfl';
+  const BARBELL_QUOTAS: { [key: string]: { projRange: [number, number]; targetPct: number; label: string } } = isNBAorNFL ? {
+    high:  { projRange: [0.97, 1.01], targetPct: 0.30, label: 'high-proj' },
+    mid:   { projRange: [0.94, 0.97], targetPct: 0.35, label: 'mid-proj' },
+    low:   { projRange: [0.91, 0.94], targetPct: 0.25, label: 'low-proj contrarian' },
+    ultra: { projRange: [0.88, 0.91], targetPct: 0.08, label: 'ultra-contrarian' },
+    floor: { projRange: [0.00, 0.88], targetPct: 0.02, label: 'extreme lottery' },
+  } : {
+    high:  { projRange: [0.93, 1.01], targetPct: 0.20, label: 'high-proj' },
+    mid:   { projRange: [0.86, 0.93], targetPct: 0.20, label: 'mid-proj' },
+    low:   { projRange: [0.79, 0.86], targetPct: 0.30, label: 'low-proj contrarian' },
+    ultra: { projRange: [0.72, 0.79], targetPct: 0.20, label: 'ultra-contrarian' },
+    floor: { projRange: [0.00, 0.72], targetPct: 0.10, label: 'extreme lottery' },
+  };
 
-  for (let round = 0; round < sortedCandidates.length && selected.length < targetCount; round++) {
-    // For first FREE_PASS_PICKS, just take the top formula scores (no diversity needed yet)
-    if (selected.length < FREE_PASS_PICKS) {
-      const c = sortedCandidates[round];
-      if (selectedHashes.has(c.lineup.hash)) continue;
+  const tierCounts = new Map<string, number>();
+  for (const key of Object.keys(BARBELL_QUOTAS)) tierCounts.set(key, 0);
 
-      selectedHashes.add(c.lineup.hash);
-      selected.push(toScoredLineup(c, selected.length + 1));
-      selectedPlayerSets.push(candidateIdSets[round]);
-      updateCounts(c.lineup, playerCounts, pairCounts, primaryComboCounts, candidatePrimaryComboKeys[round]);
-      continue;
+  function getProjectionTier(projection: number): string {
+    const pct = projection / optimalProjection;
+    for (const [key, quota] of Object.entries(BARBELL_QUOTAS)) {
+      if (pct >= quota.projRange[0] && pct < quota.projRange[1]) return key;
     }
+    return 'floor';
+  }
 
-    // Scan top candidates, pick best adjusted score
-    let bestIdx = -1;
-    let bestAdjScore = -Infinity;
+  // Count available candidates per tier for diagnostics (kept for logging)
+  const tierAvailable = new Map<string, number>();
+  for (const c of sortedCandidates) {
+    const tier = getProjectionTier(c.lineup.projection);
+    tierAvailable.set(tier, (tierAvailable.get(tier) || 0) + 1);
+  }
 
-    const scanEnd = Math.min(sortedCandidates.length, round + SCAN_WINDOW);
-    for (let i = round; i < scanEnd; i++) {
+  console.log(`\n  --- POOL TIER INVENTORY ---`);
+  for (const [key, quota] of Object.entries(BARBELL_QUOTAS)) {
+    const avail = tierAvailable.get(key) || 0;
+    console.log(`  ${quota.label.padEnd(22)} available: ${String(avail).padStart(5)}`);
+  }
+
+  // Ownership tracking for spread enforcement
+  const OWN_BUCKETS = [
+    { label: '0-5%', min: 0, max: 5 },
+    { label: '5-8%', min: 5, max: 8 },
+    { label: '8-12%', min: 8, max: 12 },
+    { label: '12-16%', min: 12, max: 16 },
+    { label: '16-20%', min: 16, max: 20 },
+    { label: '20%+', min: 20, max: 999 },
+  ];
+  const ownBucketCounts = new Map<string, number>();
+  for (const b of OWN_BUCKETS) ownBucketCounts.set(b.label, 0);
+
+  function getOwnBucket(lineup: Lineup): string {
+    const avgOwn = lineup.players.reduce((s, p) => s + (p.ownership || 0), 0) / lineup.players.length;
+    for (const b of OWN_BUCKETS) {
+      if (avgOwn >= b.min && avgOwn < b.max) return b.label;
+    }
+    return '20%+';
+  }
+
+  // ============================================================
+  // GLOBAL SELECTION WITH CROWDING DISCOUNT
+  // ============================================================
+  // Instead of tier-rotation, scan ALL candidates globally.
+  // The crowding discount naturally creates a barbell:
+  //   - Chalk combos get heavy discount → only the very best survive
+  //   - Contrarian combos get full value → they dominate later picks
+  //   - The greedy loop alternates between the two as marginal EV shifts
+
+  function pickBestCandidate(): number {
+    const scored: { idx: number; adjScore: number; maxQuadFreq: number; chalkDepth: number }[] = [];
+    // Scan a large window — need to reach low-projection contrarian candidates
+    // that have the best crowding-adjusted scores, but capped for speed
+    const GLOBAL_SCAN = Math.min(sortedCandidates.length, 8000);
+
+    for (let i = 0; i < GLOBAL_SCAN; i++) {
       const c = sortedCandidates[i];
       if (selectedHashes.has(c.lineup.hash)) continue;
 
+      // Chalk depth quota enforcement (KEPT — structural guard)
+      if (chalkTeams.size > 0) {
+        const depth = candidateMaxChalkDepth[i];
+        const team = candidateMaxChalkTeam[i];
+        if (depth >= 4 && team) {
+          const hedgeCount = chalkHedgeCounts.get(team) || 0;
+          const hedgeMax = Math.ceil(targetCount * CHALK_DEEP_HEDGE_PCT);
+          if (hedgeCount >= hedgeMax) continue;
+        } else if (depth === 3 && team) {
+          const partialCount = chalkPartialCounts.get(team) || 0;
+          const partialMax = Math.ceil(targetCount * CHALK_PARTIAL_PCT);
+          if (partialCount >= partialMax) continue;
+        }
+      }
+
       const diversity = calculateDiversityMultiplier(
-        c.lineup, playerCounts, pairCounts,
-        selected.length,
+        c.lineup, playerCounts, pairCounts, selected.length,
       );
 
-      // Max-overlap penalty: check last 50 selected lineups for player overlap.
+      // Overlap penalty (KEPT)
       let overlapPenalty = 1.0;
       if (selectedPlayerSets.length >= 3) {
         const candIds = candidateIdSets[i];
@@ -797,21 +1183,21 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
         }
       }
 
-      // Portfolio combo concentration penalty: prevent our own portfolio from
-      // being combo-concentrated around the same primary combos
+      // Portfolio combo concentration penalty (KEPT — distinct from field crowding)
+      // Prevents the same stack core from dominating our own portfolio
       let comboPenalty = 1.0;
-      if (selected.length >= 20 && ensemble) {
-        const pcKey = candidatePrimaryComboKeys[i];
+      if (selected.length >= 20) {
+        const pcKey = sortedPrimaryComboKeys[i];
         if (pcKey) {
           const portfolioComboFreq = (primaryComboCounts.get(pcKey) || 0) / selected.length;
-          if (portfolioComboFreq > 0.05) {
-            const cx = portfolioComboFreq - 0.05;
-            comboPenalty = 1 / (1 + cx * cx * 400 + cx * cx * cx * cx * 8000);
+          if (portfolioComboFreq > 0.04) {
+            const cx = portfolioComboFreq - 0.04;
+            comboPenalty = 1 / (1 + cx * cx * 500 + cx * cx * cx * cx * 10000);
           }
         }
       }
 
-      // Correlation cluster bonus: lineups touching more games = more leverage
+      // Correlation bonus (KEPT)
       let correlationBonus = 1.0;
       if (selected.length >= 20 && numGames > 2 && !isNonTeamSport) {
         const candGames = new Set(c.lineup.players.map(p => (p as any).gameInfo || (p as any).team || ''));
@@ -819,29 +1205,96 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
         correlationBonus = 1 + 0.15 * coverageRatio;
       }
 
-      const adjScore = c.formulaScore * diversity * overlapPenalty * comboPenalty * correlationBonus;
+      // NEW: Crowding discount — the core MC-driven penalty
+      const crowdingScore = candidateCrowdingScores[i];
+      const crowdingDiscount = crowdingScore > 0
+        ? 1 / (1 + crowdingAlpha * crowdingScore)
+        : 1.0;
 
-      if (adjScore > bestAdjScore) {
-        bestAdjScore = adjScore;
-        bestIdx = i;
+      const adjScore = c.formulaScore * diversity * overlapPenalty * comboPenalty * correlationBonus * crowdingDiscount;
+      scored.push({ idx: i, adjScore, maxQuadFreq: candidateMaxQuadFreqs[i], chalkDepth: candidateMaxChalkDepth[i] });
+    }
+
+    if (scored.length === 0) return -1;
+
+    // Find best adj score
+    let bestAdjScore = -Infinity;
+    for (const s of scored) {
+      if (s.adjScore > bestAdjScore) bestAdjScore = s.adjScore;
+    }
+
+    // Combo uniqueness tiebreaker: within 15% of best, prefer rarest combos
+    const tolerance = 0.15;
+    const threshold = bestAdjScore * (1 - tolerance);
+
+    let bestIdx = -1;
+    let bestBlendedScore = -Infinity;
+
+    for (const s of scored) {
+      if (s.adjScore < threshold) continue;
+
+      const comboRarityBonus = 1 + Math.max(0, 1 - s.maxQuadFreq / 0.05);
+      const chalkDepthBonus = chalkTeams.size > 0
+        ? 1 + Math.max(0, 0.05 * (3 - s.chalkDepth))
+        : 1.0;
+      const blended = s.adjScore * comboRarityBonus * chalkDepthBonus;
+
+      if (blended > bestBlendedScore) {
+        bestBlendedScore = blended;
+        bestIdx = s.idx;
       }
+    }
+
+    return bestIdx;
+  }
+
+  // --- MAIN SELECTION LOOP ---
+  // Phase 1: Free pass (top 10 by formula score)
+  // Phase 2: Global selection with crowding discount (no tier rotation)
+  for (let pick = 0; pick < targetCount; pick++) {
+    let bestIdx = -1;
+
+    if (selected.length < FREE_PASS_PICKS) {
+      // Free pass: scan global top candidates (KEPT)
+      for (let i = 0; i < sortedCandidates.length && bestIdx < 0; i++) {
+        if (!selectedHashes.has(sortedCandidates[i].lineup.hash)) bestIdx = i;
+      }
+    } else {
+      // Global pick: crowding discount naturally creates barbell
+      bestIdx = pickBestCandidate();
     }
 
     if (bestIdx < 0) break;
 
     const picked = sortedCandidates[bestIdx];
     selectedHashes.add(picked.lineup.hash);
-    selected.push(toScoredLineup(picked, selected.length + 1));
+    selected.push(toScoredLineup(picked, selected.length));
     selectedPlayerSets.push(candidateIdSets[bestIdx]);
-    updateCounts(picked.lineup, playerCounts, pairCounts, primaryComboCounts, candidatePrimaryComboKeys[bestIdx]);
+    updateCounts(picked.lineup, playerCounts, pairCounts, primaryComboCounts, sortedPrimaryComboKeys[bestIdx]);
 
-    // Swap picked, its combo keys, and its ID set to current position
-    [sortedCandidates[round], sortedCandidates[bestIdx]] = [sortedCandidates[bestIdx], sortedCandidates[round]];
-    [comboKeysCache[round], comboKeysCache[bestIdx]] = [comboKeysCache[bestIdx], comboKeysCache[round]];
-    [candidateIdSets[round], candidateIdSets[bestIdx]] = [candidateIdSets[bestIdx], candidateIdSets[round]];
-    // Also swap primary combo keys to keep aligned
-    if (candidatePrimaryComboKeys.length > 0) {
-      [candidatePrimaryComboKeys[round], candidatePrimaryComboKeys[bestIdx]] = [candidatePrimaryComboKeys[bestIdx], candidatePrimaryComboKeys[round]];
+    // Track chalk depth quotas (KEPT)
+    if (chalkTeams.size > 0) {
+      const depth = candidateMaxChalkDepth[bestIdx];
+      const team = candidateMaxChalkTeam[bestIdx];
+      if (depth >= 4 && team) {
+        chalkHedgeCounts.set(team, (chalkHedgeCounts.get(team) || 0) + 1);
+      } else if (depth === 3 && team) {
+        chalkPartialCounts.set(team, (chalkPartialCounts.get(team) || 0) + 1);
+      }
+    }
+
+    // Track barbell tier + ownership bucket (LOGGING ONLY — no enforcement)
+    const pickedTier = getProjectionTier(picked.lineup.projection);
+    tierCounts.set(pickedTier, (tierCounts.get(pickedTier) || 0) + 1);
+    const pickedBucket = getOwnBucket(picked.lineup);
+    ownBucketCounts.set(pickedBucket, (ownBucketCounts.get(pickedBucket) || 0) + 1);
+
+    // Log progress every 100 picks with natural tier distribution
+    if (selected.length % 100 === 0) {
+      const tierSummary = Object.entries(BARBELL_QUOTAS)
+        .map(([key, q]) => `${q.label.split(' ')[0]}:${tierCounts.get(key)||0}`)
+        .join(' | ');
+      console.log(`  [Crowding] Pick ${selected.length}: ${tierSummary}`);
     }
   }
 
@@ -909,6 +1362,68 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
     }
   }
 
+  // --- Step 5.7: Per-tier combo uniqueness diagnostics ---
+  if (ensemble && selected.length > 0) {
+    const TIER_COMBO_TARGETS: { [key: string]: number } = {
+      high: 0.06,   // No quad > 6% field
+      mid: 0.04,    // No quad > 4% field
+      low: 0.02,    // No quad > 2% field
+      ultra: 0.01,  // No quad > 1% field
+      floor: 0.01,  // No quad > 1% field
+    };
+
+    console.log(`\n  --- COMBO UNIQUENESS BY TIER ---`);
+    for (const [key, quota] of Object.entries(BARBELL_QUOTAS)) {
+      const tierLineups = selected.filter(l => {
+        const pct = l.projection / optimalProjection;
+        return pct >= quota.projRange[0] && pct < quota.projRange[1];
+      });
+      if (tierLineups.length === 0) continue;
+
+      const targetMaxFreq = TIER_COMBO_TARGETS[key] || 0.04;
+      let passingCount = 0;
+      let totalMaxFreq = 0;
+
+      for (const lu of tierLineups) {
+        const keys = precomputeComboKeys(lu);
+        let maxQuadFreq = 0;
+        for (const k of keys.quadKeys) {
+          const freq = ensemble.combinedQuads.get(k) || 0;
+          if (freq > maxQuadFreq) maxQuadFreq = freq;
+        }
+        if (maxQuadFreq <= targetMaxFreq) passingCount++;
+        totalMaxFreq += maxQuadFreq;
+      }
+
+      const n = tierLineups.length;
+      const avgProj = tierLineups.reduce((s, l) => s + l.projection, 0) / n;
+      const avgOwn = tierLineups.reduce((s, l) => s + l.players.reduce((ps, p) => ps + (p.ownership || 0), 0) / l.players.length, 0) / n;
+      console.log(
+        `  ${quota.label.padEnd(22)} ${String(n).padStart(3)} lu | ` +
+        `pass (<${(targetMaxFreq*100).toFixed(0)}%): ${String(passingCount).padStart(3)}/${n} (${(passingCount/n*100).toFixed(0)}%) | ` +
+        `avg max quad: ${(totalMaxFreq/n*100).toFixed(2)}% | ` +
+        `avg proj: ${avgProj.toFixed(1)} | avg own: ${avgOwn.toFixed(1)}%`
+      );
+    }
+  }
+
+  // --- Step 5.75: Barbell shape + ownership spread diagnostics ---
+  console.log(`\n  --- BARBELL PORTFOLIO SHAPE ---`);
+  for (const [key, quota] of Object.entries(BARBELL_QUOTAS)) {
+    const actual = tierCounts.get(key) || 0;
+    const target = Math.ceil(targetCount * quota.targetPct);
+    const pct = selected.length > 0 ? (actual / selected.length * 100).toFixed(0) : '0';
+    const status = actual >= target * 0.9 ? 'OK' : actual >= target * 0.5 ? 'PARTIAL' : 'SHORT';
+    console.log(`  ${quota.label.padEnd(22)} ${String(actual).padStart(4)}/${String(target).padStart(4)} (${pct}% of portfolio) [${status}]`);
+  }
+
+  console.log(`\n  --- OWNERSHIP SPREAD ---`);
+  for (const b of OWN_BUCKETS) {
+    const ct = ownBucketCounts.get(b.label) || 0;
+    const pct = selected.length > 0 ? (ct / selected.length * 100).toFixed(0) : '0';
+    console.log(`  ${b.label.padEnd(10)} avg own: ${String(ct).padStart(4)} lineups (${pct}%)`);
+  }
+
   // --- Step 6: Compute exposures ---
   const finalPlayerCounts = new Map<string, number>();
   for (const lineup of selected) {
@@ -940,8 +1455,24 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   // Stack composition logging
   const isNonTeamSport2 = params.sport && ['mma', 'nascar', 'golf'].includes(params.sport);
   if (!isNonTeamSport2 && numGames > 1) {
-    const stackCount = selected.filter(l => hasStackWithBringBack(l, 3)).length;
-    console.log(`  Stack composition: ${stackCount}/${selected.length} (${(stackCount/selected.length*100).toFixed(0)}%) have 3+BB`);
+    if (params.sport === 'mlb') {
+      // MLB: report same-team batter stack sizes (not game-level)
+      const stack4 = selected.filter(l => {
+        const tb = new Map<string, number>();
+        for (const p of l.players) { if (!p.positions.includes('P')) tb.set(p.team, (tb.get(p.team) || 0) + 1); }
+        return Math.max(...tb.values(), 0) >= 4;
+      }).length;
+      const stack5 = selected.filter(l => {
+        const tb = new Map<string, number>();
+        for (const p of l.players) { if (!p.positions.includes('P')) tb.set(p.team, (tb.get(p.team) || 0) + 1); }
+        return Math.max(...tb.values(), 0) >= 5;
+      }).length;
+      const bbCount = selected.filter(l => hasStackWithBringBack(l, 4)).length;
+      console.log(`  MLB stacks: ${stack4}/${selected.length} have 4+ batters, ${stack5} have 5+ batters, ${bbCount} have bring-back`);
+    } else {
+      const stackCount = selected.filter(l => hasStackWithBringBack(l, 3)).length;
+      console.log(`  Stack composition: ${stackCount}/${selected.length} (${(stackCount/selected.length*100).toFixed(0)}%) have 3+BB`);
+    }
   }
 
   // Show top exposures
@@ -977,6 +1508,53 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
     console.log(`  Worst field combo overlap: ${(maxFieldComboFreq * 100).toFixed(1)}%`);
     console.log(`  Worst portfolio combo concentration: ${(maxPortfolioComboFreq * 100).toFixed(1)}%`);
     console.log(`  Chalk primary combos in ensemble: ${ensemble.chalkPrimaryCombos.length}`);
+  }
+
+  // --- Step 7.5: Chalk depth report ---
+  if (chalkTeams.size > 0 && selected.length > 0) {
+    console.log(`\n  [ChalkDepth] === CHALK DEPTH REPORT ===`);
+    console.log(`  [ChalkDepth] Total lineups: ${selected.length}`);
+
+    for (const team of chalkTeams) {
+      const depthDist = [0, 0, 0, 0, 0, 0, 0]; // index = num players from this team
+
+      for (const lu of selected) {
+        let ct = 0;
+        for (const p of lu.players) {
+          if (p.team === team) {
+            // For MLB, only count batters
+            if (params.sport === 'mlb' && p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) continue;
+            ct++;
+          }
+        }
+        depthDist[Math.min(ct, 6)]++;
+      }
+
+      const avgOwn = teamBatterOwnership.get(team)?.toFixed(1) || '?';
+      console.log(`  [ChalkDepth] ${team} (avg batter own: ${avgOwn}%):`);
+      console.log(`  [ChalkDepth]   0 players: ${depthDist[0]} (${(depthDist[0]/selected.length*100).toFixed(0)}%)`);
+      console.log(`  [ChalkDepth]   1 player:  ${depthDist[1]} (${(depthDist[1]/selected.length*100).toFixed(0)}%)`);
+      console.log(`  [ChalkDepth]   2 players: ${depthDist[2]} (${(depthDist[2]/selected.length*100).toFixed(0)}%)`);
+      console.log(`  [ChalkDepth]   3 players: ${depthDist[3]} (${(depthDist[3]/selected.length*100).toFixed(0)}%) — capped at ${(CHALK_PARTIAL_PCT*100).toFixed(0)}%`);
+      console.log(`  [ChalkDepth]   4+ players: ${depthDist.slice(4).reduce((s,v)=>s+v,0)} (${(depthDist.slice(4).reduce((s,v)=>s+v,0)/selected.length*100).toFixed(0)}%) — capped at ${(CHALK_DEEP_HEDGE_PCT*100).toFixed(0)}%`);
+    }
+
+    // Overall chalk exposure summary
+    const shallowOrNone = selected.filter(lu => {
+      for (const team of chalkTeams) {
+        let ct = 0;
+        for (const p of lu.players) {
+          if (p.team === team) {
+            if (params.sport === 'mlb' && p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP')) continue;
+            ct++;
+          }
+        }
+        if (ct >= 3) return false;
+      }
+      return true;
+    }).length;
+    console.log(`\n  [ChalkDepth] Lineups with shallow chalk (0-2 per chalk team): ${shallowOrNone} (${(shallowOrNone/selected.length*100).toFixed(0)}%)`);
+    console.log(`  [ChalkDepth] === END REPORT ===`);
   }
 
   return { selected, exposures, avgProjection, avgOwnership };

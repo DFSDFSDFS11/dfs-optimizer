@@ -75,6 +75,41 @@ export const DK_NFL_CLASSIC: ContestConfig = {
 };
 
 // ============================================================
+// DRAFTKINGS MLB CLASSIC
+// ============================================================
+
+/**
+ * DraftKings MLB Classic Rules
+ *
+ * - 10 players: P, P, C, 1B, 2B, 3B, SS, OF, OF, OF
+ * - $50,000 salary cap
+ * - Max 5 players per team (hitters only — pitchers don't count toward team limit)
+ */
+export const DK_MLB_CLASSIC: ContestConfig = {
+  site: 'dk',
+  sport: 'mlb',
+  contestType: 'classic',
+  salaryCap: 50000,
+  salaryMin: 48000,
+  rosterSize: 10,
+  name: 'DraftKings MLB Classic',
+  maxPlayersPerTeam: 5,
+  minGames: 2,
+  positions: [
+    { name: 'P', eligible: ['P'] },
+    { name: 'P', eligible: ['P'] },
+    { name: 'C', eligible: ['C'] },
+    { name: '1B', eligible: ['1B'] },
+    { name: '2B', eligible: ['2B'] },
+    { name: '3B', eligible: ['3B'] },
+    { name: 'SS', eligible: ['SS'] },
+    { name: 'OF', eligible: ['OF'] },
+    { name: 'OF', eligible: ['OF'] },
+    { name: 'OF', eligible: ['OF'] },
+  ],
+};
+
+// ============================================================
 // DRAFTKINGS NBA SHOWDOWN
 // ============================================================
 
@@ -308,6 +343,11 @@ export function getContestConfig(
   // DraftKings NBA Classic
   if (site === 'dk' && sport === 'nba' && contestType === 'classic') {
     return DK_NBA_CLASSIC;
+  }
+
+  // DraftKings MLB Classic
+  if (site === 'dk' && sport === 'mlb' && contestType === 'classic') {
+    return DK_MLB_CLASSIC;
   }
 
   // DraftKings NBA Showdown

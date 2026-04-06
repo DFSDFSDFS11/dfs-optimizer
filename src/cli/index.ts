@@ -21,12 +21,12 @@ export function parseArguments(): CLIOptions {
     .option('-i, --input <file>', 'Input CSV file (SaberSim export)')
     .option('-o, --output <file>', 'Output CSV file', './exported_lineups_5000.csv')
     .option('-s, --site <site>', 'DFS site (dk, fd)', 'dk')
-    .option('-p, --sport <sport>', 'Sport (nba, nfl, mma, nascar, golf)', 'nba')
+    .option('-p, --sport <sport>', 'Sport (nba, nfl, mlb, mma, nascar, golf)', 'nba')
     .option('-c, --contest <type>', 'Contest type (classic, showdown)', 'classic')
     .option('--pool <size>', 'Pool size to generate', '25000')
     .option('--max-exposure <pct>', 'Max player exposure (0-1)', '0.5')
     .option('--min-salary <amount>', 'Minimum salary to use')
-    .option('--count <number>', 'Number of lineups to select and export', '500')
+    .option('--count <number>', 'Number of lineups to select and export', '1500')
     .option('--late-swap', 'Enable late swap mode (place DK entries in ./lateswap/entries.csv)')
     .option('--entries <file>', 'DraftKings entries CSV file', './lateswap/entries.csv')
     .option('--sim-mode <mode>', 'Simulation mode: uniform (all equal depth), tiered (legacy), or none (skip sim)', 'uniform')
@@ -60,8 +60,8 @@ export function parseArguments(): CLIOptions {
 
   // Validate sport
   const sport = opts.sport.toLowerCase() as Sport;
-  if (!['nba', 'nfl', 'mma', 'nascar', 'golf'].includes(sport)) {
-    console.error(`Invalid sport: ${opts.sport}. Must be 'nba', 'nfl', 'mma', 'nascar', or 'golf'`);
+  if (!['nba', 'nfl', 'mlb', 'mma', 'nascar', 'golf'].includes(sport)) {
+    console.error(`Invalid sport: ${opts.sport}. Must be 'nba', 'nfl', 'mlb', 'mma', 'nascar', or 'golf'`);
     process.exit(1);
   }
 

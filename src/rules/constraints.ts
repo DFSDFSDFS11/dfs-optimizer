@@ -115,6 +115,46 @@ export function validateLineup(
     }
   }
 
+  // MLB constraints: batter vs opposing pitcher, min 4-man batter stack
+  if (config.sport === 'mlb') {
+    const pitchers = players.filter(p => p.positions.includes('P'));
+    const batters = players.filter(p => !p.positions.includes('P'));
+
+    // Detect number of games from player game info
+    const mlbGames = new Set<string>();
+    for (const p of players) {
+      if (p.gameInfo) mlbGames.add(p.gameInfo);
+    }
+    const slateGames = mlbGames.size || 99; // default to large if unknown
+
+    // 2-game slates: allow max 1 batter vs opposing pitcher (bring-back captures game total)
+    // 3+ game slates: NO batters vs opposing pitcher (enough games to avoid it)
+    const maxBattersVsPitcher = slateGames <= 2 ? 1 : 0;
+
+    for (const pitcher of pitchers) {
+      const battersVsPitcher = batters.filter(b => b.team === pitcher.opponent);
+      if (battersVsPitcher.length > maxBattersVsPitcher) {
+        return {
+          valid: false,
+          error: `${battersVsPitcher.length} batters vs pitcher ${pitcher.name} (max ${maxBattersVsPitcher} on ${slateGames}-game slate)`,
+        };
+      }
+    }
+
+    // Min 4-man batter stack from same team
+    const batterTeamCounts = new Map<string, number>();
+    for (const b of batters) {
+      batterTeamCounts.set(b.team, (batterTeamCounts.get(b.team) || 0) + 1);
+    }
+    const maxBatterStack = Math.max(...batterTeamCounts.values(), 0);
+    if (maxBatterStack < 4) {
+      return {
+        valid: false,
+        error: `Largest batter stack is ${maxBatterStack} (min 4 required)`,
+      };
+    }
+  }
+
   // Check position eligibility for each slot
   for (let i = 0; i < config.positions.length; i++) {
     const slot = config.positions[i];
