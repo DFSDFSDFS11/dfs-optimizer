@@ -85,14 +85,14 @@ function detectContestType(
  * SaberSim and other tools use different naming conventions.
  */
 const COLUMN_MAPPINGS: Record<string, string[]> = {
-  id: ['DFS ID', 'ID', 'Player ID', 'PlayerId', 'id', 'DFS Id'],
+  id: ['DFS ID', 'ID', 'Player ID', 'PlayerId', 'id', 'DFS Id', 'player_id', 'partner_id'],
   name: ['Name', 'Player', 'Player Name', 'name', 'Nickname'],
   position: ['Roster Position', 'Position', 'Pos', 'pos', 'position'],
   team: ['Team', 'TeamAbbrev', 'team', 'Tm'],
   salary: ['Salary', 'salary', 'Sal', 'DK Salary', 'FD Salary'],
-  projection: ['My Proj', 'SS Proj', 'Projection', 'Proj', 'projection', 'Fpts', 'AvgPointsPerGame'],
-  ownership: ['My Own', 'Adj Own', 'Own', 'Ownership', 'ownership', 'Own%', 'pOwn'],
-  ceiling: ['dk_85_percentile', 'dk_95_percentile', 'Ceiling', 'ceiling', '85th', '95th'],
+  projection: ['My Proj', 'SS Proj', 'Projection', 'Proj', 'projection', 'Fpts', 'fpts', 'AvgPointsPerGame'],
+  ownership: ['My Own', 'Adj Own', 'Own', 'Ownership', 'ownership', 'Own%', 'pOwn', 'proj_own'],
+  ceiling: ['dk_85_percentile', 'dk_95_percentile', 'Ceiling', 'ceiling', 'ceil', '85th', '95th'],
   ceiling99: ['dk_99_percentile', '99th'],
   gameTotal: ['Saber Total', 'Game Total', 'Total', 'Vegas Total', 'O/U'],
   status: ['Status', 'status', 'Game Status', 'Player Status', 'Injury Status'],
@@ -517,6 +517,8 @@ function normalizePosition(pos: string): string {
     'GOLFER': 'G',
     'UTILITY': 'UTIL',
     'CAPTAIN': 'CPT',
+    'SP': 'P',   // Starting pitcher → P (DK MLB uses 'P' for all pitchers)
+    'RP': 'P',   // Relief pitcher → P
   };
 
   return mappings[pos] || pos;

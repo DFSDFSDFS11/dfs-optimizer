@@ -912,7 +912,7 @@ function constructStackFirstLineups(
         if (config.sport === 'mlb') {
           const allCurrent = [...stackPlayers, ...miniCurrentPlayers];
           const localGames = new Set(pool.players.map(p => p.gameInfo || p.team));
-          const localMaxBvP = localGames.size <= 2 ? 1 : 0;
+          const localMaxBvP = localGames.size <= 2 ? 2 : 0;
           let mlbSkip = false;
           if (player.positions.includes('P')) {
             const battersVs = allCurrent.filter(s => !s.positions.includes('P') && s.team === player.opponent);
@@ -1252,7 +1252,7 @@ function enumerateStackedLineups(
                 if (config.sport === 'mlb') {
                   const allCurrent = [...stackPlayers, ...currentFill];
                   const localGames2 = new Set(pool.players.map(p => p.gameInfo || p.team));
-                  const localMaxBvP2 = localGames2.size <= 2 ? 1 : 0;
+                  const localMaxBvP2 = localGames2.size <= 2 ? 2 : 0;
                   let mlbSkip = false;
                   if (player.positions.includes('P')) {
                     const battersVs = allCurrent.filter(s => !s.positions.includes('P') && s.team === player.opponent);
@@ -1399,7 +1399,7 @@ export function optimizeLineups(
   const isShortSlate = gameSet.size <= 3 && !isSingleGame && !['mma', 'nascar', 'golf'].includes(config.sport);
   // MLB batter vs pitcher: only allowed on 2-game slates (need bring-back for game total correlation)
   // On 3+ game slates, enough games to avoid rostering batters against your own pitcher
-  const mlbMaxBattersVsPitcher = gameSet.size <= 2 ? 1 : 0;
+  const mlbMaxBattersVsPitcher = gameSet.size <= 2 ? 2 : 0;
   // Generate more lineups for larger pool (50K+)
   // Same iteration count for showdown and classic - thorough exploration for both
   // Plan 9: Slate-size adaptive — large slates (7+ games) get 20% more iterations
@@ -3434,7 +3434,7 @@ function runSingleOptimization(params: {
       // MLB constraints: batter vs opposing pitcher — only on 2-game slates
       if (config.sport === 'mlb') {
         const bbGames = new Set(pool.players.map(pp => pp.gameInfo || pp.team));
-        const bbMaxBvP = bbGames.size <= 2 ? 1 : 0;
+        const bbMaxBvP = bbGames.size <= 2 ? 2 : 0;
         const isPitcher = player.positions.includes('P');
         let mlbSkip = false;
         if (isPitcher) {
@@ -3684,7 +3684,7 @@ function constructOwnershipWeightedLineup(
       // MLB: batter vs opposing pitcher — only on 2-game slates
       if (config.sport === 'mlb') {
         const fmGames = new Set(pool.players.map(pp => pp.gameInfo || pp.team));
-        const fmMaxBvP = fmGames.size <= 2 ? 1 : 0;
+        const fmMaxBvP = fmGames.size <= 2 ? 2 : 0;
         if (p.positions.includes('P')) {
           const battersVs = players.filter(s => !s.positions.includes('P') && s.team === p.opponent);
           if (battersVs.length > fmMaxBvP) return false;
@@ -3808,7 +3808,7 @@ function constructRandomLineup(
       // MLB: batter vs opposing pitcher — only on 2-game slates
       if (config.sport === 'mlb') {
         const crGames = new Set(pool.players.map(pp => pp.gameInfo || pp.team));
-        const crMaxBvP = crGames.size <= 2 ? 1 : 0;
+        const crMaxBvP = crGames.size <= 2 ? 2 : 0;
         if (p.positions.includes('P')) {
           const battersVs = selected.filter(s => !s.positions.includes('P') && s.team === p.opponent);
           if (battersVs.length > crMaxBvP) return false;

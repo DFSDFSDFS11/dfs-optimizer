@@ -127,9 +127,10 @@ export function validateLineup(
     }
     const slateGames = mlbGames.size || 99; // default to large if unknown
 
-    // 2-game slates: allow max 1 batter vs opposing pitcher (bring-back captures game total)
+    // 2-game slates: allow up to 2 batters vs opposing pitcher (bring-back captures game total,
+    // and the limited player pool makes strict avoidance impractical)
     // 3+ game slates: NO batters vs opposing pitcher (enough games to avoid it)
-    const maxBattersVsPitcher = slateGames <= 2 ? 1 : 0;
+    const maxBattersVsPitcher = slateGames <= 2 ? 2 : 0;
 
     for (const pitcher of pitchers) {
       const battersVsPitcher = batters.filter(b => b.team === pitcher.opponent);

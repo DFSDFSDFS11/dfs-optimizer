@@ -47,6 +47,12 @@ export function parseArguments(): CLIOptions {
     .option('--extract-data', 'Extract pro entries, combos, and field stats to CSV')
     .option('--data <dir>', 'Directory with historical slate data for calibration', './historical_slates')
     .option('--field-samples <number>', 'Number of field ensemble samples for combo leverage (3-5)', '3')
+    .option('--pool-csv <file>', 'Use a pre-built lineup pool CSV (e.g. SaberSim export) instead of generating our own')
+    .option('--score-actuals <file>', 'Standalone mode: score a lineup CSV against a DK contest actuals CSV')
+    .option('--actuals <file>', 'DK contest actuals CSV (used by --score-actuals and --backtest-actuals)')
+    .option('--backtest-actuals', 'Mode 2 backtest: use the actual contest field as the pool, run selector, score against actuals')
+    .option('--pro-names <list>', 'Comma-separated list of pro usernames to benchmark in backtest-actuals mode')
+    .option('--sweep-actuals', 'Sweep selector parameters across multiple slates using actuals backtest')
     .parse(process.argv);
 
   const opts = program.opts();
@@ -137,8 +143,20 @@ export function parseArguments(): CLIOptions {
   const extractData = !!opts.extractData;
   const fieldSamples = Math.max(3, Math.min(5, parseInt(opts.fieldSamples || '3', 10)));
 
-  // Input is required unless in calibration/backtest/optimize/sweep/extract mode
-  if (!calibrate && !backtest && !fastOptimize && !sweepSelect && !sweepFormula && !extractData && !opts.input) {
+  // New: pool CSV loader and actuals modes
+  const poolCsv = opts.poolCsv ? path.resolve(opts.poolCsv) : undefined;
+  const scoreActualsLineups = opts.scoreActuals ? path.resolve(opts.scoreActuals) : undefined;
+  const actualsCsv = opts.actuals ? path.resolve(opts.actuals) : undefined;
+  const backtestActuals = !!opts.backtestActuals;
+  const sweepActuals = !!opts.sweepActuals;
+  const proNames: string[] = opts.proNames
+    ? opts.proNames.split(',').map((s: string) => s.trim()).filter((s: string) => s.length > 0)
+    : [];
+
+  // Input is required unless in calibration/backtest/optimize/sweep/extract/score mode
+  const requiresNoInput = calibrate || backtest || fastOptimize || sweepSelect || sweepFormula
+    || extractData || !!scoreActualsLineups;
+  if (!requiresNoInput && !opts.input) {
     console.error('Error: required option \'-i, --input <file>\' not specified');
     process.exit(1);
   }
@@ -202,6 +220,12 @@ export function parseArguments(): CLIOptions {
     extractData,
     dataDir,
     fieldSamples,
+    poolCsv,
+    scoreActualsLineups,
+    actualsCsv,
+    backtestActuals,
+    sweepActuals,
+    proNames,
   };
 }
 

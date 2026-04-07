@@ -5,3 +5,5 @@
  */
 
 export * from './csv-parser';
+export * from './pool-csv-loader';
+export * from './actuals-parser';

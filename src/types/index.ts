@@ -317,6 +317,14 @@ export interface CLIOptions {
   scrapeDays: number;
   extractData: boolean;
   fieldSamples: number;           // Number of field ensemble samples (3-5, default 3)
+  // Pool CSV loader: skip pool gen, load lineups from a pre-built CSV
+  poolCsv?: string;
+  // Standalone scoring + actuals-backtest modes
+  scoreActualsLineups?: string;   // Path to lineup CSV to score against actuals
+  actualsCsv?: string;            // Path to DK contest actuals CSV
+  backtestActuals?: boolean;      // Mode 2: use actual contest field as the pool
+  sweepActuals?: boolean;         // Sweep selector params using actuals-backtest
+  proNames?: string[];            // Pro usernames to benchmark
 }
 
 // ============================================================

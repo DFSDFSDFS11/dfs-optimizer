@@ -16,6 +16,7 @@ import {
   SelectionResult,
   Player,
   ContestSize,
+  SimMode,
 } from '../types';
 
 import {
@@ -27,7 +28,7 @@ import {
 
 import { OptimizedWeights, loadOptimizedWeights } from './selector';
 import { analyzeFieldCombos, analyzeDeepCombos, FieldComboAnalysis, DeepComboAnalysis, DifferentiatedCore, extractPrimaryCombo } from './scoring/field-analysis';
-import { generateFieldPool } from './simulation/tournament-sim';
+import { generateFieldPool, simulateUniform, setSimSportConfig, SimulationResult, FieldLineup } from './simulation/tournament-sim';
 import { generateFieldEnsemble, FieldEnsemble } from './field-ensemble';
 
 // ============================================================
@@ -38,19 +39,39 @@ import { generateFieldEnsemble, FieldEnsemble } from './field-ensemble';
 // splitting and penalizes chalk combos mathematically, so the greedy
 // loop naturally creates a barbell without forced tier quotas.
 
-const CROWDING_ALPHA: Record<string, number> = {
-  mlb: 0.6,     // MLB stacking makes combos highly correlated
-  nfl: 0.5,
-  nba: 0.15,    // NBA has concentrated ownership (fewer players) → higher crowding scores naturally
-  mma: 0.2,
-  nascar: 0.2,
-  golf: 0.2,
-};
+// 5-of-8 OVERLAP CROWDING MODEL
+// One clean metric: for each candidate, count how many field lineups share 5+ of its players.
+// Replaces combo frequency maps, core/shell splits, and multi-weight crowding scores.
+// "247 field entries share my build" is directly interpretable as splitting risk.
 
-// Weights for combining frequency signals into crowdingScore
-const CROWDING_PRIMARY_WEIGHT = 500;   // Primary combo freq (stack core — most important)
-const CROWDING_QUAD_WEIGHT = 200;      // Average 4-player combo frequency
-const CROWDING_TRIPLE_WEIGHT = 50;     // Average 3-player combo frequency
+const OVERLAP_THRESHOLD = 5;  // Share 5+ of 8 players = "same build"
+
+function getCrowdingAlpha(sport: string, fieldSize: number): number {
+  // Base alpha by sport — NBA data shows winners are slightly chalkier,
+  // so discount is MILD. NBA has concentrated ownership (fewer viable players)
+  // meaning overlap counts are naturally HIGH (500+ is normal). Alpha must be
+  // very small to produce gentle 5-15% discounts, not 70%+ crushes.
+  //
+  // Target: at median NBA overlap (~500), discount should be ~85-90% of raw payout
+  //   → alpha * 500 ≈ 0.10-0.15 → alpha ≈ 0.0002-0.0003
+  // At high overlap (~1500), discount ~70-80%: alpha * 1500 ≈ 0.25-0.40
+  const base = sport === 'nba' ? 0.0003
+    : sport === 'mlb' ? 0.002
+    : sport === 'nfl' ? 0.001
+    : sport === 'mma' ? 0.0005
+    : sport === 'nascar' ? 0.0005
+    : sport === 'golf' ? 0.0005
+    : 0.001;
+
+  // Field size scaling: larger contests = more splitting damage
+  // 5K → 0.7x, 10K → 1.0x, 20K → 1.4x, 50K → 1.8x
+  const fieldFactor = Math.max(0.5, 0.4 + 0.6 * Math.log10(Math.max(1000, fieldSize) / 10000) + 1.0);
+
+  return base * fieldFactor;
+}
+
+// Max portfolio self-overlap: no more than 3% of portfolio sharing 5+ players with this candidate
+const MAX_PORTFOLIO_OVERLAP_PCT = 0.03;
 
 // ============================================================
 // TYPES
@@ -78,6 +99,14 @@ export interface SimpleSelectParams {
   players?: Player[];  // Full player pool for field generation
   contestSize?: ContestSize;  // For field ensemble composition weights
   fieldSamples?: number;      // Number of field ensemble samples (3-5, default 3)
+  simMode?: SimMode;          // 'uniform' to run simulation, 'none' to skip (default: 'none')
+  /** Override the sim/formula blend ratio (default: 0.25 = 75% formula + 25% sim). */
+  simBlendWeight?: number;
+  /** Multiplier on the per-sport crowding alpha used in the 5-of-N overlap discount.
+   *  >1 = stronger discount on chalk combos, <1 = milder. */
+  crowdingAlphaMult?: number;
+  /** Suppress all console output (used by sweep harnesses to keep logs readable). */
+  quiet?: boolean;
 }
 
 // ============================================================
@@ -397,7 +426,7 @@ function computeFormulaScore(
   salary: number,
   salaryCap: number,
   constructionMultiplier: number,
-  fieldComboFreq: number = 0,
+  _fieldComboFreq: number = 0, // Deprecated: combo crowding now handled by 5-of-8 overlap in greedy loop
   sport?: string,
 ): number {
   // NBA ceiling amplifier: pros' 14-pt avg actual advantage comes from selecting
@@ -430,26 +459,11 @@ function computeFormulaScore(
     : salary >= (salaryCap - 2000) ? 0.75
     : 0.5;
 
-  // Ceiling-weighted combo crowding: common combo + high ceiling = MAX crowding risk.
-  // When a chalk combo booms, ALL field lineups with that combo boom together — you split.
-  // A high-ceiling lineup with a common combo is MORE crowded in boom worlds than a
-  // low-ceiling lineup with the same combo, because ceilings correlate with the worlds
-  // where you actually finish in the money.
-  //
-  // Base discount at 10% field freq: 1/(1+0.10*3.0) = 0.77 (23% penalty)
-  // With ceiling weighting at ceilingScore=0.9: effective freq = 0.10*0.9 = 0.09
-  //   → 1/(1+0.09*3.0) = 0.79 — still heavy penalty (high ceiling + common combo = bad)
-  // With ceiling weighting at ceilingScore=0.3: effective freq = 0.10*0.3 = 0.03
-  //   → 1/(1+0.03*3.0) = 0.92 — lighter penalty (low ceiling + common combo = less risk)
-  const COMBO_LEVERAGE_WEIGHT = 3.0;
-  const ceilingWeight = Math.max(0.3, Math.min(1.0, ceilingScore));
-  const effectiveComboFreq = fieldComboFreq * ceilingWeight;
-  const comboLeverageDiscount = effectiveComboFreq > 0
-    ? 1 / (1 + effectiveComboFreq * COMBO_LEVERAGE_WEIGHT)
-    : 1.0;
+  // NOTE: Combo crowding is now handled ENTIRELY by the 5-of-8 overlap discount
+  // in the greedy selection loop. No formula-level combo penalty — avoids double-penalizing.
 
-  // Core formula: additive × quality gate × game stack × construction × salary floor × combo leverage
-  return additiveScore * qualityGate * salaryFloorGate * (1 + gameStackScore) * constructionMultiplier * comboLeverageDiscount;
+  // Core formula: additive × quality gate × game stack × construction × salary floor
+  return additiveScore * qualityGate * salaryFloorGate * (1 + gameStackScore) * constructionMultiplier;
 }
 
 // ============================================================
@@ -709,13 +723,21 @@ function calculateDiversityMultiplier(
  * 4. Update player/pair counts and repeat
  */
 export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult {
+  // Quiet mode: monkey-patch console.log so the selector doesn't spam during sweeps.
+  // Restored in a try/finally below.
+  const originalConsoleLog = console.log;
+  const originalConsoleWarn = console.warn;
+  if (params.quiet) {
+    console.log = () => {};
+    console.warn = () => {};
+  }
+  try {
   const { lineups, numGames, salaryCap } = params;
-  // Short slates (2-3 games) have fewer unique combos — cap lineup count
-  // to avoid exhausting diversity and getting stuck
-  const maxForSlate = numGames <= 2 ? 150 : numGames <= 3 ? 300 : params.targetCount;
-  const targetCount = Math.min(params.targetCount, maxForSlate);
-  if (targetCount < params.targetCount) {
-    console.log(`\n  Short slate (${numGames} games): capping lineups at ${targetCount} (requested ${params.targetCount})`);
+  // Honor the requested count — short slates may exhaust diversity but the caller
+  // explicitly asked for this many lineups.
+  const targetCount = params.targetCount;
+  if (numGames <= 3) {
+    console.log(`\n  Short slate (${numGames} games) — generating ${targetCount} lineups as requested`);
   }
   const weights = { ...(params.weights || loadOptimizedWeights()) };
   const cap = salaryCap || 50000;
@@ -737,8 +759,9 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   // --- Step 0.5: Identify chalk teams for depth quota enforcement ---
   const chalkTeams = new Set<string>();
   const teamBatterOwnership = new Map<string, number>();
-  const CHALK_DEEP_HEDGE_PCT = 0.10;   // 10% of portfolio for 4-5 man chalk stacks
-  const CHALK_PARTIAL_PCT = 0.08;      // 8% of portfolio for 3-man chalk combos
+  // Chalk depth quotas — tighter on 2-game slates where chalk concentration is the main risk
+  const CHALK_DEEP_HEDGE_PCT = numGames <= 2 ? 0.05 : 0.10;   // 5% for 2-game, 10% otherwise
+  const CHALK_PARTIAL_PCT = numGames <= 2 ? 0.04 : 0.08;      // 4% for 2-game, 8% otherwise
 
   if (!isNonTeamSport && params.players && params.players.length > 0) {
     const adjustedThreshold = numGames <= 3 ? 25 : numGames <= 5 ? 20 : 18;
@@ -792,7 +815,9 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   // Winners project at 71-83% of optimal. Must allow full range for GPP upside.
   // NBA/NFL: 90% — tight ranges, low-proj NBA lineups are just bad
   // MLB: 68% — winners project 71-83% of optimal
+  // MLB 2-game: 58% — tiny player pool, need deeper contrarian range to find leverage
   const projFloorPct = isNonTeamSport ? 0.70
+    : params.sport === 'mlb' && numGames <= 2 ? 0.58
     : params.sport === 'mlb' ? 0.68
     : (params.sport === 'nba' || params.sport === 'nfl') ? 0.90
     : (numGames <= 3 ? 0.82 : 0.80);
@@ -911,9 +936,9 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
 
   // --- Step 2.7: Sort by formula score, keep top candidates ---
   // No ownership-biased Pareto filter — the formula already balances projection, ceiling, etc.
-  // Cap at 20K to prevent OOM from combo key caches on large pools.
+  // Cap at 20K (40K on short slates) to prevent OOM from combo key caches on large pools.
   candidates.sort((a, b) => b.formulaScore - a.formulaScore);
-  const MAX_CANDIDATES = 20000;
+  const MAX_CANDIDATES = numGames <= 2 ? 40000 : 20000;
   const sortedCandidates = candidates.length > MAX_CANDIDATES
     ? candidates.slice(0, MAX_CANDIDATES)
     : candidates;
@@ -925,80 +950,158 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   }
   console.log(`  Formula scores: top=${sortedCandidates[0].formulaScore.toFixed(4)}, median=${sortedCandidates[Math.floor(sortedCandidates.length / 2)].formulaScore.toFixed(4)}, bottom=${sortedCandidates[sortedCandidates.length - 1].formulaScore.toFixed(4)}`);
 
+  // --- Step 2.8: Tournament Simulation (if enabled) ---
+  // Run Monte Carlo simulation on top candidates, blend sim score into formula score.
+  // This adds correlated outcome modeling: game-level and team-level correlations
+  // that the static formula can't capture. Stacked lineups that boom together
+  // get higher sim scores than the formula alone would predict.
+  const simMode = params.simMode || 'none';
+  const simResults = new Map<string, SimulationResult>();
+
+  if (simMode !== 'none' && params.players && params.players.length > 0) {
+    console.log(`\n  --- TOURNAMENT SIMULATION (${simMode}) ---`);
+    setSimSportConfig(params.sport);
+
+    // Sim the top candidates — enough to cover greedy selection's scan window
+    const SIM_CANDIDATE_COUNT = Math.min(sortedCandidates.length, 8000);
+    const simCandidateLineups = sortedCandidates.slice(0, SIM_CANDIDATE_COUNT).map(c => c.lineup);
+
+    // Generate field pool for simulation (reuse ensemble field if available, else generate fresh)
+    const simFieldSize = 5000;
+    let simFieldPool;
+    if (ensemble) {
+      // Flatten ensemble samples into one field pool
+      const flatField: FieldLineup[] = [];
+      for (const sample of ensemble.samples) {
+        for (const fl of sample.lineups) {
+          flatField.push(fl);
+        }
+      }
+      simFieldPool = flatField.length >= 2000 ? flatField : generateFieldPool(params.players, rosterSize, simFieldSize);
+    } else {
+      simFieldPool = generateFieldPool(params.players, rosterSize, simFieldSize);
+    }
+
+    console.log(`  Simulating ${SIM_CANDIDATE_COUNT.toLocaleString()} candidates against ${simFieldPool.length.toLocaleString()} field lineups...`);
+
+    // Use 500 sims for speed (enough for reliable top-1% signal)
+    const simResultMap = simulateUniform(
+      simCandidateLineups,
+      params.players,
+      simFieldPool,
+      { numSims: 500, fieldSize: 10000, entryFee: 20, sport: params.sport },
+    );
+
+    // Store results and log distribution
+    for (const [hash, result] of simResultMap) {
+      simResults.set(hash, result);
+    }
+
+    // Log sim score distribution
+    const simScores = [...simResultMap.values()].map(r => r.simulationScore).sort((a, b) => b - a);
+    const simROIs = [...simResultMap.values()].map(r => r.expectedROI).sort((a, b) => b - a);
+    console.log(`  Sim scores: top=${simScores[0].toFixed(4)}, p10=${simScores[Math.floor(simScores.length*0.1)].toFixed(4)}, median=${simScores[Math.floor(simScores.length*0.5)].toFixed(4)}`);
+    console.log(`  Expected ROI: top=${simROIs[0].toFixed(1)}%, p10=${simROIs[Math.floor(simROIs.length*0.1)].toFixed(1)}%, median=${simROIs[Math.floor(simROIs.length*0.5)].toFixed(1)}%`);
+    console.log(`  Win rates: max P(1st)=${([...simResultMap.values()].reduce((m, r) => Math.max(m, r.pFirst), 0) * 100).toFixed(2)}%`);
+
+    // Blend sim score into formula score (default: 75% formula + 25% sim).
+    // Sim score captures correlated upside that formula misses (stacks, game environment).
+    // Override via params.simBlendWeight for parameter sweeps.
+    const SIM_WEIGHT = params.simBlendWeight ?? 0.25;
+    for (let i = 0; i < SIM_CANDIDATE_COUNT; i++) {
+      const c = sortedCandidates[i];
+      const sr = simResults.get(c.lineup.hash);
+      if (sr) {
+        c.formulaScore = c.formulaScore * (1 - SIM_WEIGHT) + sr.simulationScore * SIM_WEIGHT;
+      }
+    }
+
+    // Re-sort by blended score
+    sortedCandidates.sort((a, b) => b.formulaScore - a.formulaScore);
+    console.log(`  Blended scores (${((1-SIM_WEIGHT)*100).toFixed(0)}% formula + ${(SIM_WEIGHT*100).toFixed(0)}% sim): top=${sortedCandidates[0].formulaScore.toFixed(4)}, median=${sortedCandidates[Math.floor(sortedCandidates.length/2)].formulaScore.toFixed(4)}`);
+  }
+
   // --- Step 3: Build combo keys cache aligned with sorted candidates ---
   const comboKeysCache: LineupComboKeys[] = new Array(sortedCandidates.length);
   for (let i = 0; i < sortedCandidates.length; i++) {
     comboKeysCache[i] = precomputeComboKeys(sortedCandidates[i].lineup);
   }
 
-  // --- Step 3.5: Pre-compute max quad field frequency per candidate ---
-  // Used for combo-uniqueness tiebreaking: among candidates with similar adjusted
-  // scores, prefer the one whose worst (highest) quad combo freq in the field is lowest.
-  const candidateMaxQuadFreqs = new Float64Array(sortedCandidates.length);
-  if (ensemble) {
-    for (let i = 0; i < sortedCandidates.length; i++) {
-      let maxQuadFreq = 0;
-      for (const key of comboKeysCache[i].quadKeys) {
-        const freq = ensemble.combinedQuads.get(key) || 0;
-        if (freq > maxQuadFreq) maxQuadFreq = freq;
-      }
-      candidateMaxQuadFreqs[i] = maxQuadFreq;
-    }
-  }
-
-  // --- Step 3.6: Pre-compute crowding scores per sorted candidate ---
-  // Built on sortedCandidates index space (fixes index mismatch with candidatePrimaryComboKeys)
-  const sortedPrimaryComboKeys: string[] = new Array(sortedCandidates.length);
-  const sortedPrimaryComboFreqs = new Float64Array(sortedCandidates.length);
-  const candidateCrowdingScores = new Float64Array(sortedCandidates.length);
-
-  const crowdingAlpha = CROWDING_ALPHA[params.sport || ''] ?? 0.4;
-
-  if (ensemble) {
-    for (let i = 0; i < sortedCandidates.length; i++) {
-      // Rebuild primary combo on correct (sorted) index
-      const pc = extractPrimaryCombo(sortedCandidates[i].lineup, playerMap, params.sport);
-      sortedPrimaryComboKeys[i] = pc.comboKey;
-      sortedPrimaryComboFreqs[i] = ensemble.combinedPrimaryCombos.get(pc.comboKey) || 0;
-
-      // Average triple frequency
-      const tripleKeys = comboKeysCache[i].tripleKeys;
-      let tripleSum = 0;
-      for (const key of tripleKeys) {
-        tripleSum += ensemble.combinedTriples.get(key) || 0;
-      }
-      const avgTripleFreq = tripleKeys.length > 0 ? tripleSum / tripleKeys.length : 0;
-
-      // Average quad frequency (reuse candidateMaxQuadFreqs as proxy — already computed)
-      // For a more accurate average, compute from all quads
-      const quadKeys = comboKeysCache[i].quadKeys;
-      let quadSum = 0;
-      for (const key of quadKeys) {
-        quadSum += ensemble.combinedQuads.get(key) || 0;
-      }
-      const avgQuadFreq = quadKeys.length > 0 ? quadSum / quadKeys.length : 0;
-
-      // Composite crowding score
-      const primaryFreq = sortedPrimaryComboFreqs[i];
-      candidateCrowdingScores[i] = primaryFreq * CROWDING_PRIMARY_WEIGHT
-        + avgQuadFreq * CROWDING_QUAD_WEIGHT
-        + avgTripleFreq * CROWDING_TRIPLE_WEIGHT;
-    }
-
-    // Log crowding score distribution for the pool
-    const poolScores = [...candidateCrowdingScores].sort((a, b) => a - b);
-    const pn = poolScores.length;
-    if (pn > 0) {
-      console.log(`  Crowding scores (alpha=${crowdingAlpha}): p10=${poolScores[Math.floor(pn*0.1)].toFixed(2)}, median=${poolScores[Math.floor(pn*0.5)].toFixed(2)}, p90=${poolScores[Math.floor(pn*0.9)].toFixed(2)}`);
-      const heavyPenalty = poolScores.filter(s => 1/(1+crowdingAlpha*s) < 0.5).length;
-      console.log(`  Pool lineups with >50% crowding penalty: ${heavyPenalty}/${pn} (${(heavyPenalty/pn*100).toFixed(0)}%)`);
-    }
-  }
-
-  // --- Step 4: Pre-compute candidate ID sets for speed ---
+  // --- Step 3.5a: Pre-compute candidate ID sets for speed ---
+  // Moved here (before overlap computation) because overlap counting needs these
   const candidateIdSets: Set<string>[] = new Array(sortedCandidates.length);
   for (let i = 0; i < sortedCandidates.length; i++) {
     candidateIdSets[i] = new Set(sortedCandidates[i].lineup.players.map(p => p.id));
+  }
+
+  // --- Step 3.5b: Pre-compute 5-of-8 field overlap counts per candidate ---
+  // For each candidate, count how many field lineups share OVERLAP_THRESHOLD+ players.
+  // One clean metric that replaces combo frequency maps, core/shell splits, etc.
+  // "247 field entries share my build" = directly interpretable splitting risk.
+
+  // Collect all field lineups as Sets of player IDs for fast overlap counting
+  const fieldIdSets: Set<string>[] = [];
+  let totalFieldLineupsForScaling = 0;
+  if (ensemble) {
+    for (const sample of ensemble.samples) {
+      for (const fl of sample.lineups) {
+        fieldIdSets.push(new Set(fl.playerIds));
+      }
+      totalFieldLineupsForScaling += sample.lineups.length;
+    }
+  }
+
+  // Estimate real field size for alpha scaling (contest-dependent)
+  // Default to 15000 for a typical 20-max GPP
+  const estimatedFieldSize = totalFieldLineupsForScaling > 0
+    ? Math.max(5000, totalFieldLineupsForScaling * 3) // field sample ~1/3 of real field
+    : 15000;
+  const crowdingAlpha = getCrowdingAlpha(params.sport || '', estimatedFieldSize) * (params.crowdingAlphaMult ?? 1);
+
+  const candidateOverlapCounts = new Float64Array(sortedCandidates.length);
+
+  if (fieldIdSets.length > 0) {
+    const startOverlap = Date.now();
+    for (let c = 0; c < sortedCandidates.length; c++) {
+      const candIds = candidateIdSets[c];
+      let overlapCount = 0;
+
+      for (const fieldSet of fieldIdSets) {
+        let shared = 0;
+        for (const id of candIds) {
+          if (fieldSet.has(id)) {
+            shared++;
+            if (shared >= OVERLAP_THRESHOLD) {
+              overlapCount++;
+              break; // Don't need to count further for this field lineup
+            }
+          }
+        }
+      }
+
+      // Scale to estimated full field size
+      candidateOverlapCounts[c] = overlapCount * (estimatedFieldSize / fieldIdSets.length);
+    }
+
+    const elapsedOverlap = Date.now() - startOverlap;
+    // Log overlap distribution
+    const overlapArr = [...candidateOverlapCounts].sort((a, b) => a - b);
+    const on = overlapArr.length;
+    if (on > 0) {
+      console.log(`  [Overlap] 5-of-${rosterSize} field overlap (${fieldIdSets.length} field lus, est. field ${estimatedFieldSize.toLocaleString()}, alpha=${crowdingAlpha.toFixed(4)}):`);
+      console.log(`    p10=${overlapArr[Math.floor(on*0.1)].toFixed(0)}, median=${overlapArr[Math.floor(on*0.5)].toFixed(0)}, p90=${overlapArr[Math.floor(on*0.9)].toFixed(0)}, max=${overlapArr[on-1].toFixed(0)}`);
+      const avgDiscount = on > 0 ? overlapArr.reduce((s, v) => s + 1/(1+crowdingAlpha*v), 0) / on : 1;
+      console.log(`    Avg payout discount: ${(avgDiscount*100).toFixed(1)}% of raw | computed in ${(elapsedOverlap/1000).toFixed(1)}s`);
+    }
+  }
+
+  // Also keep primary combo keys for portfolio concentration tracking (prevents same stack dominating)
+  const sortedPrimaryComboKeys: string[] = new Array(sortedCandidates.length);
+  if (ensemble) {
+    for (let i = 0; i < sortedCandidates.length; i++) {
+      const pc = extractPrimaryCombo(sortedCandidates[i].lineup, playerMap, params.sport);
+      sortedPrimaryComboKeys[i] = pc.comboKey;
+    }
   }
 
   // --- Step 4.1: Pre-compute chalk depth per candidate ---
@@ -1134,14 +1237,51 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   //   - The greedy loop alternates between the two as marginal EV shifts
 
   function pickBestCandidate(): number {
-    const scored: { idx: number; adjScore: number; maxQuadFreq: number; chalkDepth: number }[] = [];
+    let bestIdx = -1;
+    let bestAdjScore = -Infinity;
+
     // Scan a large window — need to reach low-projection contrarian candidates
-    // that have the best crowding-adjusted scores, but capped for speed
-    const GLOBAL_SCAN = Math.min(sortedCandidates.length, 8000);
+    // that have the best crowding-adjusted scores. On short slates we MUST scan
+    // the full pool because the top of the formula-ranked list is dominated
+    // by lineups containing the few elite players.
+    const GLOBAL_SCAN = numGames <= 2
+      ? sortedCandidates.length
+      : Math.min(sortedCandidates.length, 8000);
+
+    // Pre-compute portfolio self-overlap limit.
+    // Short slates have very limited unique combinations, so we relax the cap heavily.
+    const overlapPctForSlate = numGames <= 2 ? 0.40
+      : numGames <= 3 ? 0.20
+      : MAX_PORTFOLIO_OVERLAP_PCT;
+    const maxPortfolioOverlap = Math.max(5, Math.ceil(selected.length * overlapPctForSlate));
+    // Relax the threshold of "what counts as overlap" on short slates — 5-of-10
+    // is unavoidable with so few unique players, so only flag near-duplicates.
+    const overlapThresholdForSlate = numGames <= 2 ? 8
+      : numGames <= 3 ? 7
+      : OVERLAP_THRESHOLD;
+
+    // Short-slate hard exposure caps — keeps any single player from dominating
+    // the portfolio when there are only a few viable options on a 2-game slate.
+    // Pitcher cap is loose (only 4 viable arms total), batter cap is tighter.
+    const SHORT_SLATE_PITCHER_CAP = 0.75;
+    const SHORT_SLATE_BATTER_CAP = 0.40;
+    const pitcherHardCap = numGames <= 2 ? Math.ceil(targetCount * SHORT_SLATE_PITCHER_CAP) : Infinity;
+    const batterHardCap = numGames <= 2 ? Math.ceil(targetCount * SHORT_SLATE_BATTER_CAP) : Infinity;
 
     for (let i = 0; i < GLOBAL_SCAN; i++) {
       const c = sortedCandidates[i];
       if (selectedHashes.has(c.lineup.hash)) continue;
+
+      // Hard player exposure caps on 2-game slates
+      if (numGames <= 2) {
+        let capHit = false;
+        for (const p of c.lineup.players) {
+          const isP = p.positions.some((pos: string) => pos === 'P' || pos === 'SP' || pos === 'RP');
+          const cap = isP ? pitcherHardCap : batterHardCap;
+          if ((playerCounts.get(p.id) || 0) >= cap) { capHit = true; break; }
+        }
+        if (capHit) continue;
+      }
 
       // Chalk depth quota enforcement (KEPT — structural guard)
       if (chalkTeams.size > 0) {
@@ -1158,11 +1298,32 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
         }
       }
 
+      // Portfolio self-overlap gate: hard skip if too many of our own lineups
+      // share OVERLAP_THRESHOLD+ players with this candidate.
+      if (selectedPlayerSets.length >= 10) {
+        const candIds = candidateIdSets[i];
+        let portfolioOverlap = 0;
+        for (const selSet of selectedPlayerSets) {
+          let shared = 0;
+          for (const id of candIds) {
+            if (selSet.has(id)) {
+              shared++;
+              if (shared >= overlapThresholdForSlate) {
+                portfolioOverlap++;
+                break;
+              }
+            }
+          }
+          if (portfolioOverlap >= maxPortfolioOverlap) break;
+        }
+        if (portfolioOverlap >= maxPortfolioOverlap) continue;
+      }
+
       const diversity = calculateDiversityMultiplier(
         c.lineup, playerCounts, pairCounts, selected.length,
       );
 
-      // Overlap penalty (KEPT)
+      // Overlap penalty with recent picks (KEPT — prevents streaks of similar lineups)
       let overlapPenalty = 1.0;
       if (selectedPlayerSets.length >= 3) {
         const candIds = candidateIdSets[i];
@@ -1205,43 +1366,41 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
         correlationBonus = 1 + 0.15 * coverageRatio;
       }
 
-      // NEW: Crowding discount — the core MC-driven penalty
-      const crowdingScore = candidateCrowdingScores[i];
-      const crowdingDiscount = crowdingScore > 0
-        ? 1 / (1 + crowdingAlpha * crowdingScore)
+      // 5-of-8 overlap crowding discount — the ONE combo-related metric
+      // How many field entries share 5+ of your players → splitting risk
+      const overlapCount = candidateOverlapCounts[i];
+      const crowdingDiscount = overlapCount > 0
+        ? 1 / (1 + crowdingAlpha * overlapCount)
         : 1.0;
 
-      const adjScore = c.formulaScore * diversity * overlapPenalty * comboPenalty * correlationBonus * crowdingDiscount;
-      scored.push({ idx: i, adjScore, maxQuadFreq: candidateMaxQuadFreqs[i], chalkDepth: candidateMaxChalkDepth[i] });
-    }
+      // Short-slate ownership penalty: on 2-game slates the field overlap
+      // metric loses signal (everything overlaps heavily), so we add a direct
+      // BATTER-ownership penalty (excluding pitchers, which are dominated by 1-2 elites)
+      // to actively pull down the portfolio's avg ownership without forcing pitcher fades.
+      let shortSlateOwnPenalty = 1.0;
+      if (numGames <= 2) {
+        let batterOwnSum = 0;
+        let batterCount = 0;
+        for (const p of c.lineup.players) {
+          if (!p.positions.includes('P')) {
+            batterOwnSum += p.ownership || 0;
+            batterCount++;
+          }
+        }
+        const avgBatterOwn = batterCount > 0 ? batterOwnSum / batterCount : 0;
+        // Avg batter own typically 18-30% on 2-game slates. 18% = neutral, lower = big bonus.
+        const ownNorm = Math.max(5, avgBatterOwn) / 18;
+        shortSlateOwnPenalty = 1 / Math.pow(ownNorm, 1.8);
+        // Hard floor + ceiling so a lone whale doesn't dominate
+        if (shortSlateOwnPenalty < 0.15) shortSlateOwnPenalty = 0.15;
+        if (shortSlateOwnPenalty > 2.5) shortSlateOwnPenalty = 2.5;
+      }
 
-    if (scored.length === 0) return -1;
+      const adjScore = c.formulaScore * diversity * overlapPenalty * comboPenalty * correlationBonus * crowdingDiscount * shortSlateOwnPenalty;
 
-    // Find best adj score
-    let bestAdjScore = -Infinity;
-    for (const s of scored) {
-      if (s.adjScore > bestAdjScore) bestAdjScore = s.adjScore;
-    }
-
-    // Combo uniqueness tiebreaker: within 15% of best, prefer rarest combos
-    const tolerance = 0.15;
-    const threshold = bestAdjScore * (1 - tolerance);
-
-    let bestIdx = -1;
-    let bestBlendedScore = -Infinity;
-
-    for (const s of scored) {
-      if (s.adjScore < threshold) continue;
-
-      const comboRarityBonus = 1 + Math.max(0, 1 - s.maxQuadFreq / 0.05);
-      const chalkDepthBonus = chalkTeams.size > 0
-        ? 1 + Math.max(0, 0.05 * (3 - s.chalkDepth))
-        : 1.0;
-      const blended = s.adjScore * comboRarityBonus * chalkDepthBonus;
-
-      if (blended > bestBlendedScore) {
-        bestBlendedScore = blended;
-        bestIdx = s.idx;
+      if (adjScore > bestAdjScore) {
+        bestAdjScore = adjScore;
+        bestIdx = i;
       }
     }
 
@@ -1249,18 +1408,40 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   }
 
   // --- MAIN SELECTION LOOP ---
-  // Phase 1: Free pass (top 10 by formula score)
-  // Phase 2: Global selection with crowding discount (no tier rotation)
+  // Phase 1: Force high-proj and mid-proj lineups in first (they're scarce and valuable)
+  //          These get killed by diversity if left to compete with the deep contrarian pool.
+  //          NBA data shows winners project at 90%+ of optimal — we NEED these lineups.
+  // Phase 2: Global selection with crowding discount for the rest
+
+  // Collect high-proj and mid-proj candidate indices, sorted by formula score
+  const highMidIndices: number[] = [];
+  for (let i = 0; i < sortedCandidates.length; i++) {
+    const tier = getProjectionTier(sortedCandidates[i].lineup.projection);
+    if (tier === 'high' || tier === 'mid') {
+      highMidIndices.push(i);
+    }
+  }
+  // Cap forced high/mid picks at 40% of target to leave room for contrarian
+  const maxForcedHighMid = Math.ceil(targetCount * 0.40);
+  const forcedHighMidCount = Math.min(highMidIndices.length, maxForcedHighMid);
+  console.log(`  Forcing ${forcedHighMidCount} high/mid-proj lineups (of ${highMidIndices.length} available, cap ${maxForcedHighMid})`);
+
   for (let pick = 0; pick < targetCount; pick++) {
     let bestIdx = -1;
 
-    if (selected.length < FREE_PASS_PICKS) {
-      // Free pass: scan global top candidates (KEPT)
-      for (let i = 0; i < sortedCandidates.length && bestIdx < 0; i++) {
-        if (!selectedHashes.has(sortedCandidates[i].lineup.hash)) bestIdx = i;
+    if (selected.length < forcedHighMidCount) {
+      // Phase 1: Force high/mid-proj lineups in, best formula score first
+      // Still apply basic dedup but skip diversity penalty
+      for (const idx of highMidIndices) {
+        if (!selectedHashes.has(sortedCandidates[idx].lineup.hash)) {
+          bestIdx = idx;
+          break;
+        }
       }
+      // Fallback to global if we run out of high/mid
+      if (bestIdx < 0) bestIdx = pickBestCandidate();
     } else {
-      // Global pick: crowding discount naturally creates barbell
+      // Phase 2: Global pick with crowding discount
       bestIdx = pickBestCandidate();
     }
 
@@ -1298,113 +1479,59 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
     }
   }
 
-  // --- Step 5.5: Post-selection combo differentiation check ---
-  if (ensemble && selected.length > 20) {
-    const FIELD_QUAD_THRESHOLD = 0.03;
-    const FIELD_TRIPLE_THRESHOLD = 0.08;
-    let totalReplacements = 0;
-    const MAX_REPLACEMENTS = Math.ceil(selected.length * 0.15);
-
-    for (let iter = 0; iter < 3 && totalReplacements < MAX_REPLACEMENTS; iter++) {
-      let flagged = 0;
-      for (let si = FREE_PASS_PICKS; si < selected.length && totalReplacements < MAX_REPLACEMENTS; si++) {
-        const keys = precomputeComboKeys(selected[si]);
-
-        // Check 4-man combos against field ensemble
-        let maxQuadFreq = 0;
-        for (const key of keys.quadKeys) {
-          const freq = ensemble.combinedQuads.get(key) || 0;
-          if (freq > maxQuadFreq) maxQuadFreq = freq;
-        }
-
-        // Check 3-man combos against field ensemble
-        let maxTripleFreq = 0;
-        for (const key of keys.tripleKeys) {
-          const freq = ensemble.combinedTriples.get(key) || 0;
-          if (freq > maxTripleFreq) maxTripleFreq = freq;
-        }
-
-        if (maxQuadFreq > FIELD_QUAD_THRESHOLD || maxTripleFreq > FIELD_TRIPLE_THRESHOLD) {
-          flagged++;
-          // Find replacement with lower field overlap and >= 80% formula score
-          const minScore = selected[si].totalScore * 0.80;
-          for (const c of sortedCandidates) {
-            if (selectedHashes.has(c.lineup.hash)) continue;
-            if (c.formulaScore < minScore) continue;
-
-            const cKeys = precomputeComboKeys(c.lineup);
-            let cMaxQuad = 0;
-            for (const key of cKeys.quadKeys) {
-              const freq = ensemble.combinedQuads.get(key) || 0;
-              if (freq > cMaxQuad) cMaxQuad = freq;
-            }
-            if (cMaxQuad > FIELD_QUAD_THRESHOLD) continue;
-
-            let cMaxTriple = 0;
-            for (const key of cKeys.tripleKeys) {
-              const freq = ensemble.combinedTriples.get(key) || 0;
-              if (freq > cMaxTriple) cMaxTriple = freq;
-            }
-            if (cMaxTriple > FIELD_TRIPLE_THRESHOLD) continue;
-
-            // Found valid replacement
-            selectedHashes.delete(selected[si].hash);
-            selectedHashes.add(c.lineup.hash);
-            selected[si] = toScoredLineup(c, si + 1);
-            totalReplacements++;
-            break;
+  // --- Step 5.5: Overlap diagnostic report ---
+  if (fieldIdSets.length > 0 && selected.length > 0) {
+    // Compute overlap counts for selected lineups
+    const selectedOverlapCounts: number[] = [];
+    for (const lu of selected) {
+      const luIds = new Set(lu.players.map(p => p.id));
+      let overlapCount = 0;
+      for (const fieldSet of fieldIdSets) {
+        let shared = 0;
+        for (const id of luIds) {
+          if (fieldSet.has(id)) {
+            shared++;
+            if (shared >= OVERLAP_THRESHOLD) { overlapCount++; break; }
           }
         }
       }
-
-      if (flagged === 0) break;
-      console.log(`  Differentiation pass ${iter + 1}: ${flagged} flagged, ${totalReplacements} total replaced`);
+      selectedOverlapCounts.push(overlapCount * (estimatedFieldSize / fieldIdSets.length));
     }
-  }
 
-  // --- Step 5.7: Per-tier combo uniqueness diagnostics ---
-  if (ensemble && selected.length > 0) {
-    const TIER_COMBO_TARGETS: { [key: string]: number } = {
-      high: 0.06,   // No quad > 6% field
-      mid: 0.04,    // No quad > 4% field
-      low: 0.02,    // No quad > 2% field
-      ultra: 0.01,  // No quad > 1% field
-      floor: 0.01,  // No quad > 1% field
-    };
+    console.log(`\n  [Overlap] === LINEUP OVERLAP REPORT ===`);
+    const overlapBuckets = [0, 10, 25, 50, 100, 200, 500, 1000, Infinity];
+    for (let b = 0; b < overlapBuckets.length - 1; b++) {
+      const lo = overlapBuckets[b];
+      const hi = overlapBuckets[b + 1];
+      const count = selectedOverlapCounts.filter(c => c >= lo && c < hi).length;
+      const label = hi === Infinity ? `${lo}+` : `${lo}-${hi}`;
+      console.log(`  [Overlap] ${label.padEnd(10)} field entries sharing 5+ players: ${String(count).padStart(4)} lineups (${(count/selected.length*100).toFixed(0)}%)`);
+    }
 
-    console.log(`\n  --- COMBO UNIQUENESS BY TIER ---`);
-    for (const [key, quota] of Object.entries(BARBELL_QUOTAS)) {
-      const tierLineups = selected.filter(l => {
-        const pct = l.projection / optimalProjection;
-        return pct >= quota.projRange[0] && pct < quota.projRange[1];
-      });
-      if (tierLineups.length === 0) continue;
+    const avgOverlap = selectedOverlapCounts.reduce((s, c) => s + c, 0) / selected.length;
+    const maxOverlapVal = Math.max(...selectedOverlapCounts);
+    const minOverlapVal = Math.min(...selectedOverlapCounts);
+    console.log(`  [Overlap] Avg field overlap: ${avgOverlap.toFixed(0)} entries`);
+    console.log(`  [Overlap] Max: ${maxOverlapVal.toFixed(0)}, Min: ${minOverlapVal.toFixed(0)}`);
+    console.log(`  [Overlap] Alpha: ${crowdingAlpha.toFixed(4)}, Est field: ${estimatedFieldSize.toLocaleString()}`);
+    console.log(`  [Overlap] Avg payout discount: ${(1/(1+crowdingAlpha*avgOverlap)*100).toFixed(1)}% of raw payout`);
 
-      const targetMaxFreq = TIER_COMBO_TARGETS[key] || 0.04;
-      let passingCount = 0;
-      let totalMaxFreq = 0;
-
-      for (const lu of tierLineups) {
-        const keys = precomputeComboKeys(lu);
-        let maxQuadFreq = 0;
-        for (const k of keys.quadKeys) {
-          const freq = ensemble.combinedQuads.get(k) || 0;
-          if (freq > maxQuadFreq) maxQuadFreq = freq;
+    // Portfolio self-overlap: count pairs sharing 5+ players
+    let selfOverlapPairs = 0;
+    const selfCheckLimit = Math.min(selected.length, 200); // Cap for speed on large portfolios
+    for (let i = 0; i < selfCheckLimit; i++) {
+      const iIds = new Set(selected[i].players.map(p => p.id));
+      for (let j = i + 1; j < selfCheckLimit; j++) {
+        let shared = 0;
+        for (const p of selected[j].players) {
+          if (iIds.has(p.id)) shared++;
         }
-        if (maxQuadFreq <= targetMaxFreq) passingCount++;
-        totalMaxFreq += maxQuadFreq;
+        if (shared >= OVERLAP_THRESHOLD) selfOverlapPairs++;
       }
-
-      const n = tierLineups.length;
-      const avgProj = tierLineups.reduce((s, l) => s + l.projection, 0) / n;
-      const avgOwn = tierLineups.reduce((s, l) => s + l.players.reduce((ps, p) => ps + (p.ownership || 0), 0) / l.players.length, 0) / n;
-      console.log(
-        `  ${quota.label.padEnd(22)} ${String(n).padStart(3)} lu | ` +
-        `pass (<${(targetMaxFreq*100).toFixed(0)}%): ${String(passingCount).padStart(3)}/${n} (${(passingCount/n*100).toFixed(0)}%) | ` +
-        `avg max quad: ${(totalMaxFreq/n*100).toFixed(2)}% | ` +
-        `avg proj: ${avgProj.toFixed(1)} | avg own: ${avgOwn.toFixed(1)}%`
-      );
     }
+    const possiblePairs = selfCheckLimit * (selfCheckLimit - 1) / 2;
+    console.log(`  [Overlap] Portfolio self-overlap (5+ shared): ${selfOverlapPairs} pairs (of ${possiblePairs.toLocaleString()} checked)`);
+    console.log(`  [Overlap] === END ===`);
   }
 
   // --- Step 5.75: Barbell shape + ownership spread diagnostics ---
@@ -1488,26 +1615,21 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   }
 
   // --- Step 7: Combo leverage metrics ---
-  if (ensemble && selected.length > 0) {
-    let uniqueCount = 0;
-    let maxFieldComboFreq = 0;
+  if (selected.length > 0) {
+    // Report portfolio combo concentration using primary combo tracking
     let maxPortfolioComboFreq = 0;
-
-    for (const l of selected) {
-      const pc = extractPrimaryCombo(l, playerMap, params.sport);
-      const fieldFreq = ensemble.combinedPrimaryCombos.get(pc.comboKey) || 0;
-      const portfolioFreq = (primaryComboCounts.get(pc.comboKey) || 0) / selected.length;
-
-      if (fieldFreq < 0.03) uniqueCount++;
-      if (fieldFreq > maxFieldComboFreq) maxFieldComboFreq = fieldFreq;
-      if (portfolioFreq > maxPortfolioComboFreq) maxPortfolioComboFreq = portfolioFreq;
+    for (const [, count] of primaryComboCounts) {
+      const freq = count / selected.length;
+      if (freq > maxPortfolioComboFreq) maxPortfolioComboFreq = freq;
     }
+    const uniqueCombos = primaryComboCounts.size;
 
     console.log(`\n  --- COMBO LEVERAGE METRICS ---`);
-    console.log(`  Combo-unique lineups (primary <3% field): ${uniqueCount}/${selected.length} (${(uniqueCount / selected.length * 100).toFixed(0)}%)`);
-    console.log(`  Worst field combo overlap: ${(maxFieldComboFreq * 100).toFixed(1)}%`);
+    console.log(`  Distinct primary combos in portfolio: ${uniqueCombos}`);
     console.log(`  Worst portfolio combo concentration: ${(maxPortfolioComboFreq * 100).toFixed(1)}%`);
-    console.log(`  Chalk primary combos in ensemble: ${ensemble.chalkPrimaryCombos.length}`);
+    if (ensemble) {
+      console.log(`  Chalk primary combos in ensemble: ${ensemble.chalkPrimaryCombos.length}`);
+    }
   }
 
   // --- Step 7.5: Chalk depth report ---
@@ -1558,6 +1680,12 @@ export function selectLineupsSimple(params: SimpleSelectParams): SelectionResult
   }
 
   return { selected, exposures, avgProjection, avgOwnership };
+  } finally {
+    if (params.quiet) {
+      console.log = originalConsoleLog;
+      console.warn = originalConsoleWarn;
+    }
+  }
 }
 
 // ============================================================

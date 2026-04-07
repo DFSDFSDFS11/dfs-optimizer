@@ -371,6 +371,7 @@ export function optimizeLateSwaps(
 
 interface EntryData {
   entryIndex: number;
+  contestName: string;
   skeletonHash: string;
   originalPlayers: Player[];
   originalProjection: number;
@@ -441,6 +442,7 @@ function buildSkeletons(
       fullyLockedEntries++;
       entryData.push({
         entryIndex: i,
+        contestName: entry.contestName,
         skeletonHash: '',
         originalPlayers,
         originalProjection,
@@ -452,9 +454,13 @@ function buildSkeletons(
     }
 
     // Build skeleton hash from slot:playerId pairs (Bug #2 fix)
-    // Include slot indices to prevent hash collisions when same players are in different slots
+    // Include slot indices to prevent hash collisions when same players are in different slots.
+    // Use 'unconstrained' as a sentinel for entries with zero locked slots so they
+    // still group/process through phase 3 (the empty-string hash got filtered out).
     const lockedIds = lockedSlots.map(s => originalPlayers[s].id);
-    const hash = lockedSlots.map(s => `${s}:${originalPlayers[s].id}`).sort().join('|');
+    const hash = lockedSlots.length === 0
+      ? 'unconstrained'
+      : lockedSlots.map(s => `${s}:${originalPlayers[s].id}`).sort().join('|');
 
     if (!skeletons.has(hash)) {
       const lockedPlayers = lockedSlots.map(s => originalPlayers[s]);
@@ -476,6 +482,7 @@ function buildSkeletons(
 
     entryData.push({
       entryIndex: i,
+      contestName: entry.contestName,
       skeletonHash: hash,
       originalPlayers,
       originalProjection,
@@ -568,6 +575,22 @@ function assignPortfolioOptimal(
   const selectedQuints = new Map<string, number>();
   let portfolioSize = 0;
 
+  // Per-contest exposure state — prevents overconcentration in any single contest
+  const contestPlayerCounts = new Map<string, Map<string, number>>();
+  const contestSizes = new Map<string, number>();
+  const contestAssigned = new Map<string, number>();
+  for (const eData of entryData) {
+    contestSizes.set(eData.contestName, (contestSizes.get(eData.contestName) || 0) + 1);
+  }
+  for (const contestName of contestSizes.keys()) {
+    contestPlayerCounts.set(contestName, new Map());
+    contestAssigned.set(contestName, 0);
+  }
+  console.log(`Per-contest tracking: ${contestSizes.size} contests`);
+  for (const [name, size] of contestSizes) {
+    console.log(`  ${name}: ${size} entries`);
+  }
+
   // Finish vector tracking for marginal contribution
   const numSims = simFinishVectors.size > 0
     ? simFinishVectors.values().next().value!.length
@@ -590,6 +613,63 @@ function assignPortfolioOptimal(
       if (exposure >= currentCap) {
         const excess = exposure - currentCap;
         penalty *= Math.max(0.05, 1.0 - excess * 10);
+      }
+    }
+    return penalty;
+  };
+
+  // Per-contest hard cap — number of times each player can appear in a single contest.
+  // Caps:
+  //   ≤6 entries: 50% (e.g., max 3 in a 6-entry contest)
+  //   7-15 entries: 50%
+  //   16+ entries: 45%
+  // Returns true if the candidate would violate the cap if added to this contest.
+  const wouldViolateContestCap = (lineup: ScoredLineup, contestName: string): boolean => {
+    const contestSize = contestSizes.get(contestName) || 1;
+    const counts = contestPlayerCounts.get(contestName)!;
+    const cap = contestSize <= 15 ? 0.50 : 0.45;
+    // Hard limit: ceil(cap * contestSize). Min 1 to allow tiny contests to function.
+    const maxCount = Math.max(1, Math.ceil(cap * contestSize));
+    for (const player of lineup.players) {
+      const newCount = (counts.get(player.id) || 0) + 1;
+      if (newCount > maxCount) return true;
+    }
+    return false;
+  };
+
+  // Variant of the cap check used during local search: ignores players already
+  // in the current assignment for this entry (since they'd be removed by the swap).
+  const wouldViolateContestCapAfterSwap = (
+    lineup: ScoredLineup,
+    currentPlayerIds: Set<string>,
+    contestName: string,
+  ): boolean => {
+    const contestSize = contestSizes.get(contestName) || 1;
+    const counts = contestPlayerCounts.get(contestName)!;
+    const cap = contestSize <= 15 ? 0.50 : 0.45;
+    const maxCount = Math.max(1, Math.ceil(cap * contestSize));
+    for (const player of lineup.players) {
+      if (currentPlayerIds.has(player.id)) continue;
+      const newCount = (counts.get(player.id) || 0) + 1;
+      if (newCount > maxCount) return true;
+    }
+    return false;
+  };
+
+  // Soft penalty for cross-player concentration (combos, near-cap players)
+  const computeContestExposurePenalty = (lineup: ScoredLineup, contestName: string): number => {
+    const contestSize = contestSizes.get(contestName) || 1;
+    const assigned = contestAssigned.get(contestName) || 0;
+    if (assigned === 0) return 1.0;
+    const counts = contestPlayerCounts.get(contestName)!;
+    const softCap = contestSize <= 15 ? 0.40 : 0.30;
+    let penalty = 1.0;
+    for (const player of lineup.players) {
+      const count = counts.get(player.id) || 0;
+      const exposure = count / assigned;
+      if (exposure >= softCap) {
+        const excess = exposure - softCap;
+        penalty *= Math.max(0.10, 1.0 - excess * 8);
       }
     }
     return penalty;
@@ -623,8 +703,24 @@ function assignPortfolioOptimal(
 
     let bestCandidate: ScoredLineup | null = null;
     let bestScore = -Infinity;
+    let bestFallback: ScoredLineup | null = null;
+    let bestFallbackScore = -Infinity;
 
     for (const candidate of topCandidates) {
+      // HARD CAP: skip any candidate that would put a player over the per-contest cap.
+      // Track the best cap-violating candidate as a fallback in case nothing passes.
+      if (wouldViolateContestCap(candidate, eData.contestName)) {
+        const fbMarginal = computeMarginalPayout(candidate);
+        const fbScore = numSims > 0 && fbMarginal > 0
+          ? (fbMarginal + candidate.totalScore * 0.01)
+          : candidate.totalScore;
+        if (fbScore > bestFallbackScore) {
+          bestFallbackScore = fbScore;
+          bestFallback = candidate;
+        }
+        continue;
+      }
+
       // Compute marginal payout from finish vectors
       const marginalPayout = computeMarginalPayout(candidate);
 
@@ -642,18 +738,52 @@ function assignPortfolioOptimal(
       // Improvement #10: exposure penalty matching pregame pipeline
       const exposurePenalty = computeExposurePenalty(candidate);
 
+      // Per-contest exposure penalty — primary lever for cross-contest diversity
+      const contestPenalty = computeContestExposurePenalty(candidate, eData.contestName);
+
       // Improvement #10: Formula matches pregame — marginal payout dominant, totalScore as tiebreaker
       let combinedScore: number;
       if (numSims > 0 && marginalPayout > 0) {
-        combinedScore = (marginalPayout + candidate.totalScore * 0.01) * divMult * exposurePenalty;
+        combinedScore = (marginalPayout + candidate.totalScore * 0.01) * divMult * exposurePenalty * contestPenalty;
       } else {
-        combinedScore = candidate.totalScore * divMult * exposurePenalty;
+        combinedScore = candidate.totalScore * divMult * exposurePenalty * contestPenalty;
       }
 
       if (combinedScore > bestScore) {
         bestScore = combinedScore;
         bestCandidate = candidate;
       }
+    }
+
+    // Cap-respecting fallback: if no candidate in the top scan passed the cap,
+    // scan ALL candidates (not just top 200) before giving up.
+    if (!bestCandidate && candidates.length > topCandidates.length) {
+      for (let ci = topCandidates.length; ci < candidates.length; ci++) {
+        const candidate = candidates[ci];
+        if (wouldViolateContestCap(candidate, eData.contestName)) continue;
+
+        const marginalPayout = computeMarginalPayout(candidate);
+        const divMult = computeDiversityMultiplier(
+          candidate, playerExposureCounts, selectedPairs, selectedTriples,
+          portfolioSize, selectedQuads, selectedQuints,
+        );
+        const exposurePenalty = computeExposurePenalty(candidate);
+        const contestPenalty = computeContestExposurePenalty(candidate, eData.contestName);
+
+        const combinedScore = numSims > 0 && marginalPayout > 0
+          ? (marginalPayout + candidate.totalScore * 0.01) * divMult * exposurePenalty * contestPenalty
+          : candidate.totalScore * divMult * exposurePenalty * contestPenalty;
+
+        if (combinedScore > bestScore) {
+          bestScore = combinedScore;
+          bestCandidate = candidate;
+        }
+      }
+    }
+
+    // Final fallback: every single candidate violates the cap. Take the best violator.
+    if (!bestCandidate && bestFallback) {
+      bestCandidate = bestFallback;
     }
 
     if (bestCandidate) {
@@ -669,10 +799,33 @@ function assignPortfolioOptimal(
         selectedQuints
       );
       portfolioSize++;
+
+      // Update per-contest state
+      const contestCounts = contestPlayerCounts.get(eData.contestName)!;
+      for (const player of bestCandidate.players) {
+        contestCounts.set(player.id, (contestCounts.get(player.id) || 0) + 1);
+      }
+      contestAssigned.set(eData.contestName, (contestAssigned.get(eData.contestName) || 0) + 1);
     }
   }
 
   console.log(`Portfolio assignment: ${assignments.size} entries assigned`);
+
+  // Per-contest exposure report
+  console.log(`\n--- PER-CONTEST EXPOSURE (top 5 per contest) ---`);
+  for (const [contestName, size] of contestSizes) {
+    const counts = contestPlayerCounts.get(contestName)!;
+    const assigned = contestAssigned.get(contestName) || 0;
+    if (assigned === 0) continue;
+    const top = Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+    console.log(`  ${contestName} (${assigned}/${size} entries):`);
+    for (const [pid, count] of top) {
+      const pct = (count / assigned * 100).toFixed(0);
+      console.log(`    ${pid.padEnd(12)} ${count}/${assigned} = ${pct}%`);
+    }
+  }
 
   // Local search pass: try swapping each entry to a better candidate
   // Improvement #13: Use marginal payout in local search, not just totalScore
@@ -700,14 +853,21 @@ function assignPortfolioOptimal(
         selectedQuints
       );
       const currentExposurePenalty = computeExposurePenalty(currentAssigned);
+      const currentContestPenalty = computeContestExposurePenalty(currentAssigned, eData.contestName);
 
       // Improvement #13: compute marginal payout for current
       const currentMarginal = computeMarginalPayout(currentAssigned);
       const currentScore = numSims > 0 && currentMarginal > 0
-        ? (currentMarginal + currentAssigned.totalScore * 0.01) * currentDivMult * currentExposurePenalty
-        : currentAssigned.totalScore * currentDivMult * currentExposurePenalty;
+        ? (currentMarginal + currentAssigned.totalScore * 0.01) * currentDivMult * currentExposurePenalty * currentContestPenalty
+        : currentAssigned.totalScore * currentDivMult * currentExposurePenalty * currentContestPenalty;
+
+      const currentPlayerIds = new Set(currentAssigned.players.map(p => p.id));
 
       for (const alt of alternatives) {
+        // Swap-aware cap check: a player only adds to count if they're NOT already
+        // in the current assignment (since we'd be removing the current first).
+        if (wouldViolateContestCapAfterSwap(alt, currentPlayerIds, eData.contestName)) continue;
+
         const altDivMult = computeDiversityMultiplier(
           alt,
           playerExposureCounts,
@@ -718,16 +878,27 @@ function assignPortfolioOptimal(
           selectedQuints
         );
         const altExposurePenalty = computeExposurePenalty(alt);
+        const altContestPenalty = computeContestExposurePenalty(alt, eData.contestName);
 
         const altMarginal = computeMarginalPayout(alt);
         const altScore = numSims > 0 && altMarginal > 0
-          ? (altMarginal + alt.totalScore * 0.01) * altDivMult * altExposurePenalty
-          : alt.totalScore * altDivMult * altExposurePenalty;
+          ? (altMarginal + alt.totalScore * 0.01) * altDivMult * altExposurePenalty * altContestPenalty
+          : alt.totalScore * altDivMult * altExposurePenalty * altContestPenalty;
 
         // Accept swap if alternative has better combined score (1% threshold)
         if (altScore > currentScore * 1.01) {
           // Remove old assignment from portfolio state
           removeFromPortfolioState(currentAssigned, playerExposureCounts, selectedPairs, selectedTriples, selectedQuads, selectedQuints);
+          // Update per-contest state: subtract old, add new
+          const contestCounts = contestPlayerCounts.get(eData.contestName)!;
+          for (const player of currentAssigned.players) {
+            const c = contestCounts.get(player.id) || 0;
+            if (c <= 1) contestCounts.delete(player.id);
+            else contestCounts.set(player.id, c - 1);
+          }
+          for (const player of alt.players) {
+            contestCounts.set(player.id, (contestCounts.get(player.id) || 0) + 1);
+          }
           // Add new assignment
           assignments.set(eData.entryIndex, alt);
           updatePortfolioState(

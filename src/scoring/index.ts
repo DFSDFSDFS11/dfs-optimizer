@@ -5,3 +5,4 @@
  */
 
 export * from './export';
+export * from './actuals-scorer';

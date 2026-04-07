@@ -10,12 +10,13 @@
  */
 
 import { parseArguments, printConfig, printSummary } from './cli';
-import { parseCSVFile, buildPlayerPool, parseLockStatus } from './parser';
+import { parseCSVFile, buildPlayerPool, parseLockStatus, loadPoolFromCSV } from './parser';
 import { getContestConfig } from './rules';
 import { optimizeLineups, generateEdgeBoostedPool } from './optimizer';
 import { selectLineupsSimple } from './selection/simple-selector';
 import { computePlayerEdgeScores } from './selection/scoring/field-analysis';
-import { exportLineupsToCSV, exportSwappedLineups, exportSwapReport, exportLineupsWithMetrics } from './scoring';
+import { exportLineupsToCSV, exportSwappedLineups, exportSwapReport, exportLineupsWithMetrics, scoreLineupCsvAgainstActuals, printScoreReport } from './scoring';
+import { parseContestActuals } from './parser';
 import { parseDraftKingsEntries, optimizeLateSwaps } from './swapper';
 import { runCalibration, runBacktest, runFastFormulaOptimizer, runSelectionSweep } from './calibration';
 import { runFormulaSweep } from './calibration/formula-sweep';
@@ -102,6 +103,25 @@ async function main(): Promise<void> {
       return;
     }
 
+    // Check for standalone scoring mode (--score-actuals)
+    if (options.scoreActualsLineups) {
+      await runScoreActuals(options);
+      return;
+    }
+
+    // Check for Mode 2 backtest (--backtest-actuals)
+    if (options.backtestActuals) {
+      await runBacktestActuals(options);
+      return;
+    }
+
+    // Check for parameter sweep (--sweep-actuals)
+    if (options.sweepActuals) {
+      const { runActualsSweep } = await import('./backtest/sweep-actuals');
+      await runActualsSweep(options);
+      return;
+    }
+
     // Parse CSV file (auto-detects contest type)
     console.log('========================================');
     console.log('PHASE 0: Loading Player Data');
@@ -142,6 +162,18 @@ async function main(): Promise<void> {
       // Small slate (MMA) - need MORE lineups to find diversity, not fewer
       effectivePoolSize = Math.min(options.poolSize, 75000);
       console.log(`\n  Small slate detected (${pool.players.length} players) - using ${effectivePoolSize.toLocaleString()} pool for diversity`);
+    } else {
+      // Detect short MLB/team-sport slates (2-3 games) and bump pool size
+      // so we get more pitcher and stack diversity in the candidate pool.
+      const gameSet = new Set<string>();
+      for (const p of pool.players) gameSet.add(p.gameInfo || `${p.team}_game`);
+      if (gameSet.size <= 2) {
+        effectivePoolSize = Math.max(options.poolSize, 60000);
+        console.log(`\n  2-game slate detected (${gameSet.size} games) - using ${effectivePoolSize.toLocaleString()} pool for diversity`);
+      } else if (gameSet.size === 3) {
+        effectivePoolSize = Math.max(options.poolSize, 40000);
+        console.log(`\n  3-game slate detected - using ${effectivePoolSize.toLocaleString()} pool for diversity`);
+      }
     }
 
     // Print player pool summary
@@ -157,6 +189,58 @@ async function main(): Promise<void> {
       console.log(`  ${p.name} (${p.positions.join('/')}) - $${p.salary} - ${p.projection.toFixed(1)} pts - ${p.ownership.toFixed(1)}%`);
     }
 
+    // ========================================================
+    // POOL CSV MODE: skip phases 1/1.5/1.75 entirely
+    // ========================================================
+    let mergedLineups: import('./types').Lineup[];
+
+    if (options.poolCsv) {
+      console.log('\n========================================');
+      console.log('PHASE 1: Pool CSV Load (skipping our pool generation)');
+      console.log('========================================');
+
+      const poolResult = loadPoolFromCSV({
+        filePath: options.poolCsv,
+        config,
+        playerMap: pool.byId,
+      });
+
+      if (poolResult.lineups.length === 0) {
+        console.error('\nERROR: No valid lineups loaded from pool CSV!');
+        console.error('Common causes: player IDs in pool CSV don\'t match the projection file,');
+        console.error('or position columns are missing from the pool CSV.');
+        process.exit(1);
+      }
+
+      mergedLineups = poolResult.lineups;
+
+      // MLB: filter for min 4-man batter stack (same as our pool gen does)
+      if (options.sport === 'mlb') {
+        const before = mergedLineups.length;
+        mergedLineups = mergedLineups.filter(l => {
+          const batterTeams = new Map<string, number>();
+          for (const p of l.players) {
+            if (!p.positions.includes('P')) {
+              batterTeams.set(p.team, (batterTeams.get(p.team) || 0) + 1);
+            }
+          }
+          let maxStack = 0;
+          for (const c of batterTeams.values()) if (c > maxStack) maxStack = c;
+          return maxStack >= 4;
+        });
+        const rejected = before - mergedLineups.length;
+        if (rejected > 0) {
+          console.log(`  MLB stack filter: removed ${rejected} lineups without 4+ batter stack`);
+        }
+      }
+
+      console.log(`Pool loaded from CSV: ${mergedLineups.length.toLocaleString()} lineups`);
+
+      // Skip phase 1.5/1.75 — we trust the externally-built pool to be diverse.
+      // Jump straight to phase 2 by reusing the existing flow below.
+      // (the rest of the function uses `mergedLineups` so we just need to skip
+      // the optimization/edge phases)
+    } else {
     // Phase 1: Optimization
     console.log('\n========================================');
     console.log('PHASE 1: Pool Generation (Branch & Bound)');
@@ -235,7 +319,7 @@ async function main(): Promise<void> {
     });
 
     // Merge pools
-    let mergedLineups = [...optimizationResult.lineups, ...edgeBoostedResult.lineups];
+    mergedLineups = [...optimizationResult.lineups, ...edgeBoostedResult.lineups];
 
     // MLB: filter merged pool for min 4-man batter stack
     if (options.sport === 'mlb') {
@@ -258,6 +342,7 @@ async function main(): Promise<void> {
     }
 
     console.log(`Merged pool: ${mergedLineups.length.toLocaleString()} lineups (${optimizationResult.lineups.length.toLocaleString()} pass 1 + ${edgeBoostedResult.lineups.length.toLocaleString()} edge-boosted)`);
+    } // end of else (non-poolCsv path)
 
     // Phase 2: Selection
     console.log('\n========================================');
@@ -283,6 +368,7 @@ async function main(): Promise<void> {
       players: pool.players,
       contestSize: options.contestSize,
       fieldSamples: options.fieldSamples,
+      simMode: options.simMode,
     });
 
     if (selectionResult.selected.length === 0) {
@@ -453,6 +539,57 @@ async function runLateSwap(options: import('./types').CLIOptions, startTime: num
   console.log(`Swapped lineups: ${options.output}`);
   console.log(`Swap report: ${reportPath}`);
   console.log('\nDone! Upload your swapped lineups to DraftKings.\n');
+}
+
+// ============================================================
+// STANDALONE: SCORE A LINEUP CSV AGAINST CONTEST ACTUALS
+// ============================================================
+
+async function runScoreActuals(options: import('./types').CLIOptions): Promise<void> {
+  console.log('========================================');
+  console.log('SCORE LINEUPS vs ACTUALS');
+  console.log('========================================');
+  if (!options.actualsCsv) {
+    console.error('Error: --score-actuals requires --actuals <file>');
+    process.exit(1);
+  }
+  if (!options.input) {
+    console.error('Error: --score-actuals requires --input <projections-file> for player ID/name mapping');
+    process.exit(1);
+  }
+
+  console.log(`Lineups CSV:    ${options.scoreActualsLineups}`);
+  console.log(`Actuals CSV:    ${options.actualsCsv}`);
+  console.log(`Projections:    ${options.input}`);
+
+  // Load projections to get the player ID → name map
+  const parseResult = parseCSVFile(options.input, options.sport, true);
+  const config = getContestConfig(options.site, options.sport, parseResult.detectedContestType);
+  const pool = buildPlayerPool(parseResult.players, parseResult.detectedContestType);
+
+  // Parse the contest actuals
+  const actuals = parseContestActuals(options.actualsCsv, config);
+  console.log(`Loaded ${actuals.entries.length} contest entries and ${actuals.playerActualsByName.size} player actuals`);
+
+  // Score the lineup CSV
+  const report = scoreLineupCsvAgainstActuals({
+    lineupCsvPath: options.scoreActualsLineups!,
+    actuals,
+    config,
+    playerMap: pool.byId,
+  });
+
+  printScoreReport(report, 'Submitted lineups');
+}
+
+// ============================================================
+// MODE 2 BACKTEST: USE ACTUAL CONTEST FIELD AS THE POOL
+// ============================================================
+
+async function runBacktestActuals(options: import('./types').CLIOptions): Promise<void> {
+  // Implementation in src/backtest/actuals-backtest.ts to keep run.ts manageable.
+  const { runActualsBacktest } = await import('./backtest/actuals-backtest');
+  await runActualsBacktest(options);
 }
 
 // Run
