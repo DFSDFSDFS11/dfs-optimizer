@@ -115,6 +115,27 @@ async function main(): Promise<void> {
       return;
     }
 
+    // Check for Algorithm 7 elite backtest (--elite-backtest)
+    if (options.eliteBacktest) {
+      const { runEliteBacktest } = await import('./backtest/elite-backtest');
+      await runEliteBacktest(options);
+      return;
+    }
+
+    // Check for Algorithm 7 parameter sweep (--elite-sweep)
+    if (options.eliteSweep) {
+      const { runEliteSweep } = await import('./backtest/elite-sweep');
+      await runEliteSweep(options);
+      return;
+    }
+
+    // Check for Algorithm 7 live mode (--elite-live)
+    if (options.eliteLive) {
+      const { runEliteLive } = await import('./backtest/elite-live');
+      await runEliteLive(options);
+      return;
+    }
+
     // Check for parameter sweep (--sweep-actuals)
     if (options.sweepActuals) {
       const { runActualsSweep } = await import('./backtest/sweep-actuals');

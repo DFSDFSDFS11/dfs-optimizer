@@ -53,6 +53,9 @@ export function parseArguments(): CLIOptions {
     .option('--backtest-actuals', 'Mode 2 backtest: use the actual contest field as the pool, run selector, score against actuals')
     .option('--pro-names <list>', 'Comma-separated list of pro usernames to benchmark in backtest-actuals mode')
     .option('--sweep-actuals', 'Sweep selector parameters across multiple slates using actuals backtest')
+    .option('--elite-backtest', 'Algorithm 7 (Haugh-Singal × Liu et al.) backtest. Uses --pool-csv as candidate pool when supplied (Mode 1), otherwise the contest field (Mode 2).')
+    .option('--elite-sweep', 'Sweep Algorithm 7 selector parameters across all slates and report the best config by top-1% lift.')
+    .option('--elite-live', 'Game-day Algorithm 7 selection from one or more SS pool CSVs (no actuals). Requires --input, --pool-csv (comma-separated for multiple), and --output.')
     .parse(process.argv);
 
   const opts = program.opts();
@@ -149,13 +152,17 @@ export function parseArguments(): CLIOptions {
   const actualsCsv = opts.actuals ? path.resolve(opts.actuals) : undefined;
   const backtestActuals = !!opts.backtestActuals;
   const sweepActuals = !!opts.sweepActuals;
+  const eliteBacktest = !!opts.eliteBacktest;
+  const eliteSweep = !!opts.eliteSweep;
+  const eliteLive = !!opts.eliteLive;
   const proNames: string[] = opts.proNames
     ? opts.proNames.split(',').map((s: string) => s.trim()).filter((s: string) => s.length > 0)
     : [];
 
   // Input is required unless in calibration/backtest/optimize/sweep/extract/score mode
+  // (Elite backtest in multi-slate mode reads from --data instead of --input.)
   const requiresNoInput = calibrate || backtest || fastOptimize || sweepSelect || sweepFormula
-    || extractData || !!scoreActualsLineups;
+    || extractData || !!scoreActualsLineups || (eliteBacktest && !opts.input) || (eliteSweep && !opts.input);
   if (!requiresNoInput && !opts.input) {
     console.error('Error: required option \'-i, --input <file>\' not specified');
     process.exit(1);
@@ -225,6 +232,9 @@ export function parseArguments(): CLIOptions {
     actualsCsv,
     backtestActuals,
     sweepActuals,
+    eliteBacktest,
+    eliteSweep,
+    eliteLive,
     proNames,
   };
 }

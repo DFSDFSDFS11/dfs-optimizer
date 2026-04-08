@@ -324,6 +324,9 @@ export interface CLIOptions {
   actualsCsv?: string;            // Path to DK contest actuals CSV
   backtestActuals?: boolean;      // Mode 2: use actual contest field as the pool
   sweepActuals?: boolean;         // Sweep selector params using actuals-backtest
+  eliteBacktest?: boolean;        // Algorithm 7 (Haugh-Singal × Liu et al.) backtest
+  eliteSweep?: boolean;           // Algorithm 7 parameter sweep across all slates
+  eliteLive?: boolean;            // Algorithm 7 game-day live mode (no actuals)
   proNames?: string[];            // Pro usernames to benchmark
 }
 
