@@ -5,3 +5,4 @@
  */
 
 export * from './branch-bound';
+export * from './pool-augmentation';

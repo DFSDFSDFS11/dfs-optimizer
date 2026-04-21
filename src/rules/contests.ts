@@ -110,6 +110,40 @@ export const DK_MLB_CLASSIC: ContestConfig = {
 };
 
 // ============================================================
+// DRAFTKINGS MLB SHOWDOWN
+// ============================================================
+
+/**
+ * DraftKings MLB Showdown Rules
+ *
+ * - Single game (2 teams only)
+ * - 6 players: 1 CPT + 5 FLEX
+ * - $50,000 salary cap
+ * - Captain: 1.5x salary AND 1.5x scoring
+ * - Any MLB position eligible for CPT or FLEX (P, C, 1B, 2B, 3B, SS, OF)
+ * - Must have at least 1 player from each team
+ * - Same player CANNOT appear as both CPT and FLEX
+ */
+export const DK_MLB_SHOWDOWN: ContestConfig = {
+  site: 'dk',
+  sport: 'mlb',
+  contestType: 'showdown',
+  salaryCap: 50000,
+  salaryMin: 0,
+  rosterSize: 6,
+  name: 'DraftKings MLB Showdown',
+  maxPlayersPerTeam: 5,
+  positions: [
+    { name: 'CPT', eligible: ['CPT'], isCaptain: true },
+    { name: 'UTIL', eligible: ['FLEX'] },
+    { name: 'UTIL', eligible: ['FLEX'] },
+    { name: 'UTIL', eligible: ['FLEX'] },
+    { name: 'UTIL', eligible: ['FLEX'] },
+    { name: 'UTIL', eligible: ['FLEX'] },
+  ],
+};
+
+// ============================================================
 // DRAFTKINGS NBA SHOWDOWN
 // ============================================================
 
@@ -348,6 +382,11 @@ export function getContestConfig(
   // DraftKings MLB Classic
   if (site === 'dk' && sport === 'mlb' && contestType === 'classic') {
     return DK_MLB_CLASSIC;
+  }
+
+  // DraftKings MLB Showdown
+  if (site === 'dk' && sport === 'mlb' && contestType === 'showdown') {
+    return DK_MLB_SHOWDOWN;
   }
 
   // DraftKings NBA Showdown

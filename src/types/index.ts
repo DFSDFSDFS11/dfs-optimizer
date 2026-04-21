@@ -328,6 +328,27 @@ export interface CLIOptions {
   eliteSweep?: boolean;           // Algorithm 7 parameter sweep across all slates
   eliteLive?: boolean;            // Algorithm 7 game-day live mode (no actuals)
   proNames?: string[];            // Pro usernames to benchmark
+  selectorMode?: 'algorithm7' | 'hedging' | 'emax' | 'v24';  // Which selection algorithm to run
+  rhoMax?: number;                // Hedging selector: max pairwise correlation
+  alpha?: number;                 // Hedging selector: α blend (payout vs varDiff)
+  projectionFloor?: number;       // Hedging selector: drop bottom X fraction by projection
+  hedgeMaxExposure?: number;      // Hedging selector: max single-player exposure
+  proAnalysis?: boolean;          // Run pro portfolio reverse-engineering analysis
+  augmentPool?: boolean;          // Generate augmented lineups (variance/ceiling/contrarian/team-forced) and merge into candidate pool
+  analyzeSlateMode?: boolean;     // Backtest Intelligence: single-slate diagnostic
+  analyzeAllMode?: boolean;       // Backtest Intelligence: multi-slate + cross-slate calibration
+  fullAnalysisMode?: boolean;     // Sim-backed full analysis on one slate
+  fullCalibrateMode?: boolean;    // Sim-backed full analysis across all slates + cross-slate calibration
+  v30SelectMode?: boolean;        // V30 selector: λ-sweep + evil twin
+  v31SelectMode?: boolean;        // V31 selector: corrected math
+  v32SelectMode?: boolean;        // V32 selector: region-targeted
+  buildRegionMapMode?: boolean;   // Build region map from historical data
+  regionMap?: string;             // Path to region map JSON
+  calibrateOpponentMode?: boolean;// Calibrate opponent model from historical data
+  opponentModel?: string;         // Path to calibrated opponent model JSON
+  worlds?: number;                // Number of simulation worlds (default 2000)
+  minProEntries?: number;         // Auto-detect pros with ≥ this many entries (default 100)
+  analysisOut?: string;           // Output directory for analysis report
 }
 
 // ============================================================

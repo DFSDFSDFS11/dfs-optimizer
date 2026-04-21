@@ -56,6 +56,27 @@ export function parseArguments(): CLIOptions {
     .option('--elite-backtest', 'Algorithm 7 (Haugh-Singal × Liu et al.) backtest. Uses --pool-csv as candidate pool when supplied (Mode 1), otherwise the contest field (Mode 2).')
     .option('--elite-sweep', 'Sweep Algorithm 7 selector parameters across all slates and report the best config by top-1% lift.')
     .option('--elite-live', 'Game-day Algorithm 7 selection from one or more SS pool CSVs (no actuals). Requires --input, --pool-csv (comma-separated for multiple), and --output.')
+    .option('--selector <name>', 'Selection algorithm: algorithm7, hedging (Liu Theorem 4 α-blend), or emax (pure greedy E[max]). Default: emax for MLB, algorithm7 for everything else.')
+    .option('--rho-max <num>', 'Hedging selector: max pairwise score correlation between selected entries')
+    .option('--alpha <num>', 'Hedging selector: blend between payout (α) and variance-of-difference (1-α). NBA 0.7, MLB 0.3.')
+    .option('--projection-floor <num>', 'Hedging selector: drop bottom X fraction of pool by projection (e.g. 0.60 keeps top 40%)')
+    .option('--hedge-max-exposure <num>', 'Hedging selector: max single-player exposure (overrides sport default)')
+    .option('--pro-analysis', 'Run pro portfolio reverse-engineering analysis (requires --pro-names and --elite-backtest)')
+    .option('--augment-pool', 'Generate augmented lineups (variance/ceiling/contrarian/team-forced) and merge into candidate pool')
+    .option('--analyze-slate', 'Backtest Intelligence: dissect winners/field/pros/pool-gap on a single slate (requires --input, --actuals; optional --pool-csv)')
+    .option('--analyze-all', 'Backtest Intelligence across every slate in --data, with cross-slate patterns + calibration report')
+    .option('--full-analysis', 'Full sim-backed analysis: lineup profiles, portfolio E[max]/coverage/gain curves, pool-as-portfolio (single slate)')
+    .option('--full-calibrate', 'Full sim-backed analysis across every slate in --data, with research validation + metric ranking')
+    .option('--v30-select', 'V30 selector: λ-sweep + evil twin hedging (requires --input + --pool-csv)')
+    .option('--v31-select', 'V31 selector: corrected math (threshold-aware variance + anchor σ_{δ,G} + tilted projections)')
+    .option('--v32-select', 'V32 selector: region-targeted portfolio construction (requires --region-map)')
+    .option('--build-region-map', 'Build (projection, ownership) winner heatmap from historical actuals')
+    .option('--region-map <file>', 'Path to region map JSON (for --v32-select)')
+    .option('--calibrate-opponent', 'Calibrate opponent model from historical actuals (saves to --analysis-out)')
+    .option('--opponent-model <file>', 'Path to calibrated opponent model JSON (for --v30-select)')
+    .option('--worlds <n>', 'Number of simulation worlds for full-analysis (default 2000)', '2000')
+    .option('--min-pro-entries <n>', 'Auto-detect pros with at least this many entries (default 100)', '100')
+    .option('--analysis-out <dir>', 'Output directory for analysis report (default ./historical_slates)')
     .parse(process.argv);
 
   const opts = program.opts();
@@ -147,7 +168,12 @@ export function parseArguments(): CLIOptions {
   const fieldSamples = Math.max(3, Math.min(5, parseInt(opts.fieldSamples || '3', 10)));
 
   // New: pool CSV loader and actuals modes
-  const poolCsv = opts.poolCsv ? path.resolve(opts.poolCsv) : undefined;
+  // poolCsv may be a comma-separated list of paths (elite-live merges them).
+  // Resolve each part independently so spaces in directory names don't get
+  // mangled by a global path.resolve() over the joined string.
+  const poolCsv = opts.poolCsv
+    ? opts.poolCsv.split(',').map((p: string) => path.resolve(p.trim())).join(',')
+    : undefined;
   const scoreActualsLineups = opts.scoreActuals ? path.resolve(opts.scoreActuals) : undefined;
   const actualsCsv = opts.actuals ? path.resolve(opts.actuals) : undefined;
   const backtestActuals = !!opts.backtestActuals;
@@ -155,6 +181,39 @@ export function parseArguments(): CLIOptions {
   const eliteBacktest = !!opts.eliteBacktest;
   const eliteSweep = !!opts.eliteSweep;
   const eliteLive = !!opts.eliteLive;
+  // Default selector is sport-aware based on backtest winners:
+  //   NBA → algorithm7 (1.78x lift on 17 slates, beats emax 1.49x)
+  //   MLB → emax pure  (1.46x lift on 3 slates, beats alg7 0.82x)
+  //   NFL → emax pure  (untested, expect MLB-like stacking dynamics)
+  // Explicit --selector always overrides.
+  const explicitSelector = opts.selector ? opts.selector.toLowerCase() : undefined;
+  const emaxSports = ['mlb', 'nfl'];
+  const selectorMode = (explicitSelector ?? (emaxSports.includes(sport) ? 'emax' : 'algorithm7')) as
+    'algorithm7' | 'hedging' | 'emax' | 'v24';
+  if (!['algorithm7', 'hedging', 'emax', 'v24'].includes(selectorMode)) {
+    console.error(`Invalid --selector: ${opts.selector}. Must be 'algorithm7', 'hedging', 'emax', or 'v24'`);
+    process.exit(1);
+  }
+  const rhoMax = opts.rhoMax !== undefined ? parseFloat(opts.rhoMax) : undefined;
+  const alpha = opts.alpha !== undefined ? parseFloat(opts.alpha) : undefined;
+  const projectionFloor = opts.projectionFloor !== undefined ? parseFloat(opts.projectionFloor) : undefined;
+  const hedgeMaxExposure = opts.hedgeMaxExposure !== undefined ? parseFloat(opts.hedgeMaxExposure) : undefined;
+  const proAnalysis = !!opts.proAnalysis;
+  const augmentPool = !!opts.augmentPool;
+  const analyzeSlateMode = !!opts.analyzeSlate;
+  const analyzeAllMode = !!opts.analyzeAll;
+  const fullAnalysisMode = !!opts.fullAnalysis;
+  const fullCalibrateMode = !!opts.fullCalibrate;
+  const v30SelectMode = !!opts.v30Select;
+  const v31SelectMode = !!opts.v31Select;
+  const v32SelectMode = !!opts.v32Select;
+  const buildRegionMapMode = !!opts.buildRegionMap;
+  const regionMapPath = opts.regionMap ? path.resolve(opts.regionMap) : undefined;
+  const calibrateOpponentMode = !!opts.calibrateOpponent;
+  const opponentModel = opts.opponentModel ? path.resolve(opts.opponentModel) : undefined;
+  const minProEntries = parseInt(opts.minProEntries || '100', 10);
+  const analysisOut = opts.analysisOut ? path.resolve(opts.analysisOut) : undefined;
+  const worlds = parseInt(opts.worlds || '2000', 10);
   const proNames: string[] = opts.proNames
     ? opts.proNames.split(',').map((s: string) => s.trim()).filter((s: string) => s.length > 0)
     : [];
@@ -162,7 +221,10 @@ export function parseArguments(): CLIOptions {
   // Input is required unless in calibration/backtest/optimize/sweep/extract/score mode
   // (Elite backtest in multi-slate mode reads from --data instead of --input.)
   const requiresNoInput = calibrate || backtest || fastOptimize || sweepSelect || sweepFormula
-    || extractData || !!scoreActualsLineups || (eliteBacktest && !opts.input) || (eliteSweep && !opts.input);
+    || extractData || !!scoreActualsLineups || (eliteBacktest && !opts.input) || (eliteSweep && !opts.input)
+    || analyzeAllMode || (analyzeSlateMode && !opts.input)
+    || fullCalibrateMode || (fullAnalysisMode && !opts.input)
+    || v30SelectMode || v31SelectMode || v32SelectMode || calibrateOpponentMode || buildRegionMapMode;
   if (!requiresNoInput && !opts.input) {
     console.error('Error: required option \'-i, --input <file>\' not specified');
     process.exit(1);
@@ -236,7 +298,28 @@ export function parseArguments(): CLIOptions {
     eliteSweep,
     eliteLive,
     proNames,
-  };
+    selectorMode,
+    rhoMax,
+    alpha,
+    projectionFloor,
+    hedgeMaxExposure,
+    proAnalysis,
+    augmentPool,
+    analyzeSlateMode,
+    analyzeAllMode,
+    fullAnalysisMode,
+    fullCalibrateMode,
+    v30SelectMode,
+    v31SelectMode,
+    v32SelectMode,
+    buildRegionMapMode,
+    regionMap: regionMapPath,
+    calibrateOpponentMode,
+    opponentModel,
+    minProEntries,
+    analysisOut,
+    worlds,
+  } as CLIOptions;
 }
 
 /**

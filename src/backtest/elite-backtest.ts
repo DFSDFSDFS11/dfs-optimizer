@@ -50,6 +50,23 @@ import {
   SelectorParams,
   SelectionDiagnostics,
 } from '../selection/algorithm7-selector';
+import {
+  hedgingSelect,
+  buildHedgingParams,
+  HedgingDiagnostics,
+} from '../selection/hedging-selector';
+import { analyzeProPortfolios } from '../analysis/pro-portfolio-analysis';
+import {
+  emaxSelect,
+  buildEmaxParams,
+  EmaxDiagnostics,
+} from '../selection/emax-selector';
+import {
+  v24Select,
+  buildV24Params,
+  V24Diagnostics,
+} from '../selection/v24-selector';
+import { augmentPool } from '../optimizer/pool-augmentation';
 
 // ============================================================
 // TYPES
@@ -91,8 +108,12 @@ interface SlateResult {
   random: BenchmarkResult;
   optimal: BenchmarkResult;
   pros: Array<{ name: string; entries: number } & BenchmarkResult>;
-  diagnostics: SelectionDiagnostics;
+  diagnostics?: SelectionDiagnostics;
+  hedgingDiagnostics?: HedgingDiagnostics;
+  emaxDiagnostics?: EmaxDiagnostics;
+  v24Diagnostics?: V24Diagnostics;
   lambdaHits: Map<number, LambdaHitBucket>;
+  selectorLabel: string;
 }
 
 // ============================================================
@@ -348,6 +369,12 @@ async function runOneSlate(
     console.warn(`  ⚠ candidate pool (${candidatePool.length}) is smaller than target (${options.lineupCount})`);
   }
 
+  // 4b. Pool augmentation (if --augment-pool)
+  if (options.augmentPool) {
+    const augResult = augmentPool(candidatePool, pool.players, config, options.sport);
+    candidatePool = augResult.augmented;
+  }
+
   // 5. Selector parameters — start from spec defaults, layer sport-specific overrides
   const params: SelectorParams = {
     ...DEFAULT_SELECTOR_PARAMS,
@@ -368,10 +395,68 @@ async function runOneSlate(
   console.log(`  precompute             : ${tPrecomp} ms (W=${precomp.W} P=${precomp.P} C=${precomp.C} F=${precomp.F})`);
 
   // 7. Select 150 lineups
+  const selectorMode = options.selectorMode ?? 'algorithm7';
   const t1 = Date.now();
-  const { selected, diagnostics } = algorithm7Select(precomp, params);
+  let selected: Lineup[];
+  let alg7Diagnostics: SelectionDiagnostics | undefined;
+  let hedgingDiagnostics: HedgingDiagnostics | undefined;
+  let emaxDiagnostics: EmaxDiagnostics | undefined;
+  if (selectorMode === 'hedging') {
+    const hedgingParams = buildHedgingParams(options.sport, {
+      ...(options.rhoMax !== undefined ? { rhoMax: options.rhoMax } : {}),
+      ...(options.alpha !== undefined ? { alpha: options.alpha } : {}),
+      ...(options.projectionFloor !== undefined ? { projectionFloor: options.projectionFloor } : {}),
+      ...(options.hedgeMaxExposure !== undefined ? { maxExposure: options.hedgeMaxExposure } : {}),
+    });
+    console.log(
+      `  hedging params         : ρ_max=${hedgingParams.rhoMax} α=${hedgingParams.alpha} ` +
+      `projFloor=${(hedgingParams.projectionFloor * 100).toFixed(0)}% ` +
+      `maxExp=${(hedgingParams.maxExposure * 100).toFixed(0)}%`,
+    );
+    const r = hedgingSelect(precomp, params, hedgingParams);
+    selected = r.selected;
+    hedgingDiagnostics = r.diagnostics;
+    console.log(`  hedging select         : ${Date.now() - t1} ms → ${selected.length} lineups`);
+  } else if (selectorMode === 'emax') {
+    // Reuse the projection-floor flag — emax's `topFraction` is "keep top X",
+    // hedging's `projectionFloor` is "drop bottom X". They're equivalent
+    // (topFraction = 1 - projectionFloor) but the user-facing knob is the
+    // same percent of the pool you want to keep, so we treat them identically.
+    const overrides: Partial<{ topFraction: number; maxExposure: number }> = {};
+    if (options.projectionFloor !== undefined) overrides.topFraction = 1 - options.projectionFloor;
+    if (options.hedgeMaxExposure !== undefined) overrides.maxExposure = options.hedgeMaxExposure;
+    const emaxParams = buildEmaxParams(options.sport, overrides);
+    console.log(
+      `  emax params            : topFraction=${(emaxParams.topFraction * 100).toFixed(0)}% ` +
+      `maxExp=${(emaxParams.maxExposure * 100).toFixed(0)}%`,
+    );
+    const r = emaxSelect(precomp, params, emaxParams);
+    selected = r.selected;
+    emaxDiagnostics = r.diagnostics;
+    console.log(`  emax select            : ${Date.now() - t1} ms → ${selected.length} lineups`);
+  } else if (selectorMode === 'v24') {
+    const v24Params = buildV24Params(options.sport, {
+      ...(options.projectionFloor !== undefined ? { projectionFloor: 1 - options.projectionFloor } : {}),
+      ...(options.hedgeMaxExposure !== undefined ? { maxExposure: options.hedgeMaxExposure } : {}),
+      ...(options.rhoMax !== undefined ? { rhoTarget: options.rhoMax } : {}),
+    }, options.contest);
+    console.log(
+      `  v24 params             : ρ_target=${v24Params.rhoTarget} varFloor=top${(v24Params.varianceTopFraction * 100).toFixed(0)}% ` +
+      `projFloor=top${(v24Params.projectionFloor * 100).toFixed(0)}% maxExp=${(v24Params.maxExposure * 100).toFixed(0)}%`,
+    );
+    const r = v24Select(precomp, params, v24Params);
+    selected = r.selected;
+    (emaxDiagnostics as any) = undefined;
+    // Store v24 diagnostics on the result
+    (precomp as any)._v24Diag = r.diagnostics;
+    console.log(`  v24 select             : ${Date.now() - t1} ms → ${selected.length} lineups`);
+  } else {
+    const r = algorithm7Select(precomp, params);
+    selected = r.selected;
+    alg7Diagnostics = r.diagnostics;
+    console.log(`  algorithm 7 select     : ${Date.now() - t1} ms → ${selected.length} lineups`);
+  }
   const tSelect = Date.now() - t1;
-  console.log(`  algorithm 7 select     : ${tSelect} ms → ${selected.length} lineups`);
 
   // 8. Score selected against actuals
   const sortedDescScores = actuals.entries.map(e => e.actualPoints).sort((a, b) => b - a);
@@ -391,9 +476,10 @@ async function runOneSlate(
   // value was used to pick it. This tells us whether λ=0 (projection-only)
   // is doing the work or whether the variance-seeking λ>0 picks are paying off.
   const lambdaHits: Map<number, { picks: number; t1: number; t5: number; t10: number }> = new Map();
+  const pickedLambdas = alg7Diagnostics?.pickedLambdas ?? [];
   for (let i = 0; i < selected.length; i++) {
     const lu = selected[i];
-    const lam = diagnostics.pickedLambdas[i] ?? -1;
+    const lam = pickedLambdas[i] ?? -1;
     const bucket = lambdaHits.get(lam) ?? { picks: 0, t1: 0, t5: 0, t10: 0 };
     bucket.picks++;
     let actual: number | undefined;
@@ -486,6 +572,58 @@ async function runOneSlate(
     });
   }
 
+  // 12. Pro portfolio analysis (deep reverse-engineering)
+  if (options.proAnalysis && (options.proNames || []).length > 0) {
+    // Build pro name -> Lineup[] map by filtering contest entries by username
+    // and converting to Lineup objects via the existing nameMap
+    const proLineupMap = new Map<string, Lineup[]>();
+    for (const proName of options.proNames || []) {
+      const proContestEntries = actuals.entries.filter(e =>
+        (e.entryName || '').toLowerCase().includes(proName.toLowerCase()),
+      );
+      if (proContestEntries.length < 5) continue;
+
+      const proLineups: Lineup[] = [];
+      const seenHashes = new Set<string>();
+      for (const entry of proContestEntries) {
+        const players: Player[] = [];
+        let resolved = true;
+        for (const name of entry.playerNames) {
+          const player = nameMap.get(normalizeName(name));
+          if (!player) { resolved = false; break; }
+          players.push(player);
+        }
+        if (!resolved || players.length === 0) continue;
+        const hash = players.map(p => p.id).sort().join('|');
+        if (seenHashes.has(hash)) continue;  // dedupe
+        seenHashes.add(hash);
+        proLineups.push({
+          players,
+          salary: players.reduce((s, p) => s + p.salary, 0),
+          projection: players.reduce((s, p) => s + p.projection, 0),
+          ownership: players.reduce((s, p) => s + (p.ownership || 0), 0) / players.length,
+          hash,
+          constructionMethod: 'pro-entry',
+        });
+      }
+      if (proLineups.length > 0) {
+        proLineupMap.set(proName, proLineups);
+      }
+    }
+
+    if (proLineupMap.size > 0) {
+      await analyzeProPortfolios(
+        proLineupMap,
+        selected,
+        fieldLineups,
+        precomp,
+        pool.players,
+        actualByHash,
+        actuals.entries.length,
+      );
+    }
+  }
+
   return {
     slate: slate.date,
     contestSize: actuals.entries.length,
@@ -497,8 +635,12 @@ async function runOneSlate(
     random: randomBench,
     optimal: optimalBench,
     pros: proResults,
-    diagnostics,
+    diagnostics: alg7Diagnostics,
+    hedgingDiagnostics,
+    emaxDiagnostics,
     lambdaHits,
+    v24Diagnostics: (precomp as any)?._v24Diag,
+    selectorLabel: selectorMode === 'hedging' ? 'Hedging' : selectorMode === 'emax' ? 'E[max]' : selectorMode === 'v24' ? 'V24' : 'Algorithm 7',
   };
 }
 
@@ -619,7 +761,7 @@ function printSlateReport(r: SlateResult): void {
     `field-sample: ${r.fieldSampleSize.toLocaleString()}  ` +
     `selected: ${r.selectedCount}`,
   );
-  fmt(r.selector, 'Algorithm 7:');
+  fmt(r.selector, `${r.selectorLabel}:`);
   fmt(r.random, 'Random (avg 50):');
   fmt(r.optimal, 'Optimal (ceiling):');
   for (const pro of r.pros) {
@@ -635,32 +777,90 @@ function printSlateReport(r: SlateResult): void {
   );
 
   // Diagnostics
-  const d = r.diagnostics;
-  console.log(
-    `Diagnostics: ` +
-    `proj=${d.avgSelectedProjection.toFixed(1)} (pool ${d.avgPoolProjection.toFixed(1)})  ` +
-    `divScore=${d.portfolioDiversityScore.toFixed(1)}  ` +
-    `maxExp=${(d.maxPlayerExposure * 100).toFixed(1)}%  ` +
-    `γ-relax=${d.gammaRelaxations}  ` +
-    `exp-relax=${d.exposureRelaxations}  ` +
-    `λScale=${d.lambdaScale.toFixed(2)}  ` +
-    `heldOut=${d.fieldHeldOut ? 'yes' : 'no'}`,
-  );
-  const lambdaStr = Array.from(d.lambdaUsage.entries())
-    .sort((a, b) => a[0] - b[0])
-    .map(([l, n]) => `λ${l}:${n}`)
-    .join(' ');
-  console.log(`λ usage: ${lambdaStr}`);
+  if (r.diagnostics) {
+    const d = r.diagnostics;
+    console.log(
+      `Diagnostics: ` +
+      `proj=${d.avgSelectedProjection.toFixed(1)} (pool ${d.avgPoolProjection.toFixed(1)})  ` +
+      `divScore=${d.portfolioDiversityScore.toFixed(1)}  ` +
+      `maxExp=${(d.maxPlayerExposure * 100).toFixed(1)}%  ` +
+      `γ-relax=${d.gammaRelaxations}  ` +
+      `exp-relax=${d.exposureRelaxations}  ` +
+      `λScale=${d.lambdaScale.toFixed(2)}  ` +
+      `heldOut=${d.fieldHeldOut ? 'yes' : 'no'}`,
+    );
+    const lambdaStr = Array.from(d.lambdaUsage.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([l, n]) => `λ${l}:${n}`)
+      .join(' ');
+    console.log(`λ usage: ${lambdaStr}`);
 
-  // Hit attribution by λ — answers "are the variance picks (λ>0) actually
-  // contributing to top-1% / top-5% rates, or is it all coming from λ=0?"
-  const sortedHits = Array.from(r.lambdaHits.entries()).sort((a, b) => a[0] - b[0]);
-  if (sortedHits.length > 0) {
-    const parts = sortedHits.map(([lam, b]) => {
-      const t1Pct = b.picks > 0 ? (b.t1 / b.picks * 100).toFixed(1) : '0.0';
-      return `λ${lam}: ${b.t1}/${b.picks} top1 (${t1Pct}%)`;
-    });
-    console.log(`Hit attribution: ${parts.join(' | ')}`);
+    // Hit attribution by λ — answers "are the variance picks (λ>0) actually
+    // contributing to top-1% / top-5% rates, or is it all coming from λ=0?"
+    const sortedHits = Array.from(r.lambdaHits.entries()).sort((a, b) => a[0] - b[0]);
+    if (sortedHits.length > 0) {
+      const parts = sortedHits.map(([lam, b]) => {
+        const t1Pct = b.picks > 0 ? (b.t1 / b.picks * 100).toFixed(1) : '0.0';
+        return `λ${lam}: ${b.t1}/${b.picks} top1 (${t1Pct}%)`;
+      });
+      console.log(`Hit attribution: ${parts.join(' | ')}`);
+    }
+  } else if (r.hedgingDiagnostics) {
+    const h = r.hedgingDiagnostics;
+    console.log(
+      `Diagnostics: ` +
+      `proj=${h.avgSelectedProjection.toFixed(1)} (pool ${h.avgPoolProjection.toFixed(1)})  ` +
+      `divScore=${h.portfolioDiversityScore.toFixed(1)}  ` +
+      `maxExp=${(h.maxPlayerExposure * 100).toFixed(1)}%  ` +
+      `ρ-relax=${h.rhoRelaxations}  ` +
+      `ρ_max=${h.rhoMaxFinal.toFixed(2)}  ` +
+      `selectMs=${h.selectionTimeMs}`,
+    );
+    console.log(
+      `Correlation: avg=${h.avgPairwiseCorrelation.toFixed(3)}  ` +
+      `min=${h.minPairwiseCorrelation.toFixed(3)}  max=${h.maxPairwiseCorrelation.toFixed(3)}  ` +
+      `histo[<−.5,−.5..0,0..5,>.5]=[${h.correlationHistogram.join(',')}]`,
+    );
+    const covStr = h.coverageByTier
+      .map(c => `top${(c.percentile * 100).toFixed(1)}%=${(c.rate * 100).toFixed(1)}%`)
+      .join('  ');
+    console.log(`World coverage: ${covStr}`);
+  } else if (r.v24Diagnostics) {
+    const v = r.v24Diagnostics;
+    console.log(
+      `Diagnostics: ` +
+      `proj=${v.avgSelectedProjection.toFixed(1)} (pool ${v.avgPoolProjection.toFixed(1)})  ` +
+      `firstGain=${v.firstPickGain.toFixed(3)}  lastGain=${v.lastPickGain.toFixed(4)}  ` +
+      `maxExp=${(v.maxPlayerExposure * 100).toFixed(1)}%  ` +
+      `δ_max=${v.deltaMax.toFixed(1)}  δ-relax=${v.deltaMaxRelaxations}  ` +
+      `pool=${v.poolAfterFilters}  selectMs=${v.selectionTimeMs}`,
+    );
+    console.log(
+      `Correlation: avg=${v.avgPairwiseCorrelation.toFixed(3)}  ` +
+      `histo[<−.5,−.5..0,0..5,>.5]=[${v.correlationHistogram.join(',')}]`,
+    );
+    const covStr = v.coverageByTier
+      .map(c => `top${(c.percentile * 100).toFixed(1)}%=${(c.rate * 100).toFixed(1)}%`)
+      .join('  ');
+    console.log(`World coverage: ${covStr}`);
+  } else if (r.emaxDiagnostics) {
+    const e = r.emaxDiagnostics;
+    console.log(
+      `Diagnostics: ` +
+      `proj=${e.avgSelectedProjection.toFixed(1)} (pool ${e.avgPoolProjection.toFixed(1)})  ` +
+      `E[max]=${e.expectedMax.toFixed(2)}  ` +
+      `firstGain=${e.firstPickGain.toFixed(3)}  lastGain=${e.lastPickGain.toFixed(4)}  ` +
+      `maxExp=${(e.maxPlayerExposure * 100).toFixed(1)}%  ` +
+      `pool=${e.poolAfterProjectionFloor}  selectMs=${e.selectionTimeMs}`,
+    );
+    console.log(
+      `Correlation: avg=${e.avgPairwiseCorrelation.toFixed(3)}  ` +
+      `histo[<−.5,−.5..0,0..5,>.5]=[${e.correlationHistogram.join(',')}]`,
+    );
+    const covStr = e.coverageByTier
+      .map(c => `top${(c.percentile * 100).toFixed(1)}%=${(c.rate * 100).toFixed(1)}%`)
+      .join('  ');
+    console.log(`World coverage: ${covStr}`);
   }
 }
 

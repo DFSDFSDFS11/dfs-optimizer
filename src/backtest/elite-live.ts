@@ -36,6 +36,19 @@ import {
   DEFAULT_SELECTOR_PARAMS,
   SelectorParams,
 } from '../selection/algorithm7-selector';
+import {
+  hedgingSelect,
+  buildHedgingParams,
+} from '../selection/hedging-selector';
+import {
+  emaxSelect,
+  buildEmaxParams,
+} from '../selection/emax-selector';
+import {
+  v24Select,
+  buildV24Params,
+} from '../selection/v24-selector';
+import { augmentPool } from '../optimizer/pool-augmentation';
 
 // ============================================================
 // MAIN
@@ -88,7 +101,7 @@ export async function runEliteLive(options: CLIOptions): Promise<void> {
       if (!mergedByHash.has(lu.hash)) mergedByHash.set(lu.hash, lu);
     }
   }
-  const candidatePool = Array.from(mergedByHash.values());
+  let candidatePool = Array.from(mergedByHash.values());
   console.log(
     `  merged candidate pool: ${candidatePool.length} unique lineups ` +
     `(from ${totalLoaded} loaded across ${poolPaths.length} file(s))`,
@@ -99,6 +112,12 @@ export async function runEliteLive(options: CLIOptions): Promise<void> {
       `  ⚠ candidate pool (${candidatePool.length}) is smaller than target (${options.lineupCount}). ` +
       `Selector will fill what it can.`,
     );
+  }
+
+  // 2b. Pool augmentation (if --augment-pool)
+  if (options.augmentPool) {
+    const augResult = augmentPool(candidatePool, pool.players, config, options.sport);
+    candidatePool = augResult.augmented;
   }
 
   // 3. Build selector params (sport-aware defaults)
@@ -128,26 +147,121 @@ export async function runEliteLive(options: CLIOptions): Promise<void> {
     `(W=${precomp.W} P=${precomp.P} C=${precomp.C} F=${precomp.F}  λScale=${precomp.lambdaScale.toFixed(2)})`,
   );
 
-  // 5. Select
-  console.log('\nRunning Algorithm 7 selection…');
+  // 5. Select — branch on --selector
+  const mode = options.selectorMode ?? 'algorithm7';
   const t1 = Date.now();
-  const { selected, diagnostics } = algorithm7Select(precomp, params);
-  console.log(`  select: ${Date.now() - t1} ms → ${selected.length} lineups`);
-
-  // 6. Diagnostics
-  console.log(
-    `\nDiagnostics: ` +
-    `proj=${diagnostics.avgSelectedProjection.toFixed(1)} (pool ${diagnostics.avgPoolProjection.toFixed(1)})  ` +
-    `divScore=${diagnostics.portfolioDiversityScore.toFixed(1)}  ` +
-    `maxExp=${(diagnostics.maxPlayerExposure * 100).toFixed(1)}%  ` +
-    `γ-relax=${diagnostics.gammaRelaxations}  ` +
-    `exp-relax=${diagnostics.exposureRelaxations}`,
-  );
-  const lambdaStr = Array.from(diagnostics.lambdaUsage.entries())
-    .sort((a, b) => a[0] - b[0])
-    .map(([l, n]) => `λ${l}:${n}`)
-    .join(' ');
-  console.log(`λ usage: ${lambdaStr}`);
+  let selected: Lineup[];
+  if (mode === 'v24') {
+    const v24Params = buildV24Params(options.sport, {
+      ...(options.projectionFloor !== undefined ? { projectionFloor: 1 - options.projectionFloor } : {}),
+      ...(options.hedgeMaxExposure !== undefined ? { maxExposure: options.hedgeMaxExposure } : {}),
+      ...(options.rhoMax !== undefined ? { rhoTarget: options.rhoMax } : {}),
+    }, options.contest);
+    console.log(
+      `\nv24 params: ρ_target=${v24Params.rhoTarget} varFloor=top${(v24Params.varianceTopFraction * 100).toFixed(0)}% ` +
+      `projFloor=top${(v24Params.projectionFloor * 100).toFixed(0)}% maxExp=${(v24Params.maxExposure * 100).toFixed(0)}%`,
+    );
+    console.log('\nRunning V24 selection (Hunter U²ₗ)…');
+    const r = v24Select(precomp, params, v24Params);
+    selected = r.selected;
+    const d = r.diagnostics;
+    console.log(`  select: ${Date.now() - t1} ms → ${selected.length} lineups`);
+    console.log(
+      `\nDiagnostics: proj=${d.avgSelectedProjection.toFixed(1)} (pool ${d.avgPoolProjection.toFixed(1)})  ` +
+      `maxExp=${(d.maxPlayerExposure * 100).toFixed(1)}%  ` +
+      `δ_max=${d.deltaMax.toFixed(1)}  δ-relax=${d.deltaMaxRelaxations}  pool=${d.poolAfterFilters}`,
+    );
+    console.log(
+      `Correlation: avg=${d.avgPairwiseCorrelation.toFixed(3)}  ` +
+      `histo[<−.5,−.5..0,0..5,>.5]=[${d.correlationHistogram.join(',')}]`,
+    );
+    const covStr = d.coverageByTier
+      .map(c => `top${(c.percentile * 100).toFixed(1)}%=${(c.rate * 100).toFixed(1)}%`)
+      .join('  ');
+    console.log(`World coverage: ${covStr}`);
+  } else if (mode === 'emax') {
+    const overrides: Partial<{ topFraction: number; maxExposure: number }> = {};
+    if (options.projectionFloor !== undefined) overrides.topFraction = 1 - options.projectionFloor;
+    if (options.hedgeMaxExposure !== undefined) overrides.maxExposure = options.hedgeMaxExposure;
+    const emaxParams = buildEmaxParams(options.sport, overrides);
+    console.log(
+      `\nemax params: topFraction=${(emaxParams.topFraction * 100).toFixed(0)}% ` +
+      `maxExp=${(emaxParams.maxExposure * 100).toFixed(0)}%`,
+    );
+    console.log('\nRunning E[max] greedy selection (Liu Eq. 9)…');
+    const r = emaxSelect(precomp, params, emaxParams);
+    selected = r.selected;
+    const d = r.diagnostics;
+    console.log(`  select: ${Date.now() - t1} ms → ${selected.length} lineups`);
+    console.log(
+      `\nDiagnostics: proj=${d.avgSelectedProjection.toFixed(1)} (pool ${d.avgPoolProjection.toFixed(1)})  ` +
+      `E[max]=${d.expectedMax.toFixed(2)}  ` +
+      `firstGain=${d.firstPickGain.toFixed(3)}  lastGain=${d.lastPickGain.toFixed(4)}  ` +
+      `maxExp=${(d.maxPlayerExposure * 100).toFixed(1)}%  ` +
+      `pool=${d.poolAfterProjectionFloor}`,
+    );
+    console.log(
+      `Correlation: avg=${d.avgPairwiseCorrelation.toFixed(3)}  ` +
+      `histo[<−.5,−.5..0,0..5,>.5]=[${d.correlationHistogram.join(',')}]`,
+    );
+    const covStr = d.coverageByTier
+      .map(c => `top${(c.percentile * 100).toFixed(1)}%=${(c.rate * 100).toFixed(1)}%`)
+      .join('  ');
+    console.log(`World coverage: ${covStr}`);
+  } else if (mode === 'hedging') {
+    const hedgingParams = buildHedgingParams(options.sport, {
+      ...(options.rhoMax !== undefined ? { rhoMax: options.rhoMax } : {}),
+      ...(options.alpha !== undefined ? { alpha: options.alpha } : {}),
+      ...(options.projectionFloor !== undefined ? { projectionFloor: options.projectionFloor } : {}),
+      ...(options.hedgeMaxExposure !== undefined ? { maxExposure: options.hedgeMaxExposure } : {}),
+    });
+    console.log(
+      `\nhedging params: ρ_max=${hedgingParams.rhoMax} α=${hedgingParams.alpha} ` +
+      `projFloor=top ${((1 - hedgingParams.projectionFloor) * 100).toFixed(0)}% ` +
+      `maxExp=${(hedgingParams.maxExposure * 100).toFixed(0)}%`,
+    );
+    console.log('\nRunning hedging selection (Liu et al. Theorem 4)…');
+    const r = hedgingSelect(precomp, params, hedgingParams);
+    selected = r.selected;
+    const d = r.diagnostics;
+    console.log(`  select: ${Date.now() - t1} ms → ${selected.length} lineups`);
+    console.log(
+      `\nDiagnostics: ` +
+      `proj=${d.avgSelectedProjection.toFixed(1)} (pool ${d.avgPoolProjection.toFixed(1)})  ` +
+      `divScore=${d.portfolioDiversityScore.toFixed(1)}  ` +
+      `maxExp=${(d.maxPlayerExposure * 100).toFixed(1)}%  ` +
+      `ρ-relax=${d.rhoRelaxations}  ρ_max=${d.rhoMaxFinal.toFixed(2)}  ` +
+      `selectMs=${d.selectionTimeMs}`,
+    );
+    console.log(
+      `Correlation: avg=${d.avgPairwiseCorrelation.toFixed(3)}  ` +
+      `min=${d.minPairwiseCorrelation.toFixed(3)}  max=${d.maxPairwiseCorrelation.toFixed(3)}  ` +
+      `histo[<−.5,−.5..0,0..5,>.5]=[${d.correlationHistogram.join(',')}]`,
+    );
+    const covStr = d.coverageByTier
+      .map(c => `top${(c.percentile * 100).toFixed(1)}%=${(c.rate * 100).toFixed(1)}%`)
+      .join('  ');
+    console.log(`World coverage: ${covStr}`);
+  } else {
+    console.log('\nRunning Algorithm 7 selection…');
+    const r = algorithm7Select(precomp, params);
+    selected = r.selected;
+    const diagnostics = r.diagnostics;
+    console.log(`  select: ${Date.now() - t1} ms → ${selected.length} lineups`);
+    console.log(
+      `\nDiagnostics: ` +
+      `proj=${diagnostics.avgSelectedProjection.toFixed(1)} (pool ${diagnostics.avgPoolProjection.toFixed(1)})  ` +
+      `divScore=${diagnostics.portfolioDiversityScore.toFixed(1)}  ` +
+      `maxExp=${(diagnostics.maxPlayerExposure * 100).toFixed(1)}%  ` +
+      `γ-relax=${diagnostics.gammaRelaxations}  ` +
+      `exp-relax=${diagnostics.exposureRelaxations}`,
+    );
+    const lambdaStr = Array.from(diagnostics.lambdaUsage.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([l, n]) => `λ${l}:${n}`)
+      .join(' ');
+    console.log(`λ usage: ${lambdaStr}`);
+  }
 
   // 7. Export — DK upload format + (optional) detailed sidecar
   const dkPath = options.output;

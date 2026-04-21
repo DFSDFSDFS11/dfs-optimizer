@@ -1,0 +1,1096 @@
+{
+  "projBins": [
+    200,
+    220,
+    235,
+    245,
+    255,
+    265,
+    275,
+    285,
+    300
+  ],
+  "ownBins": [
+    0,
+    10,
+    15,
+    18,
+    21,
+    24,
+    28,
+    35,
+    50
+  ],
+  "cells": {
+    "4_5": {
+      "projRange": [
+        255,
+        265
+      ],
+      "ownRange": [
+        24,
+        28
+      ],
+      "totalLineups": 14735,
+      "top1Lineups": 274,
+      "top5Lineups": 1286,
+      "cashLineups": 5066,
+      "top1Rate": 0.01859518154054971,
+      "top5Rate": 0.08727519511367493,
+      "cashRate": 0.34380726162198844,
+      "fieldFraction": 0.0428765556755058,
+      "top1Lift": 1.820119249047808
+    },
+    "3_4": {
+      "projRange": [
+        245,
+        255
+      ],
+      "ownRange": [
+        21,
+        24
+      ],
+      "totalLineups": 19112,
+      "top1Lineups": 238,
+      "top5Lineups": 1236,
+      "cashLineups": 5118,
+      "top1Rate": 0.012452909167015488,
+      "top5Rate": 0.06467141063206362,
+      "cashRate": 0.2677898702385936,
+      "fieldFraction": 0.05561294415135846,
+      "top1Lift": 1.2189060715595867
+    },
+    "2_2": {
+      "projRange": [
+        235,
+        245
+      ],
+      "ownRange": [
+        15,
+        18
+      ],
+      "totalLineups": 12496,
+      "top1Lineups": 81,
+      "top5Lineups": 369,
+      "cashLineups": 1763,
+      "top1Rate": 0.006482074263764404,
+      "top5Rate": 0.02952944942381562,
+      "cashRate": 0.14108514724711907,
+      "fieldFraction": 0.03636141430072077,
+      "top1Lift": 0.634473404602546
+    },
+    "3_5": {
+      "projRange": [
+        245,
+        255
+      ],
+      "ownRange": [
+        24,
+        28
+      ],
+      "totalLineups": 9838,
+      "top1Lineups": 111,
+      "top5Lineups": 605,
+      "cashLineups": 2441,
+      "top1Rate": 0.011282781053059564,
+      "top5Rate": 0.061496239072982316,
+      "cashRate": 0.24811953649115673,
+      "fieldFraction": 0.028627048166652604,
+      "top1Lift": 1.1043724920180868
+    },
+    "3_3": {
+      "projRange": [
+        245,
+        255
+      ],
+      "ownRange": [
+        18,
+        21
+      ],
+      "totalLineups": 21744,
+      "top1Lineups": 174,
+      "top5Lineups": 946,
+      "cashLineups": 4577,
+      "top1Rate": 0.008002207505518763,
+      "top5Rate": 0.04350625459896983,
+      "cashRate": 0.21049484915378955,
+      "fieldFraction": 0.0632716543337766,
+      "top1Lift": 0.7832659167058056
+    },
+    "4_4": {
+      "projRange": [
+        255,
+        265
+      ],
+      "ownRange": [
+        21,
+        24
+      ],
+      "totalLineups": 16766,
+      "top1Lineups": 197,
+      "top5Lineups": 893,
+      "cashLineups": 4055,
+      "top1Rate": 0.011749970177740666,
+      "top5Rate": 0.05326255517117977,
+      "cashRate": 0.24185852320171777,
+      "fieldFraction": 0.04878644943709062,
+      "top1Lift": 1.150101538380101
+    },
+    "2_3": {
+      "projRange": [
+        235,
+        245
+      ],
+      "ownRange": [
+        18,
+        21
+      ],
+      "totalLineups": 7586,
+      "top1Lineups": 71,
+      "top5Lineups": 338,
+      "cashLineups": 1499,
+      "top1Rate": 0.00935934616398629,
+      "top5Rate": 0.04455576061165305,
+      "cashRate": 0.19760084365937253,
+      "fieldFraction": 0.022074078816042553,
+      "top1Lift": 0.9161043184453695
+    },
+    "1_1": {
+      "projRange": [
+        220,
+        235
+      ],
+      "ownRange": [
+        10,
+        15
+      ],
+      "totalLineups": 8003,
+      "top1Lineups": 26,
+      "top5Lineups": 117,
+      "cashLineups": 541,
+      "top1Rate": 0.0032487817068599274,
+      "top5Rate": 0.014619517680869673,
+      "cashRate": 0.0675996501312008,
+      "fieldFraction": 0.02328748388673722,
+      "top1Lift": 0.31799475082916245
+    },
+    "2_4": {
+      "projRange": [
+        235,
+        245
+      ],
+      "ownRange": [
+        21,
+        24
+      ],
+      "totalLineups": 2264,
+      "top1Lineups": 16,
+      "top5Lineups": 81,
+      "cashLineups": 404,
+      "top1Rate": 0.007067137809187279,
+      "top5Rate": 0.0357773851590106,
+      "cashRate": 0.1784452296819788,
+      "fieldFraction": 0.0065878874821408305,
+      "top1Lift": 0.6917401443016546
+    },
+    "1_2": {
+      "projRange": [
+        220,
+        235
+      ],
+      "ownRange": [
+        15,
+        18
+      ],
+      "totalLineups": 2208,
+      "top1Lineups": 9,
+      "top5Lineups": 38,
+      "cashLineups": 194,
+      "top1Rate": 0.004076086956521739,
+      "top5Rate": 0.017210144927536232,
+      "cashRate": 0.08786231884057971,
+      "fieldFraction": 0.006424936201663849,
+      "top1Lift": 0.39897240659789723
+    },
+    "2_1": {
+      "projRange": [
+        235,
+        245
+      ],
+      "ownRange": [
+        10,
+        15
+      ],
+      "totalLineups": 16419,
+      "top1Lineups": 101,
+      "top5Lineups": 462,
+      "cashLineups": 1937,
+      "top1Rate": 0.006151409951885011,
+      "top5Rate": 0.028138132651196784,
+      "cashRate": 0.11797307996832937,
+      "fieldFraction": 0.04777673346699218,
+      "top1Lift": 0.6021075749002434
+    },
+    "3_2": {
+      "projRange": [
+        245,
+        255
+      ],
+      "ownRange": [
+        15,
+        18
+      ],
+      "totalLineups": 15642,
+      "top1Lineups": 112,
+      "top5Lineups": 600,
+      "cashLineups": 2826,
+      "top1Rate": 0.007160209691855261,
+      "top5Rate": 0.038358266206367474,
+      "cashRate": 0.1806674338319908,
+      "fieldFraction": 0.04551578445037406,
+      "top1Lift": 0.7008501346945801
+    },
+    "1_3": {
+      "projRange": [
+        220,
+        235
+      ],
+      "ownRange": [
+        18,
+        21
+      ],
+      "totalLineups": 1002,
+      "top1Lineups": 1,
+      "top5Lineups": 7,
+      "cashLineups": 74,
+      "top1Rate": 0.000998003992015968,
+      "top5Rate": 0.006986027944111776,
+      "cashRate": 0.07385229540918163,
+      "fieldFraction": 0.0029156639828202793,
+      "top1Lift": 0.09768585870128156
+    },
+    "2_5": {
+      "projRange": [
+        235,
+        245
+      ],
+      "ownRange": [
+        24,
+        28
+      ],
+      "totalLineups": 1296,
+      "top1Lineups": 1,
+      "top5Lineups": 16,
+      "cashLineups": 159,
+      "top1Rate": 0.0007716049382716049,
+      "top5Rate": 0.012345679012345678,
+      "cashRate": 0.12268518518518519,
+      "fieldFraction": 0.003771158205324433,
+      "top1Lift": 0.0755256407551575
+    },
+    "4_3": {
+      "projRange": [
+        255,
+        265
+      ],
+      "ownRange": [
+        18,
+        21
+      ],
+      "totalLineups": 18540,
+      "top1Lineups": 142,
+      "top5Lineups": 762,
+      "cashLineups": 3604,
+      "top1Rate": 0.007659115426105718,
+      "top5Rate": 0.04110032362459547,
+      "cashRate": 0.19439050701186625,
+      "fieldFraction": 0.053948513215057864,
+      "top1Lift": 0.7496836418259518
+    },
+    "0_1": {
+      "projRange": [
+        200,
+        220
+      ],
+      "ownRange": [
+        10,
+        15
+      ],
+      "totalLineups": 1079,
+      "top1Lineups": 0,
+      "top5Lineups": 5,
+      "cashLineups": 30,
+      "top1Rate": 0,
+      "top5Rate": 0.004633920296570899,
+      "cashRate": 0.027803521779425393,
+      "fieldFraction": 0.003139721993476129,
+      "top1Lift": 0
+    },
+    "1_0": {
+      "projRange": [
+        220,
+        235
+      ],
+      "ownRange": [
+        0,
+        10
+      ],
+      "totalLineups": 8279,
+      "top1Lineups": 39,
+      "top5Lineups": 141,
+      "cashLineups": 688,
+      "top1Rate": 0.004710713854330233,
+      "top5Rate": 0.017031042396424688,
+      "cashRate": 0.08310182389177437,
+      "fieldFraction": 0.0240906009119452,
+      "top1Lift": 0.4610904682121852
+    },
+    "0_0": {
+      "projRange": [
+        200,
+        220
+      ],
+      "ownRange": [
+        0,
+        10
+      ],
+      "totalLineups": 2843,
+      "top1Lineups": 2,
+      "top5Lineups": 8,
+      "cashLineups": 75,
+      "top1Rate": 0.0007034822370735139,
+      "top5Rate": 0.0028139289482940555,
+      "cashRate": 0.02638058389025677,
+      "fieldFraction": 0.008272687328501052,
+      "top1Lift": 0.06885770694244399
+    },
+    "0_2": {
+      "projRange": [
+        200,
+        220
+      ],
+      "ownRange": [
+        15,
+        18
+      ],
+      "totalLineups": 273,
+      "top1Lineups": 0,
+      "top5Lineups": 1,
+      "cashLineups": 6,
+      "top1Rate": 0,
+      "top5Rate": 0.003663003663003663,
+      "cashRate": 0.02197802197802198,
+      "fieldFraction": 0.0007943874923252857,
+      "top1Lift": 0
+    },
+    "3_1": {
+      "projRange": [
+        245,
+        255
+      ],
+      "ownRange": [
+        10,
+        15
+      ],
+      "totalLineups": 13484,
+      "top1Lineups": 129,
+      "top5Lineups": 688,
+      "cashLineups": 2975,
+      "top1Rate": 0.00956689409670721,
+      "top5Rate": 0.051023435182438445,
+      "cashRate": 0.22063185998220114,
+      "fieldFraction": 0.0392363404634218,
+      "top1Lift": 0.9364193654709473
+    },
+    "2_0": {
+      "projRange": [
+        235,
+        245
+      ],
+      "ownRange": [
+        0,
+        10
+      ],
+      "totalLineups": 5997,
+      "top1Lineups": 55,
+      "top5Lineups": 237,
+      "cashLineups": 960,
+      "top1Rate": 0.009171252292813074,
+      "top5Rate": 0.03951975987993997,
+      "cashRate": 0.16008004002001,
+      "fieldFraction": 0.017450336232508197,
+      "top1Lift": 0.8976934589007216
+    },
+    "6_5": {
+      "projRange": [
+        275,
+        285
+      ],
+      "ownRange": [
+        24,
+        28
+      ],
+      "totalLineups": 10699,
+      "top1Lineups": 177,
+      "top5Lineups": 811,
+      "cashLineups": 3112,
+      "top1Rate": 0.016543602205813628,
+      "top5Rate": 0.07580147677353023,
+      "cashRate": 0.2908683054491074,
+      "fieldFraction": 0.031132424103986197,
+      "top1Lift": 1.6193081394622946
+    },
+    "7_6": {
+      "projRange": [
+        285,
+        300
+      ],
+      "ownRange": [
+        28,
+        35
+      ],
+      "totalLineups": 5107,
+      "top1Lineups": 95,
+      "top5Lineups": 436,
+      "cashLineups": 2106,
+      "top1Rate": 0.01860191893479538,
+      "top5Rate": 0.0853730174270609,
+      "cashRate": 0.41237517133346385,
+      "fieldFraction": 0.014860574810641883,
+      "top1Lift": 1.8207787134863898
+    },
+    "7_5": {
+      "projRange": [
+        285,
+        300
+      ],
+      "ownRange": [
+        24,
+        28
+      ],
+      "totalLineups": 1199,
+      "top1Lineups": 19,
+      "top5Lineups": 110,
+      "cashLineups": 415,
+      "top1Rate": 0.0158465387823186,
+      "top5Rate": 0.09174311926605505,
+      "cashRate": 0.34612176814011675,
+      "fieldFraction": 0.003488903308783947,
+      "top1Lift": 1.551078713890741
+    },
+    "6_3": {
+      "projRange": [
+        275,
+        285
+      ],
+      "ownRange": [
+        18,
+        21
+      ],
+      "totalLineups": 248,
+      "top1Lineups": 10,
+      "top5Lineups": 34,
+      "cashLineups": 111,
+      "top1Rate": 0.04032258064516129,
+      "top5Rate": 0.13709677419354838,
+      "cashRate": 0.4475806451612903,
+      "fieldFraction": 0.0007216413849694903,
+      "top1Lift": 3.9468238072050053
+    },
+    "4_1": {
+      "projRange": [
+        255,
+        265
+      ],
+      "ownRange": [
+        10,
+        15
+      ],
+      "totalLineups": 3224,
+      "top1Lineups": 101,
+      "top5Lineups": 385,
+      "cashLineups": 1101,
+      "top1Rate": 0.031327543424317615,
+      "top5Rate": 0.11941687344913152,
+      "cashRate": 0.3415012406947891,
+      "fieldFraction": 0.009381338004603374,
+      "top1Lift": 3.066378496366965
+    },
+    "6_4": {
+      "projRange": [
+        275,
+        285
+      ],
+      "ownRange": [
+        21,
+        24
+      ],
+      "totalLineups": 2784,
+      "top1Lineups": 73,
+      "top5Lineups": 276,
+      "cashLineups": 986,
+      "top1Rate": 0.02622126436781609,
+      "top5Rate": 0.09913793103448276,
+      "cashRate": 0.3541666666666667,
+      "fieldFraction": 0.008101006515141375,
+      "top1Lift": 2.566569619455439
+    },
+    "5_3": {
+      "projRange": [
+        265,
+        275
+      ],
+      "ownRange": [
+        18,
+        21
+      ],
+      "totalLineups": 9219,
+      "top1Lineups": 123,
+      "top5Lineups": 667,
+      "cashLineups": 2756,
+      "top1Rate": 0.013342011064106736,
+      "top5Rate": 0.07235058032324547,
+      "cashRate": 0.2989478251437249,
+      "fieldFraction": 0.02682585454852311,
+      "top1Lift": 1.3059324592144645
+    },
+    "3_0": {
+      "projRange": [
+        245,
+        255
+      ],
+      "ownRange": [
+        0,
+        10
+      ],
+      "totalLineups": 1438,
+      "top1Lineups": 36,
+      "top5Lineups": 99,
+      "cashLineups": 323,
+      "top1Rate": 0.025034770514603615,
+      "top5Rate": 0.06884561891515995,
+      "cashRate": 0.22461752433936022,
+      "fieldFraction": 0.004184356095105351,
+      "top1Lift": 2.4504341412187958
+    },
+    "5_1": {
+      "projRange": [
+        265,
+        275
+      ],
+      "ownRange": [
+        10,
+        15
+      ],
+      "totalLineups": 81,
+      "top1Lineups": 1,
+      "top5Lineups": 11,
+      "cashLineups": 29,
+      "top1Rate": 0.012345679012345678,
+      "top5Rate": 0.13580246913580246,
+      "cashRate": 0.35802469135802467,
+      "fieldFraction": 0.00023569738783277706,
+      "top1Lift": 1.20841025208252
+    },
+    "5_2": {
+      "projRange": [
+        265,
+        275
+      ],
+      "ownRange": [
+        15,
+        18
+      ],
+      "totalLineups": 1430,
+      "top1Lineups": 75,
+      "top5Lineups": 257,
+      "cashLineups": 627,
+      "top1Rate": 0.05244755244755245,
+      "top5Rate": 0.1797202797202797,
+      "cashRate": 0.43846153846153846,
+      "fieldFraction": 0.0041610773407514965,
+      "top1Lift": 5.133630966014902
+    },
+    "5_4": {
+      "projRange": [
+        265,
+        275
+      ],
+      "ownRange": [
+        21,
+        24
+      ],
+      "totalLineups": 16316,
+      "top1Lineups": 103,
+      "top5Lineups": 502,
+      "cashLineups": 2597,
+      "top1Rate": 0.006312821770041677,
+      "top5Rate": 0.03076734493748468,
+      "cashRate": 0.15916891394949742,
+      "fieldFraction": 0.0474770195046863,
+      "top1Lift": 0.6179067622655348
+    },
+    "4_0": {
+      "projRange": [
+        255,
+        265
+      ],
+      "ownRange": [
+        0,
+        10
+      ],
+      "totalLineups": 60,
+      "top1Lineups": 0,
+      "top5Lineups": 3,
+      "cashLineups": 19,
+      "top1Rate": 0,
+      "top5Rate": 0.05,
+      "cashRate": 0.31666666666666665,
+      "fieldFraction": 0.00017459065765390895,
+      "top1Lift": 0
+    },
+    "6_6": {
+      "projRange": [
+        275,
+        285
+      ],
+      "ownRange": [
+        28,
+        35
+      ],
+      "totalLineups": 19522,
+      "top1Lineups": 222,
+      "top5Lineups": 1185,
+      "cashLineups": 5532,
+      "top1Rate": 0.011371785677696956,
+      "top5Rate": 0.06070074787419322,
+      "cashRate": 0.2833726052658539,
+      "fieldFraction": 0.056805980311993506,
+      "top1Lift": 1.1130843741905478
+    },
+    "4_2": {
+      "projRange": [
+        255,
+        265
+      ],
+      "ownRange": [
+        15,
+        18
+      ],
+      "totalLineups": 12227,
+      "top1Lineups": 140,
+      "top5Lineups": 775,
+      "cashLineups": 3262,
+      "top1Rate": 0.011450069518279218,
+      "top5Rate": 0.06338431340475996,
+      "cashRate": 0.2667866197759058,
+      "fieldFraction": 0.03557866618557241,
+      "top1Lift": 1.1207468928286397
+    },
+    "5_5": {
+      "projRange": [
+        265,
+        275
+      ],
+      "ownRange": [
+        24,
+        28
+      ],
+      "totalLineups": 13732,
+      "top1Lineups": 112,
+      "top5Lineups": 563,
+      "cashLineups": 2651,
+      "top1Rate": 0.00815613166326828,
+      "top5Rate": 0.04099912612875036,
+      "cashRate": 0.19305272356539468,
+      "fieldFraction": 0.03995798184839129,
+      "top1Lift": 0.7983322026574878
+    },
+    "5_6": {
+      "projRange": [
+        265,
+        275
+      ],
+      "ownRange": [
+        28,
+        35
+      ],
+      "totalLineups": 10740,
+      "top1Lineups": 122,
+      "top5Lineups": 564,
+      "cashLineups": 2635,
+      "top1Rate": 0.011359404096834265,
+      "top5Rate": 0.05251396648044693,
+      "cashRate": 0.24534450651769088,
+      "fieldFraction": 0.0312517277200497,
+      "top1Lift": 1.1118724498211792
+    },
+    "1_4": {
+      "projRange": [
+        220,
+        235
+      ],
+      "ownRange": [
+        21,
+        24
+      ],
+      "totalLineups": 603,
+      "top1Lineups": 0,
+      "top5Lineups": 2,
+      "cashLineups": 43,
+      "top1Rate": 0,
+      "top5Rate": 0.003316749585406302,
+      "cashRate": 0.07131011608623548,
+      "fieldFraction": 0.0017546361094217847,
+      "top1Lift": 0
+    },
+    "1_5": {
+      "projRange": [
+        220,
+        235
+      ],
+      "ownRange": [
+        24,
+        28
+      ],
+      "totalLineups": 626,
+      "top1Lineups": 3,
+      "top5Lineups": 9,
+      "cashLineups": 51,
+      "top1Rate": 0.004792332268370607,
+      "top5Rate": 0.01437699680511182,
+      "cashRate": 0.08146964856230032,
+      "fieldFraction": 0.0018215625281891167,
+      "top1Lift": 0.46907937900327856
+    },
+    "4_6": {
+      "projRange": [
+        255,
+        265
+      ],
+      "ownRange": [
+        28,
+        35
+      ],
+      "totalLineups": 8661,
+      "top1Lineups": 72,
+      "top5Lineups": 507,
+      "cashLineups": 2653,
+      "top1Rate": 0.008313127814340146,
+      "top5Rate": 0.058538275025978526,
+      "cashRate": 0.3063156679367279,
+      "fieldFraction": 0.025202161432341757,
+      "top1Lift": 0.8136991790953998
+    },
+    "1_6": {
+      "projRange": [
+        220,
+        235
+      ],
+      "ownRange": [
+        28,
+        35
+      ],
+      "totalLineups": 687,
+      "top1Lineups": 4,
+      "top5Lineups": 17,
+      "cashLineups": 84,
+      "top1Rate": 0.005822416302765648,
+      "top5Rate": 0.024745269286754003,
+      "cashRate": 0.1222707423580786,
+      "fieldFraction": 0.0019990630301372574,
+      "top1Lift": 0.5699052717245073
+    },
+    "3_6": {
+      "projRange": [
+        245,
+        255
+      ],
+      "ownRange": [
+        28,
+        35
+      ],
+      "totalLineups": 4666,
+      "top1Lineups": 47,
+      "top5Lineups": 255,
+      "cashLineups": 1178,
+      "top1Rate": 0.0100728675525075,
+      "top5Rate": 0.0546506643806258,
+      "cashRate": 0.2524646378054008,
+      "fieldFraction": 0.013577333476885651,
+      "top1Lift": 0.9859446698838735
+    },
+    "0_4": {
+      "projRange": [
+        200,
+        220
+      ],
+      "ownRange": [
+        21,
+        24
+      ],
+      "totalLineups": 223,
+      "top1Lineups": 0,
+      "top5Lineups": 0,
+      "cashLineups": 1,
+      "top1Rate": 0,
+      "top5Rate": 0,
+      "cashRate": 0.004484304932735426,
+      "fieldFraction": 0.0006488952776136949,
+      "top1Lift": 0
+    },
+    "0_5": {
+      "projRange": [
+        200,
+        220
+      ],
+      "ownRange": [
+        24,
+        28
+      ],
+      "totalLineups": 138,
+      "top1Lineups": 0,
+      "top5Lineups": 0,
+      "cashLineups": 1,
+      "top1Rate": 0,
+      "top5Rate": 0,
+      "cashRate": 0.007246376811594203,
+      "fieldFraction": 0.00040155851260399055,
+      "top1Lift": 0
+    },
+    "2_6": {
+      "projRange": [
+        235,
+        245
+      ],
+      "ownRange": [
+        28,
+        35
+      ],
+      "totalLineups": 1673,
+      "top1Lineups": 11,
+      "top5Lineups": 77,
+      "cashLineups": 294,
+      "top1Rate": 0.00657501494321578,
+      "top5Rate": 0.04602510460251046,
+      "cashRate": 0.17573221757322174,
+      "fieldFraction": 0.004868169504249828,
+      "top1Lift": 0.6435705526631952
+    },
+    "0_3": {
+      "projRange": [
+        200,
+        220
+      ],
+      "ownRange": [
+        18,
+        21
+      ],
+      "totalLineups": 233,
+      "top1Lineups": 0,
+      "top5Lineups": 0,
+      "cashLineups": 0,
+      "top1Rate": 0,
+      "top5Rate": 0,
+      "cashRate": 0,
+      "fieldFraction": 0.0006779937205560131,
+      "top1Lift": 0
+    },
+    "7_7": {
+      "projRange": [
+        285,
+        300
+      ],
+      "ownRange": [
+        35,
+        50
+      ],
+      "totalLineups": 7198,
+      "top1Lineups": 48,
+      "top5Lineups": 339,
+      "cashLineups": 1784,
+      "top1Rate": 0.0066685190330647405,
+      "top5Rate": 0.04709641567101973,
+      "cashRate": 0.2478466240622395,
+      "fieldFraction": 0.02094505922988061,
+      "top1Lift": 0.6527228480267906
+    },
+    "6_7": {
+      "projRange": [
+        275,
+        285
+      ],
+      "ownRange": [
+        35,
+        50
+      ],
+      "totalLineups": 4509,
+      "top1Lineups": 5,
+      "top5Lineups": 76,
+      "cashLineups": 576,
+      "top1Rate": 0.0011088933244621868,
+      "top5Rate": 0.01685517853182524,
+      "cashRate": 0.1277445109780439,
+      "fieldFraction": 0.013120487922691257,
+      "top1Lift": 0.10853984300142397
+    },
+    "4_7": {
+      "projRange": [
+        255,
+        265
+      ],
+      "ownRange": [
+        35,
+        50
+      ],
+      "totalLineups": 2640,
+      "top1Lineups": 45,
+      "top5Lineups": 259,
+      "cashLineups": 1011,
+      "top1Rate": 0.017045454545454544,
+      "top5Rate": 0.0981060606060606,
+      "cashRate": 0.38295454545454544,
+      "fieldFraction": 0.007681988936771993,
+      "top1Lift": 1.668430063954843
+    },
+    "5_7": {
+      "projRange": [
+        265,
+        275
+      ],
+      "ownRange": [
+        35,
+        50
+      ],
+      "totalLineups": 1395,
+      "top1Lineups": 53,
+      "top5Lineups": 90,
+      "cashLineups": 324,
+      "top1Rate": 0.03799283154121864,
+      "top5Rate": 0.06451612903225806,
+      "cashRate": 0.23225806451612904,
+      "fieldFraction": 0.004059232790453383,
+      "top1Lift": 3.7187850983442714
+    },
+    "3_7": {
+      "projRange": [
+        245,
+        255
+      ],
+      "ownRange": [
+        35,
+        50
+      ],
+      "totalLineups": 1917,
+      "top1Lineups": 30,
+      "top5Lineups": 159,
+      "cashLineups": 707,
+      "top1Rate": 0.01564945226917058,
+      "top5Rate": 0.08294209702660407,
+      "cashRate": 0.3688054251434533,
+      "fieldFraction": 0.005578171512042391,
+      "top1Lift": 1.5317876434848847
+    },
+    "0_6": {
+      "projRange": [
+        200,
+        220
+      ],
+      "ownRange": [
+        28,
+        35
+      ],
+      "totalLineups": 31,
+      "top1Lineups": 0,
+      "top5Lineups": 0,
+      "cashLineups": 0,
+      "top1Rate": 0,
+      "top5Rate": 0,
+      "cashRate": 0,
+      "fieldFraction": 0.00009020517312118629,
+      "top1Lift": 0
+    },
+    "2_7": {
+      "projRange": [
+        235,
+        245
+      ],
+      "ownRange": [
+        35,
+        50
+      ],
+      "totalLineups": 800,
+      "top1Lineups": 3,
+      "top5Lineups": 42,
+      "cashLineups": 209,
+      "top1Rate": 0.00375,
+      "top5Rate": 0.0525,
+      "cashRate": 0.26125,
+      "fieldFraction": 0.0023278754353854526,
+      "top1Lift": 0.36705461407006545
+    },
+    "6_2": {
+      "projRange": [
+        275,
+        285
+      ],
+      "ownRange": [
+        15,
+        18
+      ],
+      "totalLineups": 3,
+      "top1Lineups": 0,
+      "top5Lineups": 1,
+      "cashLineups": 1,
+      "top1Rate": 0,
+      "top5Rate": 0.3333333333333333,
+      "cashRate": 0.3333333333333333,
+      "fieldFraction": 0.000008729532882695448,
+      "top1Lift": 0
+    },
+    "1_7": {
+      "projRange": [
+        220,
+        235
+      ],
+      "ownRange": [
+        35,
+        50
+      ],
+      "totalLineups": 21,
+      "top1Lineups": 0,
+      "top5Lineups": 1,
+      "cashLineups": 3,
+      "top1Rate": 0,
+      "top5Rate": 0.047619047619047616,
+      "cashRate": 0.14285714285714285,
+      "fieldFraction": 0.00006110673017886813,
+      "top1Lift": 0
+    },
+    "7_4": {
+      "projRange": [
+        285,
+        300
+      ],
+      "ownRange": [
+        21,
+        24
+      ],
+      "totalLineups": 5,
+      "top1Lineups": 2,
+      "top5Lineups": 2,
+      "cashLineups": 3,
+      "top1Rate": 0.4,
+      "top5Rate": 0.4,
+      "cashRate": 0.6,
+      "fieldFraction": 0.000014549221471159079,
+      "top1Lift": 39.15249216747365
+    }
+  },
+  "baselineTop1Rate": 0.010216463317047906,
+  "top1Centroid": {
+    "projection": 260.4664739390479,
+    "ownership": 22.74293185702085
+  },
+  "slatesUsed": 18
+}

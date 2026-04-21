@@ -507,6 +507,104 @@ function fillWorldsMinimal(
       out[p * W + w] = score > 0 ? score : 0;
     }
   }
+  // Pitcher coupling is applied in the shared post-processing pass
+  // (applyPitcherCoupling) called after both sim paths in precomputeSlateInner.
+}
+
+// ============================================================
+// PITCHER-OPPOSING-OFFENSE COUPLING (MLB)
+// ============================================================
+
+/**
+ * Post-process the playerWorldScores matrix to add anti-correlation between
+ * starting pitchers and the opposing team's hitters. When a pitcher draws
+ * below expectation, opposing hitters are boosted; when a pitcher dominates,
+ * opposing hitters are suppressed.
+ *
+ * This models the real-world causal link: the runs hitters score ARE the
+ * earned runs the pitcher allows. Without this coupling the sim treats them
+ * as independent, making "pitcher blows up" worlds look unexciting because
+ * opposing hitters have average scores.
+ *
+ * COUPLING_STRENGTH=0.25: a pitcher at 50% of expected → opposing hitters
+ * boosted by ~12.5%. A pitcher at 200% of expected → hitters suppressed ~12.5%.
+ */
+const PITCHER_COUPLING_STRENGTH = 0.25;
+
+function applyPitcherCoupling(
+  out: Float32Array,
+  players: Player[],
+  W: number,
+  sport: Sport,
+  indexMap: Map<string, number>,
+): void {
+  if (sport !== 'mlb') return;
+  const P = players.length;
+
+  // Identify pitchers and build team/game indices
+  const teamIndex = new Map<string, number>();
+  const gameIndex = new Map<string, number>();
+  const playerTeamIdx = new Int32Array(P);
+  const playerGameIdx = new Int32Array(P);
+  for (let p = 0; p < P; p++) {
+    const team = players[p].team || '';
+    const game = players[p].gameInfo || `${team}_game`;
+    if (!teamIndex.has(team)) teamIndex.set(team, teamIndex.size);
+    if (!gameIndex.has(game)) gameIndex.set(game, gameIndex.size);
+    playerTeamIdx[p] = teamIndex.get(team)!;
+    playerGameIdx[p] = gameIndex.get(game)!;
+  }
+
+  // Find the highest-projected starting pitcher per (game, team)
+  interface GPInfo { teamIdx: number; oppTeamIdx: number; playerIdx: number; expected: number }
+  const bestByKey = new Map<string, { pIdx: number; proj: number }>();
+  for (let p = 0; p < P; p++) {
+    if (players[p].position !== 'P' && players[p].position !== 'SP') continue;
+    const key = `${playerGameIdx[p]}_${playerTeamIdx[p]}`;
+    const cur = bestByKey.get(key);
+    if (!cur || players[p].projection > cur.proj) {
+      bestByKey.set(key, { pIdx: p, proj: players[p].projection });
+    }
+  }
+  // Build list with opposing team
+  const gamePitchers: GPInfo[] = [];
+  for (const [key, info] of bestByKey) {
+    const [gStr, tStr] = key.split('_');
+    const gIdx = parseInt(gStr), tIdx = parseInt(tStr);
+    let oppTIdx = -1;
+    for (let p = 0; p < P; p++) {
+      if (playerGameIdx[p] === gIdx && playerTeamIdx[p] !== tIdx) {
+        oppTIdx = playerTeamIdx[p]; break;
+      }
+    }
+    if (oppTIdx >= 0) {
+      gamePitchers.push({ teamIdx: tIdx, oppTeamIdx: oppTIdx, playerIdx: info.pIdx, expected: info.proj });
+    }
+  }
+  if (gamePitchers.length === 0) return;
+
+  // Identify hitters
+  const isHitter = new Uint8Array(P);
+  for (let p = 0; p < P; p++) {
+    if (players[p].position !== 'P' && players[p].position !== 'SP') isHitter[p] = 1;
+  }
+
+  // Apply coupling per world
+  for (let w = 0; w < W; w++) {
+    for (const gp of gamePitchers) {
+      const pitcherScore = out[gp.playerIdx * W + w];
+      if (gp.expected <= 0) continue;
+      const perfRatio = pitcherScore / gp.expected;
+      const rawInverse = 1 / Math.max(0.1, perfRatio);
+      const boost = 1 + PITCHER_COUPLING_STRENGTH * (rawInverse - 1);
+      const clamped = Math.max(0.7, Math.min(2.0, boost));
+      for (let p = 0; p < P; p++) {
+        if (isHitter[p] && playerTeamIdx[p] === gp.oppTeamIdx) {
+          out[p * W + w] *= clamped;
+        }
+      }
+    }
+  }
 }
 
 function precomputeSlateInner(
@@ -561,6 +659,15 @@ function precomputeSlateInner(
       }
     }
   }
+
+  // ----- Pitcher-opposing-offense coupling (MLB only, DISABLED) -----
+  // Tested at COUPLING_STRENGTH 0.25 and 0.50 — both HURT MLB backtest
+  // (1.52%→0.67% on 3-28, 3.55%→0.00% on 4-6-26). The multiplicative
+  // hack over-biases toward opposing stacks that don't win proportionally.
+  // The right fix is modeling pitcher-offense coupling in the correlation
+  // factors of tournament-sim.ts, not a post-hoc multiplier. Keeping the
+  // function for future experimentation but not calling it.
+  // applyPitcherCoupling(playerWorldScores, players, W, sport, indexMap);
 
   // ----- Score the field across all worlds -----
   const fieldPlayerIndices: number[][] = fieldSample.map(lu => {

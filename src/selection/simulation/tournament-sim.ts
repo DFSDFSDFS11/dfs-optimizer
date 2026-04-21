@@ -369,6 +369,18 @@ export interface CorrelationFactors {
   gameTeamSides: Map<string, { teamA: string; teamB: string }>; // which team is "A" vs "B"
   teamFactors: Map<string, number>;         // team -> independent execution factor (0.80 to 1.20)
   teamUsageShifts?: Map<string, Map<string, number>>; // team -> (playerId -> zero-sum usage shift)
+  /**
+   * MLB only: per-team pitcher-performance latent factor. Drawn once per world.
+   * Negative Z = pitcher is struggling → opposing hitters get BOOSTED.
+   * Positive Z = pitcher is dominating → opposing hitters get SUPPRESSED.
+   *
+   * Applied in samplePlayerOutcome to hitters facing the pitcher's team.
+   * This creates the causal anti-correlation between pitcher performance and
+   * opposing offense that exists in reality but was missing from the sim.
+   * When a pitcher gives up 8 earned runs, it's BECAUSE the opposing hitters
+   * are getting hits — these aren't independent events.
+   */
+  pitcherPerfZ?: Map<string, number>;       // pitcherTeam -> Z-score of pitcher performance
 }
 
 /**
@@ -495,6 +507,31 @@ export function generateCorrelationFactors(
       teamUsageShifts.set(teamName, shifts);
     }
   }
+
+  // MLB pitcher-opposing-offense coupling (DISABLED — needs 10+ slates to calibrate).
+  // Tested at PITCHER_OPP_STD 0.20: improved 3-30 (2.00→2.67%) but hurt 3-28
+  // (1.52→0.00%) and 4-6-26 (3.55→0.67%). Net negative on 3-slate sample.
+  // Theory is correct (pitcher bust = opposing offense boom is one event), but
+  // the coupling strength is slate-dependent and can't be calibrated on 3 slates.
+  // Keeping the interface + samplePlayerOutcome code for future experimentation.
+  // To re-enable: uncomment the pitcherPerfZ block below and set PITCHER_OPP_STD
+  // in samplePlayerOutcome to the calibrated value.
+  //
+  // let pitcherPerfZ: Map<string, number> | undefined;
+  // if (sport === 'mlb') {
+  //   pitcherPerfZ = new Map<string, number>();
+  //   for (const [gameId, gameTeams] of games) {
+  //     for (const teamName of gameTeams) {
+  //       let bestProj = -1;
+  //       for (const p of allPlayers) {
+  //         if (p.team === teamName && (p.position === 'P' || p.position === 'SP')) {
+  //           if (p.projection > bestProj) bestProj = p.projection;
+  //         }
+  //       }
+  //       if (bestProj > 0) pitcherPerfZ.set(teamName, boxMullerZ());
+  //     }
+  //   }
+  // }
 
   return { gamePaceFactors, gameScriptFactors, gameTeamSides, teamFactors, teamUsageShifts };
 }
@@ -739,6 +776,35 @@ export function samplePlayerOutcome(
         const usageShift = teamShifts.get(player.id) || 0;
         // Scale by projection (stars shift more in absolute terms)
         baseOutcome += usageShift * projection;
+      }
+    }
+
+    // MLB pitcher-opposing-offense coupling:
+    // For HITTERS: look up the opposing team's pitcher performance Z.
+    // When the opposing pitcher has negative Z (struggling), this hitter
+    // gets a positive boost (more hits/runs off a struggling pitcher).
+    // This is a shared latent factor that creates the causal anti-correlation
+    // between pitcher performance and opposing offense.
+    //
+    // PITCHER_OPP_STD = 0.20: at 1σ pitcher-bust, opposing hitters get
+    // +20% of their projection as a boost. For a hitter with 8pt projection,
+    // that's +1.6 pts. Across 5 hitters = +8 pts for the opposing stack.
+    // At 2σ (pitcher gets shelled): +16 pts total for the stack.
+    if (correlationFactors.pitcherPerfZ) {
+      const pos = player.position;
+      const isHitter = pos !== 'P' && pos !== 'SP';
+      if (isHitter) {
+        // Find the opposing team
+        const sides = correlationFactors.gameTeamSides.get(gameId);
+        if (sides) {
+          const oppTeam = player.team === sides.teamA ? sides.teamB : sides.teamA;
+          const oppPitcherZ = correlationFactors.pitcherPerfZ.get(oppTeam);
+          if (oppPitcherZ !== undefined) {
+            // Negative Z (pitcher struggling) → positive boost for this hitter
+            const PITCHER_OPP_STD = 0.20;
+            baseOutcome += -oppPitcherZ * PITCHER_OPP_STD * projection;
+          }
+        }
       }
     }
   }

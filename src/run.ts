@@ -136,6 +136,51 @@ async function main(): Promise<void> {
       return;
     }
 
+    // Check for Backtest Intelligence modes (--analyze-slate / --analyze-all)
+    if (options.analyzeSlateMode || options.analyzeAllMode) {
+      await runAnalyzeMode(options);
+      return;
+    }
+
+    // Check for Full-Analysis modes (--full-analysis / --full-calibrate)
+    if (options.fullAnalysisMode || options.fullCalibrateMode) {
+      await runFullAnalysisMode(options);
+      return;
+    }
+
+    // Build region map
+    if (options.buildRegionMapMode) {
+      await runBuildRegionMap(options);
+      return;
+    }
+
+    // V32 selector (region-targeted)
+    if (options.v32SelectMode) {
+      const { runV32Select } = await import('./selection/v32-selector');
+      await runV32Select(options);
+      return;
+    }
+
+    // V31 selector (corrected math)
+    if (options.v31SelectMode) {
+      const { runV31Select } = await import('./selection/v31-selector');
+      await runV31Select(options);
+      return;
+    }
+
+    // V30 selector (λ-sweep + evil twin)
+    if (options.v30SelectMode) {
+      const { runV30Select } = await import('./selection/v30-selector');
+      await runV30Select(options);
+      return;
+    }
+
+    // Calibrate opponent model
+    if (options.calibrateOpponentMode) {
+      await runCalibrateOpponent(options);
+      return;
+    }
+
     // Check for parameter sweep (--sweep-actuals)
     if (options.sweepActuals) {
       const { runActualsSweep } = await import('./backtest/sweep-actuals');
@@ -611,6 +656,234 @@ async function runBacktestActuals(options: import('./types').CLIOptions): Promis
   // Implementation in src/backtest/actuals-backtest.ts to keep run.ts manageable.
   const { runActualsBacktest } = await import('./backtest/actuals-backtest');
   await runActualsBacktest(options);
+}
+
+// ============================================================
+// BACKTEST INTELLIGENCE MODE (--analyze-slate / --analyze-all)
+// ============================================================
+
+async function runAnalyzeMode(options: import('./types').CLIOptions): Promise<void> {
+  const { analyzeSlate, analyzeAllSlates, generateCalibrationReport, discoverSlates } = await import('./analysis');
+  const path = await import('path');
+
+  console.log('========================================');
+  console.log('BACKTEST INTELLIGENCE');
+  console.log('========================================');
+
+  const outDir = options.analysisOut || options.dataDir || './historical_slates';
+  const minProEntries = options.minProEntries ?? 100;
+
+  if (options.analyzeAllMode) {
+    const dataDir = options.dataDir || './historical_slates';
+    console.log(`Scanning ${dataDir} for slate pairs…`);
+    const { perSlate, crossSlate } = await analyzeAllSlates(dataDir, options.site, options.sport, { minProEntries });
+    if (perSlate.length === 0) {
+      console.error('No slates produced results.');
+      process.exit(1);
+    }
+    const { markdownPath, jsonPath } = generateCalibrationReport({
+      outDir,
+      sport: options.sport,
+      perSlate,
+      crossSlate,
+    });
+    console.log(`\n✓ Analyzed ${perSlate.length} slates`);
+    console.log(`  Markdown: ${markdownPath}`);
+    console.log(`  JSON:     ${jsonPath}`);
+    return;
+  }
+
+  // Single-slate mode
+  if (!options.input) {
+    console.error('Error: --analyze-slate requires --input <projections-csv>');
+    process.exit(1);
+  }
+  if (!options.actualsCsv) {
+    console.error('Error: --analyze-slate requires --actuals <dk-contest-csv>');
+    process.exit(1);
+  }
+
+  const baseIn = path.basename(options.input);
+  const slateName =
+    baseIn.match(/^(\d{4}-\d{2}-\d{2}(?:_dk(?:_night)?)?)_projections\.csv$/)?.[1]
+    || baseIn.match(/^(\d{1,2}-\d{1,2}-\d{2,4})[-_]?.*projections\.csv$/i)?.[1]
+    || 'slate';
+  const inputs = {
+    slate: slateName,
+    projectionsPath: options.input,
+    actualsPath: options.actualsCsv,
+    poolCsvPath: options.poolCsv,
+  };
+
+  console.log(`Slate: ${slateName}`);
+  console.log(`  projections: ${inputs.projectionsPath}`);
+  console.log(`  actuals:     ${inputs.actualsPath}`);
+  if (inputs.poolCsvPath) console.log(`  pool:        ${inputs.poolCsvPath}`);
+
+  const result = await analyzeSlate(inputs, options.site, options.sport, { minProEntries });
+  if (!result) {
+    console.error('Analysis produced no result.');
+    process.exit(1);
+  }
+
+  const { markdownPath, jsonPath } = generateCalibrationReport({
+    outDir,
+    sport: options.sport,
+    perSlate: [result],
+  });
+  console.log(`\n✓ Analysis complete`);
+  console.log(`  Markdown: ${markdownPath}`);
+  console.log(`  JSON:     ${jsonPath}`);
+}
+
+// ============================================================
+// BUILD REGION MAP
+// ============================================================
+
+async function runBuildRegionMap(options: import('./types').CLIOptions): Promise<void> {
+  const { buildRegionMap, saveRegionMap, printRegionMap } = await import('./analysis/region-map');
+  const { parseCSVFile, buildPlayerPool, parseContestActuals } = await import('./parser');
+  const { getContestConfig } = await import('./rules');
+  const { discoverSlates } = await import('./analysis');
+  const path = await import('path');
+
+  console.log('========================================');
+  console.log('BUILD REGION MAP');
+  console.log('========================================');
+
+  const dataDir = options.dataDir || './historical_slates';
+  const slateInputs = discoverSlates(dataDir);
+  console.log(`Found ${slateInputs.length} slates in ${dataDir}`);
+
+  const slateData: Array<{ entries: any[]; playerByName: Map<string, any>; totalEntries: number }> = [];
+  for (const s of slateInputs) {
+    try {
+      const pr = parseCSVFile(s.projectionsPath, options.sport, true);
+      const cfg = getContestConfig(options.site, options.sport, pr.detectedContestType);
+      const pool = buildPlayerPool(pr.players, pr.detectedContestType);
+      const actuals = parseContestActuals(s.actualsPath, cfg);
+      const playerByName = new Map<string, any>();
+      for (const p of pool.players) {
+        playerByName.set(p.name.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim(), p);
+      }
+      slateData.push({ entries: actuals.entries, playerByName, totalEntries: actuals.entries.length });
+      console.log(`  loaded ${s.slate}: ${actuals.entries.length} entries`);
+    } catch (err) {
+      console.warn(`  skip ${s.slate}: ${(err as Error).message}`);
+    }
+  }
+
+  if (slateData.length === 0) { console.error('No slates loaded.'); process.exit(1); }
+
+  // Sport-specific bins
+  const projBins = options.sport === 'nba'
+    ? [200, 220, 235, 245, 255, 265, 275, 285, 300]
+    : [70, 80, 85, 90, 95, 100, 105, 110, 120];
+  const ownBins = options.sport === 'nba'
+    ? [0, 10, 15, 18, 21, 24, 28, 35, 50]
+    : [0, 5, 8, 12, 16, 20, 25, 35, 60];
+
+  const regionMap = buildRegionMap(slateData, projBins, ownBins);
+  printRegionMap(regionMap);
+
+  const outDir = options.analysisOut || dataDir;
+  const outPath = path.join(outDir, `region-map-${options.sport}-${options.site}.json`);
+  saveRegionMap(regionMap, outPath);
+  console.log(`\nRegion map saved to ${outPath}`);
+}
+
+// ============================================================
+// CALIBRATE OPPONENT MODEL
+// ============================================================
+
+async function runCalibrateOpponent(options: import('./types').CLIOptions): Promise<void> {
+  const opponentMod = await import('./opponent/calibration');
+  const { parseCSVFile, buildPlayerPool, parseContestActuals } = await import('./parser');
+  const { getContestConfig } = await import('./rules');
+  const { discoverSlates } = await import('./analysis');
+  const path = await import('path');
+
+  console.log('========================================');
+  console.log('CALIBRATE OPPONENT MODEL');
+  console.log('========================================');
+
+  const dataDir = options.dataDir || './historical_slates';
+  const slateInputs = discoverSlates(dataDir);
+  console.log(`Found ${slateInputs.length} slates in ${dataDir}`);
+
+  const calSlates: import('./opponent/calibration').CalibrationSlate[] = [];
+  for (const s of slateInputs) {
+    try {
+      const pr = parseCSVFile(s.projectionsPath, options.sport, true);
+      const cfg = getContestConfig(options.site, options.sport, pr.detectedContestType);
+      const pool = buildPlayerPool(pr.players, pr.detectedContestType);
+      const actuals = parseContestActuals(s.actualsPath, cfg);
+      calSlates.push({ slate: s.slate, players: pool.players, config: cfg, actuals });
+    } catch (err) {
+      console.warn(`  skip ${s.slate}: ${(err as Error).message}`);
+    }
+  }
+  if (calSlates.length === 0) { console.error('No slates loaded.'); process.exit(1); }
+
+  const model = opponentMod.calibrateOpponentModel(calSlates, options.sport);
+  const outDir = options.analysisOut || dataDir;
+  const outPath = path.join(outDir, `opponent-${options.sport}-${options.site}.json`);
+  opponentMod.saveOpponentModel(model, outPath);
+}
+
+// ============================================================
+// FULL-ANALYSIS MODE (--full-analysis / --full-calibrate)
+// ============================================================
+
+async function runFullAnalysisMode(options: import('./types').CLIOptions): Promise<void> {
+  const { runFullAnalysis, runFullCalibration } = await import('./analysis/sim');
+  const { writeFullReport } = await import('./analysis/sim/report');
+  const path = await import('path');
+
+  console.log('========================================');
+  console.log('FULL ANALYSIS (sim-backed)');
+  console.log('========================================');
+
+  const outDir = options.analysisOut || options.dataDir || './historical_slates';
+  const minProEntries = options.minProEntries ?? 100;
+  const numWorlds = options.worlds ?? 2000;
+
+  if (options.fullCalibrateMode) {
+    const dataDir = options.dataDir || './historical_slates';
+    console.log(`Scanning ${dataDir}  |  worlds=${numWorlds}  |  minProEntries=${minProEntries}`);
+    const { perSlate, crossSlate } = await runFullCalibration(dataDir, options.site, options.sport, { minProEntries, numWorlds });
+    if (perSlate.length === 0) { console.error('No slates produced results.'); process.exit(1); }
+    const { markdownPath, jsonPath } = writeFullReport({
+      outDir, sport: options.sport, perSlate, crossSlate,
+    });
+    console.log(`\n✓ Analyzed ${perSlate.length} slates`);
+    console.log(`  Markdown: ${markdownPath}`);
+    console.log(`  JSON:     ${jsonPath}`);
+    return;
+  }
+
+  if (!options.input) { console.error('--full-analysis requires --input'); process.exit(1); }
+  if (!options.actualsCsv) { console.error('--full-analysis requires --actuals'); process.exit(1); }
+  const baseIn = path.basename(options.input);
+  const slateName =
+    baseIn.match(/^(\d{4}-\d{2}-\d{2}(?:_dk(?:_night)?)?)_projections\.csv$/)?.[1]
+    || baseIn.match(/^(\d{1,2}-\d{1,2}-\d{2,4})[-_]?.*projections\.csv$/i)?.[1]
+    || 'slate';
+  const inputs = {
+    slate: slateName,
+    projectionsPath: options.input,
+    actualsPath: options.actualsCsv,
+    poolCsvPath: options.poolCsv,
+  };
+  console.log(`Slate: ${slateName}  |  worlds=${numWorlds}`);
+  const result = await runFullAnalysis(inputs, options.site, options.sport, { minProEntries, numWorlds });
+  if (!result) { console.error('Analysis produced no result.'); process.exit(1); }
+  const { markdownPath, jsonPath } = writeFullReport({
+    outDir, sport: options.sport, perSlate: [result],
+  });
+  console.log(`\n✓ Done`);
+  console.log(`  Markdown: ${markdownPath}`);
+  console.log(`  JSON:     ${jsonPath}`);
 }
 
 // Run

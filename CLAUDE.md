@@ -5,7 +5,12 @@ Advanced DFS (Daily Fantasy Sports) lineup optimizer with game-theory based sele
 
 ## Architecture
 - `src/optimization/` - Branch & bound lineup generation
-- `src/selection/selector.ts` - Main selection engine with all scoring/simulation
+- `src/selection/selector.ts` - Legacy selection engine (formula-based scoring/simulation, used by `--simple-select` path)
+- `src/selection/algorithm7-selector.ts` - Algorithm 7 selector (Haugh-Singal × Liu et al.); default for `--elite-backtest`. Also owns `precomputeSlate` (world simulation, σ_{δ,G}, threshold/payout tables) shared by both modern selectors.
+- `src/selection/hedging-selector.ts` - Liu Theorem 4 α-blend hedging selector for `--selector hedging`. See "Selectors" section below.
+- `src/selection/emax-selector.ts` - Pure greedy E[max] selector for `--selector emax` (Liu et al. Eq. 9). See "Selectors" section below.
+- `src/selection/v24-selector.ts` - **V24 selector** for `--selector v24` (Hunter U²ₗ + covariance constraint + variance floor). Current best on both NBA and MLB. See "Selectors" section below.
+- `src/backtest/elite-backtest.ts` - Driver for `--elite-backtest`; branches on `options.selectorMode` (algorithm7 / hedging / emax / v24).
 - `src/scoring/export.ts` - CSV export functions
 - `src/types/index.ts` - TypeScript interfaces
 - `src/rules/` - Contest configs and constraints
@@ -49,6 +54,172 @@ node dist/run.js --input ./sabersim_dk.csv --sport mma --site dk --output ./mma_
 ```
 
 **Note**: For MMA, use smaller pool sizes (10K-20K) as the 26-player slate has fewer combinations.
+
+---
+
+## Selectors (`--selector`)
+
+Two selection algorithms ship in `src/selection/`. Both share the same precomputed world simulation (`precomputeSlate` in `algorithm7-selector.ts`) and the same `--elite-backtest` driver — they only differ in how they pick 150 lineups out of the candidate pool.
+
+### `algorithm7` (default)
+**File**: `src/selection/algorithm7-selector.ts`
+**Paper**: Haugh-Singal (Columbia 2021) × Liu et al. (NUS 2023).
+
+Greedy selection with a λ-grid sweep on the H-S mean-variance objective `proj + λ·(var − 2·σ_{δ,G})`. The σ_{δ,G} term is the principled crowding penalty (Cov(playerScore, top-1% threshold)) that replaces ad-hoc ownership penalties. γ=C-3 hard overlap constraint, split-pot marginal reward for cannibalization, sport-tuned λ grid.
+
+**Use this for NBA.** 17-slate backtest: **1.78x lift over random on top-1%**, ~1.31x on top-5%. Two months of NBA tuning are baked into `getSportDefaults('nba')`.
+
+### `v24` (current best — both NBA and MLB)
+**File**: `src/selection/v24-selector.ts`
+**Paper**: Hunter, Vielma & Zaman (MIT, 2016) "Picking Winners Using Integer Programming"
+
+Three mechanisms that produce the strongest backtest results of any selector:
+
+1. **Hunter U²ₗ marginal gain**: `ΔU²(c) = P(c wins) − Σ_{j∈portfolio} P(c AND j both win)`. Credit for winning worlds minus a penalty for EACH existing entry that also wins in the same world. Unlike E[max] (hard zero if covered) or split-pot (1/(count+1) diminishing), the penalty grows linearly with each overlapping entry, making redundancy explicitly costly. Drives selection toward genuinely contrarian builds.
+
+2. **Covariance constraint**: `Cov(i,j) ≤ δ_max` where `δ_max = ρ_target × σ_median²`. Catches high-variance pairs that move together in absolute terms — correlation misses these because it normalizes by σ. Auto-calibrated from pool statistics. Relaxes progressively when candidates exhaust; disables entirely as last resort on small slates.
+
+3. **Variance floor**: Only considers candidates in the top X% by variance. Removes flat lineups that beat thresholds often but can never reach boom scores needed to actually win a GPP.
+
+The contrarian mechanism is embedded in the threshold computation: when the field is 49.5% Valdez, the top-1% threshold in "Valdez dominates" worlds is sky-high → Valdez lineups get few pWin credits. Non-Valdez lineups in "Valdez busts" worlds face a cratered threshold → full credit.
+
+**Backtest results (17 NBA slates, 3 MLB slates):**
+
+| Selector | NBA top-1% lift | MLB avg top-1% lift |
+|---|---|---|
+| **V24 (Hunter U²ₗ)** | **1.83x** | **3.58x** |
+| Algorithm 7 | 1.78x | 0.82x |
+| E[max] field-weighted | 1.49x | 1.17x |
+| E[max] pure | 1.36x | 1.46x |
+| Hedging (α-blend) | 0.94x | 1.10x |
+
+V24 is the first selector to beat algorithm7 on NBA (1.83x vs 1.78x) while simultaneously crushing MLB (3.58x vs 0.82x). Per-slate MLB: 2.64x on 3-28, **6.02x** on 3-30, 2.08x on 4-6-26.
+
+**Performance**: O(numTiers × W) per candidate per iteration via running `portfolioHitCount`. Covariance check is O(C × W) once per iteration (only checks against the just-selected entry, not all previous entries). Typical slate: 3-15 seconds.
+
+**Known limitation**: on small slates (3 games), the covariance constraint + variance floor + exposure cap can exhaust the pool before reaching 100 entries. The selector relaxes covariance progressively and disables it entirely as a last resort. Pool size is the real ceiling — 91 lineups was the max for one 3-game 2-pool slate.
+
+### `emax`
+**File**: `src/selection/emax-selector.ts`
+**Paper**: Liu et al. (2023) Eq. 9 / Haugh-Singal (2021) — pure greedy submodular maximization of E[max(z₁,...,z_m)].
+
+The simplest possible selector that has a theoretical guarantee. At each step, pick the candidate with the highest marginal gain on the portfolio's expected maximum:
+
+```
+ΔE[max](c) = (1/W) · Σ_w max(0, z_c[w] − portfolioMax[w])
+```
+
+`portfolioMax[w]` is the running max score of the portfolio in world w. The greedy is monotone submodular so it achieves ≥ (1 − 1/e) ≈ **63.2%** of optimal. The marginal gain trajectory is automatically monotone decreasing — that's the submodularity playing out: each successive entry covers less new ground because the portfolio max keeps rising.
+
+No payout tables, no thresholds, no λ sweep, no covariance penalty, no correlation constraint, no diversity bonus. Three knobs only:
+- `topFraction` — keep top X% of pool by projection (drops garbage that hedges into obscure worlds)
+- `maxExposure` — per-player exposure cap
+- `numWorlds` — simulation size (inherited from precompute)
+
+The diversity comes automatically: once a world is "covered" by a high `portfolioMax`, adding another entry that scores well in that same world contributes zero marginal gain. The selector naturally seeks out entries that cover UNCOVERED worlds, which IS hedging.
+
+**Use this for MLB.** 3-slate backtest with sport defaults (top 60%, exposure 30%):
+
+| Selector | 3-28 | 3-30 | 4-6-26 | avg | lift |
+|---|---|---|---|---|---|
+| **emax** | **1.52%** | **2.00%** | **3.55%** | **2.36%** | **1.46x** |
+| Hedging (α-blend) | 1.33% | 1.33% | 2.67% | 1.78% | 1.10x |
+| Algorithm 7 | 0.00% | 1.33% | 2.67% | 1.33% | 0.82x |
+| Random | 1.05% | 1.11% | 2.67% | 1.61% | 1.00x |
+
+emax beat alg7 outright on every MLB slate (alg7 scored 0% on 3-28). On 4-6-26 the same projection × pool combination that defeated both other selectors at 2.67% (= random) gave emax 3.55%.
+
+**On NBA, emax (1.36x lift) is the best Liu-style selector but still loses to alg7 (1.78x).** The H-S σ_{δ,G} crowding penalty remains the local optimum for projection-accuracy contests. NBA emax sport defaults (top 50%, exposure 40%) exist as a less-bad fallback if someone wants pure E[max] semantics on NBA.
+
+### `hedging` (legacy α-blend)
+**File**: `src/selection/hedging-selector.ts`
+**Paper**: Liu et al. (2023) Theorem 4 — directly maximizes E[max(z₁,...,z_m)] across simulated worlds.
+
+Single-stage greedy. Entry 1 = pure max projection (Liu base case). Entries 2..N maximize a normalized α-blend:
+
+```
+Score(c) = α · (rawPayout[c] / medPayout)
+         + (1-α) · (varDiff(c)  / medVarDiff)
+
+varDiff(c) = Var(z_c) + avg(Var(z_selected)) − 2·sumCov[c]/M     (Liu Eq. 14)
+```
+
+`sumCov[c] = Σ Cov(z_c, z_s)` is maintained incrementally (one `O(C·W)` pass per pick, ~3-12s per slate at W=2000, C=12000). A **projection floor** drops the bottom X fraction of the pool *before* selection so anti-correlated garbage can't slip in. ρ_max correlation constraint and exposure cap enforce diversification at the candidate-filter layer.
+
+**Use this for MLB / NFL.** 3-slate MLB backtest:
+| Selector | Top-1% | Lift |
+|---|---|---|
+| Hedging | 1.78% | **1.10x** |
+| Algorithm 7 | 1.33% | 0.82x |
+| Random | 1.61% | 1.00x |
+
+Hedging beat alg7 outright on 3-28 (alg7 scored 0% top-1%), tied on the other two slates. Sample is small but directionally clean.
+
+**Do NOT use hedging on NBA.** 17-slate NBA top-1% lift maxes out at ~1.31x even with α=0.9 — alg7's σ_{δ,G} crowding penalty is the local optimum for projection-accuracy contests. The NBA hedging defaults (α=0.9, projection floor=top 30%) exist only as a less-bad fallback.
+
+### Sport-specific defaults
+
+| Sport | Recommended selector | Lift | Why |
+|---|---|---|---|
+| NBA | `v24` | **1.83x** | Hunter U²ₗ beats alg7 (1.78x) for the first time; variance floor + covariance constraint |
+| MLB | `v24` | **3.58x** | Crushes all alternatives; Hunter joint penalty drives genuine contrarian selection |
+| NFL | `v24` | untested | Expect MLB-like stacking dynamics |
+
+V24 sport defaults live in `getV24SportDefaults()` in `v24-selector.ts`. The `--selector` CLI still defaults to `emax` for MLB and `algorithm7` for NBA — switch to `v24` explicitly with `--selector v24` until we make it the default after more validation.
+
+**Selector evolution** (oldest → newest): algorithm7 → hedging → emax → **v24**. Each is still available via `--selector`. Algorithm 7 is the most battle-tested on NBA; V24 has the strongest backtest numbers but only 20 slates of validation.
+
+`α=0.5` blends payout and variance-of-difference equally; `α<0.5` favors hedging (entries cover different worlds even at lower individual payout); `α>0.5` favors independent payout (chalk-leaning). MLB rewards low α because opposing-side stacks create genuine score-level anti-correlation; NBA rewards high α because no such structure exists in basketball.
+
+### CLI flags
+
+```bash
+# V24 on MLB (best selector for both sports)
+node dist/run.js --elite-live --sport mlb --site dk --selector v24 \
+  --input projections.csv --pool-csv pool1.csv,pool2.csv --output out.csv --count 100
+
+# V24 on NBA
+node dist/run.js --elite-backtest --sport nba --site dk --selector v24 \
+  --data historical_slates --count 150
+
+# V24 with overrides
+node dist/run.js --elite-live --sport mlb --site dk --selector v24 \
+  --rho-max 0.70 --hedge-max-exposure 0.35 \
+  --input projections.csv --pool-csv pool1.csv,pool2.csv --output out.csv --count 100
+
+# Algorithm 7 (legacy NBA default)
+node dist/run.js --elite-backtest --sport nba --site dk --data historical_slates --count 150
+
+# emax (legacy MLB default)  
+node dist/run.js --elite-live --sport mlb --site dk --selector emax \
+  --input projections.csv --pool-csv pool1.csv,pool2.csv --output out.csv --count 300
+```
+
+Available knobs:
+- `--selector` — `algorithm7` (NBA auto-default), `emax` (MLB auto-default), `hedging`, or `v24`
+- `--projection-floor X` — drop bottom X fraction of pool by projection. Used by `hedging`, `emax`, `v24`.
+- `--hedge-max-exposure X` — max single-player exposure. Used by `hedging`, `emax`, `v24`.
+- `--rho-max X` — covariance/correlation target. `hedging`: correlation cap. `v24`: ρ_target for δ_max calibration.
+
+### Diagnostics output
+
+Every hedging run prints (in `printSlateReport`):
+- **Correlation**: `avg=... min=... max=... histo[<−.5,−.5..0,0..5,>.5]=[0,180,8673,2322]`
+  Avg pairwise correlation across the 150 selected entries, plus distribution histogram. A healthy MLB portfolio shows a meaningful negative-correlation bin (genuine hedges); NBA portfolios cluster in [0, 0.5] because basketball lineups are inherently positively correlated.
+- **World coverage**: `top0.1%=44.8% top1.0%=93.7% top5.0%=99.7%`
+  Fraction of simulated worlds in which at least one portfolio entry would finish in the named tier. Useful for spotting "did we cover the upside worlds?" — top-1% coverage of 80%+ means most plausible game scripts have at least one portfolio entry positioned to win.
+
+These diagnostics also help debug `algorithm7` runs — feed any `selected[]` into `buildHedgingDiagnostics()` to get the same view.
+
+### When to revisit
+
+- **Make V24 the CLI default** → currently `--selector v24` must be passed explicitly. After 10+ more slates of validation, switch the sport-aware default from emax/algorithm7 to v24.
+- **NFL slates land** → backtest V24 on NFL; expect MLB-like behavior since NFL has stacking edge.
+- **More MLB slates** → 3 slates showed 3.58x lift but confidence intervals are wide. 10+ would let us tune tier weights and variance floor properly.
+- **Pitcher-opposing-offense coupling** → code exists in `tournament-sim.ts` (disabled) and `algorithm7-selector.ts` (`applyPitcherCoupling`, disabled). Tested at coupling strengths 0.20 and 0.25 — helped one slate, hurt two. Needs 10+ MLB slates to calibrate. The theory is correct (pitcher bust = opposing offense boom is one event) but the multiplicative implementation distorts scores.
+- **Small slate pool exhaustion** → V24 on 3-game slates with 2 pools hits ~91 lineups max. Need more SS pools or wider variance floor to fill 100+.
+
+---
 
 ## User Preferences
 - Minimum 500 elite lineups for SaberSim export
