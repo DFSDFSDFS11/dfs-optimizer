@@ -24,6 +24,7 @@
 
 import { Lineup, Player } from '../types';
 import { computeAnchor, SlateAnchor } from './anchor-relative';
+import { comboBonus } from './combo-leverage';
 
 // ============================================================
 // CONFIGURATION — calibrated from 8 MLB slates
@@ -37,6 +38,10 @@ export interface ProductionConfig {
   anchorTopK: number;           // Top-K lineups for anchor computation (default 50)
   teamCoverageMinPct: number;   // Min entries per team = N / numTeams * this (default 0.6)
   teamCoverageFloor: number;    // Absolute minimum per team (default 3)
+  lambda: number;               // Combo leverage weight (default 0 = pure raw projection)
+  comboFreq?: Map<string, number>; // Precomputed combo frequencies; required if lambda > 0
+  maxOverlap: number;           // Max shared players between any two selected lineups (10 = no constraint)
+  ownershipCeilingBuffer: number; // V35-style proportional ownership filter buffer in pp (0 = disabled, 3.0 = V35 default)
 }
 
 export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
@@ -47,6 +52,9 @@ export const DEFAULT_PRODUCTION_CONFIG: ProductionConfig = {
   anchorTopK: 50,
   teamCoverageMinPct: 0.6,
   teamCoverageFloor: 3,
+  lambda: 0,
+  maxOverlap: 7,
+  ownershipCeilingBuffer: 0,
 };
 
 // ============================================================
@@ -92,6 +100,7 @@ export interface ProductionResult {
   actualAvgProjection: number;
   teamStackCounts: Map<string, number>;
   binFills: Map<string, number>;
+  ownershipCeiling?: { filtered: number; medianCeiling: number; maxCeiling: number };
 }
 
 export function productionSelect(
@@ -100,7 +109,10 @@ export function productionSelect(
   config: Partial<ProductionConfig> = {},
 ): ProductionResult {
   const cfg = { ...DEFAULT_PRODUCTION_CONFIG, ...config };
-  const { N, ownDropPP, teamCapPct, maxExposure, anchorTopK, teamCoverageMinPct, teamCoverageFloor } = cfg;
+  const { N, ownDropPP, teamCapPct, maxExposure, anchorTopK, teamCoverageMinPct, teamCoverageFloor, lambda, comboFreq, maxOverlap, ownershipCeilingBuffer } = cfg;
+  const useCombo = lambda > 0 && comboFreq !== undefined;
+  const useOverlap = maxOverlap < 10;
+  const useOwnCeiling = ownershipCeilingBuffer > 0;
 
   // 1. Compute anchor from top-K pool lineups
   const anchor = computeAnchor(pool, anchorTopK);
@@ -117,13 +129,39 @@ export function productionSelect(
     return max >= 4;
   });
 
-  // 3. Compute ownership for each lineup
-  const poolWithMeta = stackPool.map(lu => ({
+  // 3. Compute ownership for each lineup (+ combo bonus if lambda > 0, + player id set if overlap constraint active)
+  let poolWithMeta = stackPool.map(lu => ({
     lu,
     own: lu.players.reduce((s, p) => s + (p.ownership || 0), 0) / lu.players.length,
     proj: lu.projection,
+    cb: useCombo ? comboBonus(lu, comboFreq!) : 0,
     primaryTeam: getPrimaryStackTeam(lu),
+    pidSet: useOverlap ? new Set(lu.players.map(p => p.id)) : null,
   }));
+
+  // 3b. V35-style proportional ownership ceiling (optional).
+  // Cap own at (anchor - ownDropPP + buffer) for median-proj lineups, scaling up to (anchor + buffer)
+  // at max-proj lineups. Hard filter — pruned lineups can't enter the bins.
+  let ownCeilingStats = { filtered: 0, medianCeiling: 0, maxCeiling: 0 };
+  if (useOwnCeiling) {
+    const projsSorted = poolWithMeta.map(e => e.proj).sort((a, b) => a - b);
+    const medianProj = projsSorted[Math.floor(projsSorted.length / 2)];
+    const maxProj = projsSorted[projsSorted.length - 1];
+    const targetAvgOwn = anchor.ownership - ownDropPP;
+    const before = poolWithMeta.length;
+    poolWithMeta = poolWithMeta.filter(e => {
+      const projFrac = maxProj > medianProj
+        ? Math.min(1, Math.max(0, (e.proj - medianProj) / (maxProj - medianProj)))
+        : 0;
+      const ceiling = targetAvgOwn + ownershipCeilingBuffer + projFrac * (anchor.ownership - targetAvgOwn);
+      return e.own <= ceiling;
+    });
+    ownCeilingStats = {
+      filtered: before - poolWithMeta.length,
+      medianCeiling: targetAvgOwn + ownershipCeilingBuffer,
+      maxCeiling: anchor.ownership + ownershipCeilingBuffer,
+    };
+  }
 
   // 4. Assign each lineup to an ownership bin (relative to anchor)
   const binned = new Map<string, typeof poolWithMeta>();
@@ -138,9 +176,14 @@ export function productionSelect(
     }
   }
 
-  // Sort each bin by projection descending (raw projection wins)
+  // Sort each bin by score descending. lambda=0 → pure projection (identical to baseline).
+  // lambda>0 → projection + lambda * combo leverage bonus (rarer construction nudged up).
   for (const [, entries] of binned) {
-    entries.sort((a, b) => b.proj - a.proj);
+    if (useCombo) {
+      entries.sort((a, b) => (b.proj + lambda * b.cb) - (a.proj + lambda * a.cb));
+    } else {
+      entries.sort((a, b) => b.proj - a.proj);
+    }
   }
 
   // 5. Compute bin allocations
@@ -160,6 +203,7 @@ export function productionSelect(
   // 6. Greedy selection with constraints
   const selected: Lineup[] = [];
   const selectedHashes = new Set<string>();
+  const selectedPidSets: Set<string>[] = []; // parallel to selected, only populated when useOverlap
   const playerCount = new Map<string, number>();
   const teamStackCount = new Map<string, number>();
   const maxPerTeam = Math.max(1, Math.floor(N * teamCapPct));
@@ -175,12 +219,25 @@ export function productionSelect(
     // Team stack cap check
     const team = entry.primaryTeam;
     if (team && (teamStackCount.get(team) || 0) >= maxPerTeam) return false;
+    // Pairwise overlap check (gamma) — skip candidates sharing > maxOverlap players with any selected
+    if (useOverlap && entry.pidSet) {
+      for (const sel of selectedPidSets) {
+        let shared = 0;
+        for (const id of entry.pidSet) {
+          if (sel.has(id)) {
+            shared++;
+            if (shared > maxOverlap) return false;
+          }
+        }
+      }
+    }
     return true;
   };
 
   const addLineup = (entry: typeof poolWithMeta[0]): void => {
     selected.push(entry.lu);
     selectedHashes.add(entry.lu.hash);
+    if (useOverlap && entry.pidSet) selectedPidSets.push(entry.pidSet);
     for (const p of entry.lu.players) {
       playerCount.set(p.id, (playerCount.get(p.id) || 0) + 1);
     }
@@ -288,6 +345,7 @@ export function productionSelect(
     actualAvgProjection: selected.length > 0 ? sumProj / selected.length : 0,
     teamStackCounts: teamStackCount,
     binFills,
+    ownershipCeiling: useOwnCeiling ? ownCeilingStats : undefined,
   };
 }
 

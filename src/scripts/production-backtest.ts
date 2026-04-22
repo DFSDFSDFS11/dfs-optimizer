@@ -32,6 +32,7 @@ const SLATES = [
   { slate: '4-17-26', proj: '4-17-26projections.csv', actuals: '4-17-26actuals.csv', pool: '4-17-26sspool.csv' },
   { slate: '4-18-26', proj: '4-18-26projections.csv', actuals: '4-18-26actuals.csv', pool: '4-18-26sspool.csv' },
   { slate: '4-19-26', proj: '4-19-26projections.csv', actuals: '4-19-26actuals.csv', pool: '4-19-26sspool.csv' },
+  { slate: '4-20-26', proj: '4-20-26projections.csv', actuals: '4-20-26actuals.csv', pool: '4-20-26sspool.csv' },
 ];
 
 function norm(n: string): string {
@@ -146,7 +147,7 @@ async function main() {
   const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
   console.log('================================================================');
-  console.log('PRODUCTION SELECTOR BACKTEST — 8 MLB slates');
+  console.log('PRODUCTION SELECTOR BACKTEST — 9 MLB slates');
   console.log('================================================================');
   console.log(`  Own target: anchor - ${DEFAULT_PRODUCTION_CONFIG.ownDropPP}pp`);
   console.log(`  Team cap: ${(DEFAULT_PRODUCTION_CONFIG.teamCapPct * 100).toFixed(0)}%`);
