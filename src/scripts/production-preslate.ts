@@ -1,9 +1,23 @@
 /**
- * Production Pre-Slate — run the production selector on tonight's MLB pools.
+ * Kraken Pre-Slate — run the Kraken selector on tonight's MLB pools.
  *
- * Config B (shipped 2026-04-24): λ=0.20 + extremeCornerCap: true.
- * Validated on 11 MLB slates: +$21,638 vs prior shipped (λ=0.05). Profitable 5/11,
- * min-LOO $2,951. Caveat: 93% of gain vs prod-λ0.20 is 4-14-slate-driven.
+ * KRAKEN (shipped 2026-04-24): concentrated GPP attack. λ=0.38 combo leverage
+ * + γ=6 tight overlap + teamCap=0.21 high-concentration + value-heavy bins
+ * (55% value, 13% chalk/core/contra, 2% deep).
+ *
+ * Validated via 67,900-config megabin sweep on 11 MLB slates. 3,100+ configs
+ * beat Apex on all three metrics (full + recent + min-LOO); winners converge
+ * on this exact archetype.
+ *
+ *   Full-sample: $149,215 (+172% vs Apex $54,869)
+ *   Recent 5:    $62,921  (+$19,574 vs Apex)
+ *   min-LOO:     $7,959   (2.65× $3K break-even, best ever tested)
+ *
+ * Caveat: 95% of full-sample from 4 slates (4-6, 4-14, 4-18, 4-21). Structural
+ * convergence across 2,000+ configs says "concentrate harder when projections
+ * identify correct team explosions." Risk: if projections miss the team, high
+ * concentration hurts — 7 of 11 backtest slates returned below break-even.
+ *
  * Reads mlbdkprojpre.csv + sspool{1,2,3}pre.csv from DATA_DIR.
  * Merges/dedupes pools by lineup hash, precomputes combo frequencies, runs selection,
  * exports DK upload CSV + detailed CSV.
@@ -52,15 +66,28 @@ const DATA_DIR = 'C:/Users/colin/dfs opto';
 const PROJ_FILE = 'mlbdkprojpre.csv';
 const POOL_FILES = ['sspool1pre.csv', 'sspool2pre.csv', 'sspool3pre.csv'];
 const TARGET_COUNT = 45;
-const LAMBDA = 0.20;
-const GAMMA = 7;
+
+// ============ KRAKEN CONFIG ============
+// Named preset: concentrated GPP attack (deep-rising predator).
+// Top-winner from 67,900-config megabin sweep — structural archetype of
+// 3,100+ configs that beat Apex on all three metrics.
+const KRAKEN_LAMBDA = 0.38;
+const KRAKEN_GAMMA = 6;
+const KRAKEN_TEAM_CAP = 0.21;
+const KRAKEN_CORNER = false;
+const KRAKEN_BINS = { chalk: 0.16, core: 0.13, value: 0.55, contra: 0.13, deep: 0.02 };
+// ========================================
+
+const LAMBDA = KRAKEN_LAMBDA;
+const GAMMA = KRAKEN_GAMMA;
 
 const OUTPUT_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}.csv`);
 const DETAILED_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}_detailed.csv`);
 
 async function main() {
   console.log('================================================================');
-  console.log(`PRODUCTION PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, N=${TARGET_COUNT}`);
+  console.log(`KRAKEN PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, teamCap=${KRAKEN_TEAM_CAP}, cornerCap=${KRAKEN_CORNER}, N=${TARGET_COUNT}`);
+  console.log('  Bins: ' + JSON.stringify(KRAKEN_BINS));
   console.log('================================================================\n');
 
   // 1. Load projections
@@ -158,13 +185,13 @@ async function main() {
     N: TARGET_COUNT,
     lambda: LAMBDA,
     comboFreq,
-    maxOverlap: 7, // Hunter γ
-    teamCapPct: 0.15, // 15% team cap (max ~7 lineups per primary-stack team)
+    maxOverlap: GAMMA, // Kraken γ=6
+    teamCapPct: KRAKEN_TEAM_CAP, // 0.21 — high concentration (32 lineups max per primary-stack team)
     minPrimaryStack: 3, // allow 3-stacks in pool
-    maxExposurePitcher: 0.40, // 40% pitcher cap (max ~18 lineups per pitcher)
+    maxExposurePitcher: 0.40, // 40% pitcher cap
     useOwnershipCeiling: false,
-    extremeCornerCap: true, // Config B: caps (Q5-proj, Q5-own) at 25% and (Q1-proj, Q1-own) at 5%
-    // Default bins (10/30/35/20/5) — validated. No-chalk variant was rejected in parallel experiments.
+    extremeCornerCap: KRAKEN_CORNER, // Kraken: corner cap OFF (top-winner config)
+    binAllocation: KRAKEN_BINS, // 16/13/55/13/2 — value-heavy
   });
   console.log(`  Selected ${result.portfolio.length} lineups in ${((Date.now() - t1) / 1000).toFixed(1)}s`);
 
