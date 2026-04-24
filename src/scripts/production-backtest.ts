@@ -18,6 +18,7 @@ import { Lineup, Player } from '../types';
 import { parseCSVFile, buildPlayerPool, parseContestActuals, loadPoolFromCSV, ContestActuals } from '../parser';
 import { getContestConfig } from '../rules';
 import { productionSelect, DEFAULT_PRODUCTION_CONFIG, ProductionConfig } from '../selection/production-selector';
+import { precomputeComboFrequencies } from '../selection/combo-leverage';
 
 const DIR = 'C:/Users/colin/dfs opto';
 const FEE = 20;
@@ -33,6 +34,7 @@ const SLATES = [
   { slate: '4-18-26', proj: '4-18-26projections.csv', actuals: '4-18-26actuals.csv', pool: '4-18-26sspool.csv' },
   { slate: '4-19-26', proj: '4-19-26projections.csv', actuals: '4-19-26actuals.csv', pool: '4-19-26sspool.csv' },
   { slate: '4-20-26', proj: '4-20-26projections.csv', actuals: '4-20-26actuals.csv', pool: '4-20-26sspool.csv' },
+  { slate: '4-21-26', proj: '4-21-26projections.csv', actuals: '4-21-26actuals.csv', pool: '4-21-26sspool.csv' },
 ];
 
 function norm(n: string): string {
@@ -203,7 +205,10 @@ async function main() {
     }
 
     // Run production selector
-    const result = productionSelect(loaded.lineups, pool.players, { N });
+    const comboFreq = precomputeComboFrequencies(loaded.lineups, 3);
+    const result = productionSelect(loaded.lineups, pool.players, {
+      N, lambda: 0.05, comboFreq, // match shipped config
+    });
 
     console.log(`  anchor: own=${result.anchor.ownership.toFixed(1)}% proj=${result.anchor.projection.toFixed(1)}`);
     console.log(`  target own: ${result.targetOwnership.toFixed(1)}%`);

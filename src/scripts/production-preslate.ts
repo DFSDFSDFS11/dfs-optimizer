@@ -1,7 +1,9 @@
 /**
  * Production Pre-Slate — run the production selector on tonight's MLB pools.
  *
- * Config: λ=0.05 (validated 2026-04-21), γ disabled (maxOverlap=10), N=150.
+ * Config B (shipped 2026-04-24): λ=0.20 + extremeCornerCap: true.
+ * Validated on 11 MLB slates: +$21,638 vs prior shipped (λ=0.05). Profitable 5/11,
+ * min-LOO $2,951. Caveat: 93% of gain vs prod-λ0.20 is 4-14-slate-driven.
  * Reads mlbdkprojpre.csv + sspool{1,2,3}pre.csv from DATA_DIR.
  * Merges/dedupes pools by lineup hash, precomputes combo frequencies, runs selection,
  * exports DK upload CSV + detailed CSV.
@@ -9,6 +11,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { parse } from 'csv-parse/sync';
 import { Lineup, Player } from '../types';
 import { parseCSVFile, buildPlayerPool, loadPoolFromCSV } from '../parser';
 import { getContestConfig } from '../rules';
@@ -16,11 +19,40 @@ import { exportForDraftKings, exportDetailedLineups } from '../scoring';
 import { productionSelect } from '../selection/production-selector';
 import { precomputeComboFrequencies } from '../selection/combo-leverage';
 
+// Sim-ROI filter: reject lineups below this percentile of pool sim ROI for target contest.
+// 0.0 = disabled (accept all). 0.5 = reject bottom half. 0.75 = top quartile only.
+const MIN_SIM_ROI_PERCENTILE = 0.5;
+const SIM_ROI_CONTEST = 'Small Slate | 10k-50k'; // 2-game slate → Small Slate bracket
+
+function parsePoolSimROI(filePath: string, rosterSize: number, roiCol: string): Map<string, number> {
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const records: string[][] = parse(content, { columns: false, skip_empty_lines: true, relax_column_count: true, trim: true });
+  if (records.length < 2) return new Map();
+  const headers = records[0];
+  const idx = headers.findIndex(h => h.trim() === roiCol);
+  if (idx === -1) return new Map();
+  const hashMap = new Map<string, number>();
+  for (let r = 1; r < records.length; r++) {
+    const row = records[r];
+    const ids: string[] = [];
+    for (let i = 0; i < rosterSize; i++) if (row[i]) ids.push(row[i]);
+    if (ids.length !== rosterSize) continue;
+    const hash = [...ids].sort().join('|');
+    const v = parseFloat(row[idx]);
+    if (!isNaN(v)) hashMap.set(hash, v);
+  }
+  return hashMap;
+}
+
+function lineupHash(lu: Lineup): string {
+  return lu.players.map(p => p.id).sort().join('|');
+}
+
 const DATA_DIR = 'C:/Users/colin/dfs opto';
 const PROJ_FILE = 'mlbdkprojpre.csv';
 const POOL_FILES = ['sspool1pre.csv', 'sspool2pre.csv', 'sspool3pre.csv'];
-const TARGET_COUNT = 150;
-const LAMBDA = 0.05;
+const TARGET_COUNT = 45;
+const LAMBDA = 0.20;
 const GAMMA = 7;
 
 const OUTPUT_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}.csv`);
@@ -60,11 +92,56 @@ async function main() {
     console.log(`  ${pf}: ${loaded.lineups.length} lineups (${loaded.unresolvedRows} unresolved)`);
   }
 
-  const candidates = Array.from(mergedByHash.values());
+  let candidates = Array.from(mergedByHash.values());
   console.log(`\n  Merged pool: ${candidates.length} unique lineups (from ${totalLoaded} total)\n`);
 
   if (candidates.length === 0) {
     console.error('ERROR: No lineups loaded.');
+    process.exit(1);
+  }
+
+  // 2b. Sim-ROI filter — reject bottom (1 - MIN_SIM_ROI_PERCENTILE) of pool by sim ROI for target contest
+  if (MIN_SIM_ROI_PERCENTILE > 0) {
+    console.log(`\nApplying sim-ROI filter: contest="${SIM_ROI_CONTEST}", keep top ${((1 - MIN_SIM_ROI_PERCENTILE) * 100).toFixed(0)}% by sim ROI...`);
+    // Merge sim ROI from all source pool files (each pool has its own sim ROI column)
+    const roiByHash = new Map<string, number>();
+    for (const pf of POOL_FILES) {
+      const poolPath = path.join(DATA_DIR, pf);
+      if (!fs.existsSync(poolPath)) continue;
+      const roi = parsePoolSimROI(poolPath, config.rosterSize, SIM_ROI_CONTEST);
+      for (const [h, v] of roi) if (!roiByHash.has(h)) roiByHash.set(h, v);
+    }
+    if (roiByHash.size === 0) {
+      console.log(`  ⚠ Sim ROI column "${SIM_ROI_CONTEST}" not found in pool files — skipping filter.`);
+    } else {
+      console.log(`  ROI map entries: ${roiByHash.size}  |  merged pool: ${candidates.length}`);
+      // Diagnostic: count lineups in merged pool with vs without ROI data
+      let covered = 0;
+      for (const lu of candidates) if (roiByHash.has(lineupHash(lu))) covered++;
+      console.log(`  Pool coverage: ${covered}/${candidates.length} lineups have ROI data (${(covered / candidates.length * 100).toFixed(1)}%)`);
+
+      // Use ROI distribution ONLY over covered lineups (lineups in merged pool WITH ROI data)
+      const coveredROIs: number[] = [];
+      for (const lu of candidates) {
+        const r = roiByHash.get(lineupHash(lu));
+        if (r !== undefined) coveredROIs.push(r);
+      }
+      coveredROIs.sort((a, b) => a - b);
+      const threshold = coveredROIs[Math.floor(coveredROIs.length * MIN_SIM_ROI_PERCENTILE)];
+      console.log(`  Covered ROI dist: p10=${coveredROIs[Math.floor(coveredROIs.length * 0.1)].toFixed(2)}  p25=${coveredROIs[Math.floor(coveredROIs.length * 0.25)].toFixed(2)}  p50=${coveredROIs[Math.floor(coveredROIs.length * 0.5)].toFixed(2)}  p75=${coveredROIs[Math.floor(coveredROIs.length * 0.75)].toFixed(2)}  p90=${coveredROIs[Math.floor(coveredROIs.length * 0.9)].toFixed(2)}  max=${coveredROIs[coveredROIs.length - 1].toFixed(2)}`);
+      console.log(`  Threshold at p${(MIN_SIM_ROI_PERCENTILE * 100).toFixed(0)}: ${threshold.toFixed(2)}`);
+      const before = candidates.length;
+      // Keep lineups with ROI data above threshold. Lineups without ROI data: keep (don't penalize for missing data).
+      candidates = candidates.filter(lu => {
+        const r = roiByHash.get(lineupHash(lu));
+        return r === undefined || r >= threshold;
+      });
+      console.log(`  Filtered pool: ${before} → ${candidates.length} lineups (${((candidates.length / before) * 100).toFixed(1)}%)`);
+    }
+  }
+
+  if (candidates.length === 0) {
+    console.error('ERROR: Pool empty after sim-ROI filter. Loosen MIN_SIM_ROI_PERCENTILE.');
     process.exit(1);
   }
 
@@ -81,9 +158,13 @@ async function main() {
     N: TARGET_COUNT,
     lambda: LAMBDA,
     comboFreq,
-    maxOverlap: 7, // Hunter γ — matches nerdytenor's empirical max across 8 slates
-    teamCapPct: 0.15, // 4-game slate — 15% cap
-    ownershipCeilingBuffer: 3.0, // V35 proportional ownership filter
+    maxOverlap: 7, // Hunter γ
+    teamCapPct: 0.15, // 15% team cap (max ~7 lineups per primary-stack team)
+    minPrimaryStack: 3, // allow 3-stacks in pool
+    maxExposurePitcher: 0.40, // 40% pitcher cap (max ~18 lineups per pitcher)
+    useOwnershipCeiling: false,
+    extremeCornerCap: true, // Config B: caps (Q5-proj, Q5-own) at 25% and (Q1-proj, Q1-own) at 5%
+    // Default bins (10/30/35/20/5) — validated. No-chalk variant was rejected in parallel experiments.
   });
   console.log(`  Selected ${result.portfolio.length} lineups in ${((Date.now() - t1) / 1000).toFixed(1)}s`);
 
