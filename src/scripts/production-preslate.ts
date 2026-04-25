@@ -1,22 +1,23 @@
 /**
- * Kraken Pre-Slate — run the Kraken selector on tonight's MLB pools.
+ * Hydra Pre-Slate — supersedes Kraken (shipped 2026-04-25).
  *
- * KRAKEN (shipped 2026-04-24): concentrated GPP attack. λ=0.38 combo leverage
- * + γ=6 tight overlap + teamCap=0.21 high-concentration + value-heavy bins
- * (55% value, 13% chalk/core/contra, 2% deep).
+ * HYDRA: archetype-centroid config from the 3,492 validated winners (configs
+ * that beat Apex on BOTH 11 in-sample slates AND 2 OOS slates 4-23/4-24).
+ * Custom: chalk bin pulled to 7% (vs 13% archetype median) per Colin's call.
  *
- * Validated via 67,900-config megabin sweep on 11 MLB slates. 3,100+ configs
- * beat Apex on all three metrics (full + recent + min-LOO); winners converge
- * on this exact archetype.
+ * Config: λ=0.20, γ=6, teamCap=0.20, corner=ON, bins 7/7/58/12/16.
  *
- *   Full-sample: $149,215 (+172% vs Apex $54,869)
- *   Recent 5:    $62,921  (+$19,574 vs Apex)
- *   min-LOO:     $7,959   (2.65× $3K break-even, best ever tested)
+ *   Top-100 archetype median: λ=0.21, γ=6 (99%), tc=0.20, corner ON 73%.
+ *   Bin median: chalk 13% / core 7% / value 52% / contra 12% / deep 16%.
  *
- * Caveat: 95% of full-sample from 4 slates (4-6, 4-14, 4-18, 4-21). Structural
- * convergence across 2,000+ configs says "concentrate harder when projections
- * identify correct team explosions." Risk: if projections miss the team, high
- * concentration hurts — 7 of 11 backtest slates returned below break-even.
+ * Why Hydra differs from Kraken:
+ *   - λ down (0.38 → 0.20): Kraken's 0.378 was in archetype upper tail (p75=0.25)
+ *   - corner OFF → ON: Kraken's "off" was minority (27% of validated)
+ *   - core 13% → 7% (Kraken was ABOVE archetype median)
+ *   - deep 2% → 16% (Kraken was FAR BELOW archetype median)
+ *   - chalk 16% → 7% (Colin's custom — below archetype median 13%)
+ *   - Kraken (rank #2 of 68,643 by full13) sits at one tail of the archetype;
+ *     Hydra sits closer to the center of the validated cluster.
  *
  * Reads mlbdkprojpre.csv + sspool{1,2,3}pre.csv from DATA_DIR.
  * Merges/dedupes pools by lineup hash, precomputes combo frequencies, runs selection,
@@ -65,29 +66,29 @@ function lineupHash(lu: Lineup): string {
 const DATA_DIR = 'C:/Users/colin/dfs opto';
 const PROJ_FILE = 'mlbdkprojpre.csv';
 const POOL_FILES = ['sspool1pre.csv', 'sspool2pre.csv', 'sspool3pre.csv'];
-const TARGET_COUNT = 45;
+const TARGET_COUNT = 150;
 
-// ============ KRAKEN CONFIG ============
-// Named preset: concentrated GPP attack (deep-rising predator).
-// Top-winner from 67,900-config megabin sweep — structural archetype of
-// 3,100+ configs that beat Apex on all three metrics.
-const KRAKEN_LAMBDA = 0.38;
-const KRAKEN_GAMMA = 6;
-const KRAKEN_TEAM_CAP = 0.21;
-const KRAKEN_CORNER = false;
-const KRAKEN_BINS = { chalk: 0.16, core: 0.13, value: 0.55, contra: 0.13, deep: 0.02 };
-// ========================================
+// ============ HYDRA CONFIG ============
+// Named preset: multi-headed archetype centroid.
+// Median of 3,492 validated winners (beat Apex in-sample AND OOS).
+// Custom: chalk pulled to 7% (vs archetype median 13%) — Colin's call.
+const HYDRA_LAMBDA = 0.20;
+const HYDRA_GAMMA = 6;
+const HYDRA_TEAM_CAP = 0.20;
+const HYDRA_CORNER = true;
+const HYDRA_BINS = { chalk: 0.07, core: 0.07, value: 0.58, contra: 0.12, deep: 0.16 };
+// =======================================
 
-const LAMBDA = KRAKEN_LAMBDA;
-const GAMMA = KRAKEN_GAMMA;
+const LAMBDA = HYDRA_LAMBDA;
+const GAMMA = HYDRA_GAMMA;
 
 const OUTPUT_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}.csv`);
 const DETAILED_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}_detailed.csv`);
 
 async function main() {
   console.log('================================================================');
-  console.log(`KRAKEN PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, teamCap=${KRAKEN_TEAM_CAP}, cornerCap=${KRAKEN_CORNER}, N=${TARGET_COUNT}`);
-  console.log('  Bins: ' + JSON.stringify(KRAKEN_BINS));
+  console.log(`HYDRA PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, teamCap=${HYDRA_TEAM_CAP}, cornerCap=${HYDRA_CORNER}, N=${TARGET_COUNT}`);
+  console.log('  Bins: ' + JSON.stringify(HYDRA_BINS));
   console.log('================================================================\n');
 
   // 1. Load projections
@@ -185,13 +186,14 @@ async function main() {
     N: TARGET_COUNT,
     lambda: LAMBDA,
     comboFreq,
-    maxOverlap: GAMMA, // Kraken γ=6
-    teamCapPct: KRAKEN_TEAM_CAP, // 0.21 — high concentration (32 lineups max per primary-stack team)
+    maxOverlap: GAMMA, // Hydra γ=6
+    teamCapPct: HYDRA_TEAM_CAP, // 0.20 — high concentration (30 lineups max per primary-stack team)
     minPrimaryStack: 3, // allow 3-stacks in pool
-    maxExposurePitcher: 0.40, // 40% pitcher cap
+    maxExposure: 0.20, // 20% hitter cap (30 lineups max per hitter at N=150)
+    maxExposurePitcher: 0.40, // 40% pitcher cap (60 lineups max per pitcher)
     useOwnershipCeiling: false,
-    extremeCornerCap: KRAKEN_CORNER, // Kraken: corner cap OFF (top-winner config)
-    binAllocation: KRAKEN_BINS, // 16/13/55/13/2 — value-heavy
+    extremeCornerCap: HYDRA_CORNER, // Hydra: corner cap ON (archetype majority — 73% of validated winners)
+    binAllocation: HYDRA_BINS, // 7/7/58/12/16 — chalk-light, deep-rebuilt
   });
   console.log(`  Selected ${result.portfolio.length} lineups in ${((Date.now() - t1) / 1000).toFixed(1)}s`);
 
