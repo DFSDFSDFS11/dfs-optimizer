@@ -1,23 +1,23 @@
 /**
- * Hydra Pre-Slate — supersedes Kraken (shipped 2026-04-25).
+ * Phoenix Pre-Slate — supersedes Hydra (shipped 2026-04-26).
  *
- * HYDRA: archetype-centroid config from the 3,492 validated winners (configs
- * that beat Apex on BOTH 11 in-sample slates AND 2 OOS slates 4-23/4-24).
- * Custom: chalk bin pulled to 7% (vs 13% archetype median) per Colin's call.
+ * PHOENIX: value-extreme winner of the megabin V2 sweep (40,326 configs across
+ * 13 MLB slates). The V1 archetype centroid (Hydra) was a noisy estimate biased
+ * away from the value-extreme corner of the bin-allocation simplex. Phoenix
+ * corrects course: 85% value bin, minimal chalk/core/contra/deep.
  *
- * Config: λ=0.20, γ=6, teamCap=0.20, corner=ON, bins 7/7/58/12/16.
+ * Config: λ=0.14, γ=6, teamCap=0.22, corner=OFF, bins 5/5/85/3/2.
  *
- *   Top-100 archetype median: λ=0.21, γ=6 (99%), tc=0.20, corner ON 73%.
- *   Bin median: chalk 13% / core 7% / value 52% / contra 12% / deep 16%.
+ * Direct head-to-head on 13 MLB slates:
+ *   Variant   | Full     | OOS    | min-LOO | t1 | Profit
+ *   Apex      | $47,770  | $1,870 | $2,058  | 37 | 3/13
+ *   Hydra     | $52,066  | $3,906 | $2,432  | 38 | 3/13
+ *   Kraken    | $72,225  | $3,710 | $3,684  | 30 | 4/13
+ *   Phoenix   | $156,155 | $6,075 | $7,884  | 49 | 6/13
  *
- * Why Hydra differs from Kraken:
- *   - λ down (0.38 → 0.20): Kraken's 0.378 was in archetype upper tail (p75=0.25)
- *   - corner OFF → ON: Kraken's "off" was minority (27% of validated)
- *   - core 13% → 7% (Kraken was ABOVE archetype median)
- *   - deep 2% → 16% (Kraken was FAR BELOW archetype median)
- *   - chalk 16% → 7% (Colin's custom — below archetype median 13%)
- *   - Kraken (rank #2 of 68,643 by full13) sits at one tail of the archetype;
- *     Hydra sits closer to the center of the validated cluster.
+ * Phoenix beats every prior config on every metric. ROI ~+300% (synthetic payout
+ * model — actual DK ROI may differ). Profitable on 6 of 13 slates; wins on
+ * 4-6 (+$57K), 4-21 (+$30K), 4-14 (+$13K), 4-18 (+$22K) drive the edge.
  *
  * Reads mlbdkprojpre.csv + sspool{1,2,3}pre.csv from DATA_DIR.
  * Merges/dedupes pools by lineup hash, precomputes combo frequencies, runs selection,
@@ -68,27 +68,27 @@ const PROJ_FILE = 'mlbdkprojpre.csv';
 const POOL_FILES = ['sspool1pre.csv', 'sspool2pre.csv', 'sspool3pre.csv'];
 const TARGET_COUNT = 150;
 
-// ============ HYDRA CONFIG ============
-// Named preset: multi-headed archetype centroid.
-// Median of 3,492 validated winners (beat Apex in-sample AND OOS).
-// Custom: chalk pulled to 7% (vs archetype median 13%) — Colin's call.
-const HYDRA_LAMBDA = 0.20;
-const HYDRA_GAMMA = 6;
-const HYDRA_TEAM_CAP = 0.20;
-const HYDRA_CORNER = true;
-const HYDRA_BINS = { chalk: 0.07, core: 0.07, value: 0.58, contra: 0.12, deep: 0.16 };
-// =======================================
+// ============ PHOENIX CONFIG ============
+// Named preset: value-extreme rebirth (V2 sweep #13 winner).
+// Top-validated config from 40,326-config megabin V2 sweep — beats every prior
+// shipped config (Apex, Kraken, Hydra) on every metric across 13 MLB slates.
+const PHOENIX_LAMBDA   = 0.14;
+const PHOENIX_GAMMA    = 6;
+const PHOENIX_TEAM_CAP = 0.22;
+const PHOENIX_CORNER   = false;
+const PHOENIX_BINS = { chalk: 0.05, core: 0.05, value: 0.85, contra: 0.03, deep: 0.02 };
+// =========================================
 
-const LAMBDA = HYDRA_LAMBDA;
-const GAMMA = HYDRA_GAMMA;
+const LAMBDA = PHOENIX_LAMBDA;
+const GAMMA = PHOENIX_GAMMA;
 
 const OUTPUT_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}.csv`);
 const DETAILED_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}_detailed.csv`);
 
 async function main() {
   console.log('================================================================');
-  console.log(`HYDRA PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, teamCap=${HYDRA_TEAM_CAP}, cornerCap=${HYDRA_CORNER}, N=${TARGET_COUNT}`);
-  console.log('  Bins: ' + JSON.stringify(HYDRA_BINS));
+  console.log(`PHOENIX PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, teamCap=${PHOENIX_TEAM_CAP}, cornerCap=${PHOENIX_CORNER}, N=${TARGET_COUNT}`);
+  console.log('  Bins: ' + JSON.stringify(PHOENIX_BINS));
   console.log('================================================================\n');
 
   // 1. Load projections
@@ -122,6 +122,23 @@ async function main() {
 
   let candidates = Array.from(mergedByHash.values());
   console.log(`\n  Merged pool: ${candidates.length} unique lineups (from ${totalLoaded} total)\n`);
+
+  // Manual player exclusions (injury/news). Set to empty array for normal runs.
+  const ZERO_PROJ_PLAYERS: string[] = [];
+  if (ZERO_PROJ_PLAYERS.length > 0) {
+    const zeroSet = new Set(ZERO_PROJ_PLAYERS.map(n => n.toLowerCase().trim()));
+    const before = candidates.length;
+    candidates = candidates.filter(lu => !lu.players.some(p => zeroSet.has(p.name.toLowerCase().trim())));
+    for (const p of pool.players) {
+      if (zeroSet.has(p.name.toLowerCase().trim())) {
+        p.projection = 0;
+        p.ownership = 0;
+      }
+    }
+    console.log(`  Excluded ${before - candidates.length} lineups containing: ${ZERO_PROJ_PLAYERS.join(', ')}`);
+    console.log(`  Pool after exclusions: ${candidates.length} lineups\n`);
+  }
+
 
   if (candidates.length === 0) {
     console.error('ERROR: No lineups loaded.');
@@ -186,14 +203,14 @@ async function main() {
     N: TARGET_COUNT,
     lambda: LAMBDA,
     comboFreq,
-    maxOverlap: GAMMA, // Hydra γ=6
-    teamCapPct: HYDRA_TEAM_CAP, // 0.20 — high concentration (30 lineups max per primary-stack team)
+    maxOverlap: GAMMA, // Phoenix γ=6
+    teamCapPct: PHOENIX_TEAM_CAP, // 0.22 — high concentration (33 lineups max per primary-stack team)
     minPrimaryStack: 3, // allow 3-stacks in pool
     maxExposure: 0.20, // 20% hitter cap (30 lineups max per hitter at N=150)
     maxExposurePitcher: 0.40, // 40% pitcher cap (60 lineups max per pitcher)
     useOwnershipCeiling: false,
-    extremeCornerCap: HYDRA_CORNER, // Hydra: corner cap ON (archetype majority — 73% of validated winners)
-    binAllocation: HYDRA_BINS, // 7/7/58/12/16 — chalk-light, deep-rebuilt
+    extremeCornerCap: PHOENIX_CORNER, // Phoenix: corner cap OFF (V2 winner)
+    binAllocation: PHOENIX_BINS, // 5/5/85/3/2 — value-extreme
   });
   console.log(`  Selected ${result.portfolio.length} lineups in ${((Date.now() - t1) / 1000).toFixed(1)}s`);
 
