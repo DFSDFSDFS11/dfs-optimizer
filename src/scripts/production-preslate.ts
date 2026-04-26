@@ -1,23 +1,26 @@
 /**
- * Phoenix Pre-Slate — supersedes Hydra (shipped 2026-04-26).
+ * Chimera Pre-Slate — supersedes Phoenix (shipped 2026-04-26).
  *
- * PHOENIX: value-extreme winner of the megabin V2 sweep (40,326 configs across
- * 13 MLB slates). The V1 archetype centroid (Hydra) was a noisy estimate biased
- * away from the value-extreme corner of the bin-allocation simplex. Phoenix
- * corrects course: 85% value bin, minimal chalk/core/contra/deep.
+ * CHIMERA: dispersion-aware top winner from the rank-dispersion analysis.
+ * Phoenix had +248.5% ROI but was rank #141 of 200 on dispersion (clumping —
+ * 150 lineups all finishing in similar rank windows). Chimera produces both
+ * higher ROI (+278.9%) AND smoother rank distribution (#15 of 200).
  *
- * Config: λ=0.14, γ=6, teamCap=0.22, corner=OFF, bins 5/5/85/3/2.
+ * Config: λ=0.62, γ=6, teamCap=0.24, corner=ON, bins 5/5/85/3/2 (same as Phoenix),
+ *         minPrimaryStack=5, maxExposure=0.16, maxExposurePitcher=0.41,
+ *         combo power=2 (vs Phoenix's 3).
  *
- * Direct head-to-head on 13 MLB slates:
- *   Variant   | Full     | OOS    | min-LOO | t1 | Profit
- *   Apex      | $47,770  | $1,870 | $2,058  | 37 | 3/13
- *   Hydra     | $52,066  | $3,906 | $2,432  | 38 | 3/13
- *   Kraken    | $72,225  | $3,710 | $3,684  | 30 | 4/13
- *   Phoenix   | $156,155 | $6,075 | $7,884  | 49 | 6/13
+ * Why Chimera differs from Phoenix:
+ *   - λ: 0.14 → 0.62 (4× combo leverage push toward rare 5-stack constructions)
+ *   - corner: OFF → ON (caps Q5×Q5 chalk corner + Q1×Q1 junk corner)
+ *   - mps: 3 → 5 (FORCED 5-player primary stack — biggest dispersion driver)
+ *   - me: 0.20 → 0.16 (tighter hitter cap)
+ *   - combo power: 3 → 2 (different combo frequency weighting)
+ *   - Bin allocation unchanged (5/5/85/3/2 value-extreme)
  *
- * Phoenix beats every prior config on every metric. ROI ~+300% (synthetic payout
- * model — actual DK ROI may differ). Profitable on 6 of 13 slates; wins on
- * 4-6 (+$57K), 4-21 (+$30K), 4-14 (+$13K), 4-18 (+$22K) drive the edge.
+ * Direct head-to-head on 15 MLB slates:
+ *   Phoenix  | full15 $156,817 | ROI +248.5% | IQR/F 47.9% (rank #141)
+ *   Chimera  | full15 $170,510 | ROI +278.9% | IQR/F 50.1% (rank #15)
  *
  * Reads mlbdkprojpre.csv + sspool{1,2,3}pre.csv from DATA_DIR.
  * Merges/dedupes pools by lineup hash, precomputes combo frequencies, runs selection,
@@ -68,27 +71,31 @@ const PROJ_FILE = 'mlbdkprojpre.csv';
 const POOL_FILES = ['sspool1pre.csv', 'sspool2pre.csv', 'sspool3pre.csv'];
 const TARGET_COUNT = 150;
 
-// ============ PHOENIX CONFIG ============
-// Named preset: value-extreme rebirth (V2 sweep #13 winner).
-// Top-validated config from 40,326-config megabin V2 sweep — beats every prior
-// shipped config (Apex, Kraken, Hydra) on every metric across 13 MLB slates.
-const PHOENIX_LAMBDA   = 0.14;
-const PHOENIX_GAMMA    = 6;
-const PHOENIX_TEAM_CAP = 0.22;
-const PHOENIX_CORNER   = false;
-const PHOENIX_BINS = { chalk: 0.05, core: 0.05, value: 0.85, contra: 0.03, deep: 0.02 };
+// ============ CHIMERA CONFIG ============
+// Named preset: dispersion-aware multi-mechanism winner.
+// Top of "Smooth Winners" analysis — best combined ROI rank × dispersion rank.
+// Beats Phoenix on both ROI (+278.9% vs +248.5%) AND rank dispersion (#15 vs #141).
+const CHIMERA_LAMBDA   = 0.62;
+const CHIMERA_GAMMA    = 6;
+const CHIMERA_TEAM_CAP = 0.24;
+const CHIMERA_CORNER   = true;
+const CHIMERA_MIN_STACK = 5;        // FORCED 5-player primary stack — key dispersion driver
+const CHIMERA_MAX_EXPOSURE = 0.16;  // tighter hitter cap (24 lineups max per hitter at N=150)
+const CHIMERA_MAX_EXPOSURE_P = 0.41; // pitcher cap
+const CHIMERA_COMBO_POWER = 2;      // combo frequency weighting (vs default 3)
+const CHIMERA_BINS = { chalk: 0.05, core: 0.05, value: 0.85, contra: 0.03, deep: 0.02 };
 // =========================================
 
-const LAMBDA = PHOENIX_LAMBDA;
-const GAMMA = PHOENIX_GAMMA;
+const LAMBDA = CHIMERA_LAMBDA;
+const GAMMA = CHIMERA_GAMMA;
 
 const OUTPUT_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}.csv`);
 const DETAILED_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}_detailed.csv`);
 
 async function main() {
   console.log('================================================================');
-  console.log(`PHOENIX PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, teamCap=${PHOENIX_TEAM_CAP}, cornerCap=${PHOENIX_CORNER}, N=${TARGET_COUNT}`);
-  console.log('  Bins: ' + JSON.stringify(PHOENIX_BINS));
+  console.log(`CHIMERA PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, teamCap=${CHIMERA_TEAM_CAP}, cornerCap=${CHIMERA_CORNER}, mps=${CHIMERA_MIN_STACK}, N=${TARGET_COUNT}`);
+  console.log(`  Bins: ${JSON.stringify(CHIMERA_BINS)}  comboPower=${CHIMERA_COMBO_POWER}  me=${CHIMERA_MAX_EXPOSURE} mep=${CHIMERA_MAX_EXPOSURE_P}`);
   console.log('================================================================\n');
 
   // 1. Load projections
@@ -190,10 +197,10 @@ async function main() {
     process.exit(1);
   }
 
-  // 3. Precompute combo frequencies from the merged pool
-  console.log('Precomputing combo frequencies (projection^3 weighted)...');
+  // 3. Precompute combo frequencies from the merged pool (Chimera uses power=2)
+  console.log(`Precomputing combo frequencies (projection^${CHIMERA_COMBO_POWER} weighted)...`);
   const t0 = Date.now();
-  const comboFreq = precomputeComboFrequencies(candidates, 3);
+  const comboFreq = precomputeComboFrequencies(candidates, CHIMERA_COMBO_POWER);
   console.log(`  ${comboFreq.size} unique combo keys in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
 
   // 4. Run production selector
@@ -203,14 +210,14 @@ async function main() {
     N: TARGET_COUNT,
     lambda: LAMBDA,
     comboFreq,
-    maxOverlap: GAMMA, // Phoenix γ=6
-    teamCapPct: PHOENIX_TEAM_CAP, // 0.22 — high concentration (33 lineups max per primary-stack team)
-    minPrimaryStack: 3, // allow 3-stacks in pool
-    maxExposure: 0.20, // 20% hitter cap (30 lineups max per hitter at N=150)
-    maxExposurePitcher: 0.40, // 40% pitcher cap (60 lineups max per pitcher)
+    maxOverlap: GAMMA, // Chimera γ=6
+    teamCapPct: CHIMERA_TEAM_CAP, // 0.24 — slightly higher than Phoenix
+    minPrimaryStack: CHIMERA_MIN_STACK, // 5 — FORCED 5-player primary stack (dispersion driver)
+    maxExposure: CHIMERA_MAX_EXPOSURE, // 0.16 hitter cap (24 lineups max per hitter)
+    maxExposurePitcher: CHIMERA_MAX_EXPOSURE_P, // 0.41 pitcher cap
     useOwnershipCeiling: false,
-    extremeCornerCap: PHOENIX_CORNER, // Phoenix: corner cap OFF (V2 winner)
-    binAllocation: PHOENIX_BINS, // 5/5/85/3/2 — value-extreme
+    extremeCornerCap: CHIMERA_CORNER, // Chimera: corner cap ON
+    binAllocation: CHIMERA_BINS, // 5/5/85/3/2 — value-extreme (same as Phoenix)
   });
   console.log(`  Selected ${result.portfolio.length} lineups in ${((Date.now() - t1) / 1000).toFixed(1)}s`);
 
