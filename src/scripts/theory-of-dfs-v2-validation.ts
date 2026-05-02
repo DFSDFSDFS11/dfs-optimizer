@@ -50,6 +50,8 @@ const SLATES = [
   { slate: '4-26-26', proj: '4-26-26projections.csv', actuals: '4-26-26actuals.csv', pool: '4-26-26sspool.csv' },
   { slate: '4-27-26', proj: '4-27-26projections.csv', actuals: '4-27-26actuals.csv', pool: '4-27-26sspool.csv' },
   { slate: '4-28-26', proj: '4-28-26projections.csv', actuals: '4-28-26actuals.csv', pool: '4-28-26sspool.csv' },
+  { slate: '4-29-26', proj: '4-29-26projections.csv', actuals: '4-29-26actuals.csv', pool: '4-29-26sspool.csv' },
+  { slate: '5-1-26',  proj: '5-1-26projections.csv',  actuals: '5-1-26actuals.csv',  pool: '5-1-26sspool.csv' },
 ];
 
 // ============================================================
@@ -330,8 +332,10 @@ interface ScoredLU {
   logOwn: number;
   uniqueness: number;  // raw uniqueness score (typed-or-untyped depending on V1 vs V2)
   ppd: number;
+  stackOwnAvg: number;  // V3: mean ownership of primary-stack hitters
   ev: number;
   projPct: number; ownPct: number; rangePct: number; ppdPct: number; uniqPct: number;
+  stackOwnPct: number;  // V3: slate-relative percentile of stackOwnAvg
 }
 
 function scoreLineup(
@@ -413,14 +417,25 @@ function scoreLineup(
   let ppd = 0;
   for (const p of lu.players) if (p.salary && p.projection) ppd += p.projection / (p.salary / 1000);
 
+  // V3: stack chalk-lean — mean ownership of primary-stack hitters.
+  let stackOwnAvg = 0;
+  if (primaryTeam) {
+    const stackOwns: number[] = [];
+    for (const p of lu.players) {
+      if (isPitcher(p)) continue;
+      if ((p.team || '').toUpperCase() === primaryTeam) stackOwns.push(p.ownership || 0);
+    }
+    if (stackOwns.length > 0) stackOwnAvg = stackOwns.reduce((s, x) => s + x, 0) / stackOwns.length;
+  }
+
   return {
     lu, proj: lu.projection, floor, ceiling, range: ceiling - floor,
-    primarySize, corrAdj, logOwn, uniqueness, ppd,
-    ev: 0, projPct: 0, ownPct: 0, rangePct: 0, ppdPct: 0, uniqPct: 0,
+    primarySize, corrAdj, logOwn, uniqueness, ppd, stackOwnAvg,
+    ev: 0, projPct: 0, ownPct: 0, rangePct: 0, ppdPct: 0, uniqPct: 0, stackOwnPct: 0,
   };
 }
 
-interface VariantOpts { applyTypeScaling: boolean; topNFilter: number; }
+interface VariantOpts { applyTypeScaling: boolean; topNFilter: number; stackChalkBonus?: number; }
 
 function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
   // Optionally apply top-N hard filter (topNFilter=0 means no filter).
@@ -451,16 +466,20 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
   const rangePct = rankPercentile(scored.map(s => s.range));
   const ppdPct = rankPercentile(scored.map(s => s.ppd));
   const uniqPct = rankPercentile(scored.map(s => s.uniqueness));
+  const stackOwnPct = rankPercentile(scored.map(s => s.stackOwnAvg));
   for (let i = 0; i < scored.length; i++) {
     scored[i].projPct = projPct[i]; scored[i].ownPct = ownPct[i];
     scored[i].rangePct = rangePct[i]; scored[i].ppdPct = ppdPct[i];
     scored[i].uniqPct = uniqPct[i];
+    scored[i].stackOwnPct = stackOwnPct[i];
   }
+  const stackChalkBonus = opts.stackChalkBonus || 0;
   for (const s of scored) {
     let ev = TODFS_PARAMS.W_PROJ * s.projPct
            + TODFS_PARAMS.W_LEV * (1 - s.ownPct)
            + TODFS_PARAMS.W_VAR * s.rangePct * 0.85
-           + TODFS_PARAMS.W_CMB * s.uniqPct;
+           + TODFS_PARAMS.W_CMB * s.uniqPct
+           + stackChalkBonus * s.stackOwnPct;  // V3 term
     if (s.ppdPct >= 1 - TODFS_PARAMS.PPD_LINEUP_TOP_PCT) ev *= (1 - TODFS_PARAMS.PPD_LINEUP_PENALTY);
     s.ev = ev;
   }
@@ -653,6 +672,15 @@ async function main() {
     // V1 baseline.
     const v1Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0 });
     const v1Result = evaluatePortfolio(v1Portfolio, sd, 'theory-dfs-v1', sd.candidates.length, sd.candidates.length);
+    // V3: V1 + stack chalk-lean bonus (W_STACK_CHALK = 0.05).
+    const v3Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, stackChalkBonus: 0.05 });
+    const v3Result = evaluatePortfolio(v3Portfolio, sd, 'theory-dfs-v3', sd.candidates.length, sd.candidates.length);
+    // V3b: smaller bonus (W_STACK_CHALK = 0.03).
+    const v3bPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, stackChalkBonus: 0.03 });
+    const v3bResult = evaluatePortfolio(v3bPortfolio, sd, 'theory-dfs-v3b', sd.candidates.length, sd.candidates.length);
+    // V3c: middle bonus (W_STACK_CHALK = 0.04) — fallback if V3b too small.
+    const v3cPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, stackChalkBonus: 0.04 });
+    const v3cResult = evaluatePortfolio(v3cPortfolio, sd, 'theory-dfs-v3c', sd.candidates.length, sd.candidates.length);
     // V2a: type-scaling only (no top-N filter).
     const v2aPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: true, topNFilter: 0 });
     const v2aResult = evaluatePortfolio(v2aPortfolio, sd, 'theory-dfs-v2a-scaling-only', sd.candidates.length, sd.candidates.length);
@@ -677,7 +705,7 @@ async function main() {
       }
     }
     const v2cResult = evaluatePortfolio(v2cPortfolio, sd, 'theory-dfs-v2c-top1-plus-scaling', sd.candidates.length, v2cPoolFiltered);
-    allResults.push(v1Result, v2aResult, v2bResult, v2cResult);
+    allResults.push(v1Result, v3Result, v3bResult, v3cResult, v2aResult, v2bResult, v2cResult);
     process.stderr.write(`v1 m=${v1Result.mahal?.toFixed(2)} | v2a m=${v2aResult.mahal?.toFixed(2)} | v2b m=${v2bResult.mahal?.toFixed(2)} pool=${filteredPoolSize} | v2c m=${v2cResult.mahal?.toFixed(2)} pool=${v2cPoolFiltered} [${((Date.now() - t0) / 1000).toFixed(1)}s]\n`);
   }
 
@@ -686,6 +714,9 @@ async function main() {
   console.log('ISOLATION TEST: Theory-DFS V1 vs V2a (scaling only) vs V2b (top-5 only) vs V2c (top-1 + scaling)');
   console.log('================================================================\n');
   const v1 = allResults.filter(r => r.system === 'theory-dfs-v1');
+  const v3 = allResults.filter(r => r.system === 'theory-dfs-v3');
+  const v3b = allResults.filter(r => r.system === 'theory-dfs-v3b');
+  const v3c = allResults.filter(r => r.system === 'theory-dfs-v3c');
   const v2 = allResults.filter(r => r.system === 'theory-dfs-v2a-scaling-only');
   const v2b = allResults.filter(r => r.system === 'theory-dfs-v2b-top5-only');
   const v2c = allResults.filter(r => r.system === 'theory-dfs-v2c-top1-plus-scaling');
@@ -702,6 +733,9 @@ async function main() {
     return { label, totalPay, roi: totalPay / fees - 1, totalT1, totalT01, meanMahal, t1Edge: totalT1 / expT1, t01Edge: totalT01 / expT01 };
   }
   const sV1 = summary(v1, 'V1');
+  const sV3 = summary(v3, 'V3');
+  const sV3b = summary(v3b, 'V3b');
+  const sV3c = summary(v3c, 'V3c');
   const sV2a = summary(v2, 'V2a');
   const sV2b = summary(v2b, 'V2b');
   const sV2c = summary(v2c, 'V2c');
@@ -721,20 +755,25 @@ async function main() {
   const verdictA = passOrFail(sV2a, sV1);
   const verdictB = passOrFail(sV2b, sV1);
   const verdictC = passOrFail(sV2c, sV1);
+  const verdictV3 = passOrFail(sV3, sV1);
+  const verdictV3b = passOrFail(sV3b, sV1);
+  const verdictV3c = passOrFail(sV3c, sV1);
 
   console.log('Comparison vs V1 baseline:');
-  console.log('Metric                      | V1 baseline | V2a         | V2b         | V2c         ');
-  console.log('-'.repeat(95));
-  const fmt = (n: number, pct = false, prec = 2) => (pct ? (n * 100).toFixed(prec) + '%' : n.toFixed(prec));
-  console.log(`Total ROI                   | ${(sV1.roi*100).toFixed(1).padStart(8)}%   | ${(sV2a.roi*100).toFixed(1).padStart(8)}%   | ${(sV2b.roi*100).toFixed(1).padStart(8)}%   | ${(sV2c.roi*100).toFixed(1).padStart(8)}%   `);
-  console.log(`Top-1% hits                 | ${String(sV1.totalT1).padStart(11)} | ${String(sV2a.totalT1).padStart(11)} | ${String(sV2b.totalT1).padStart(11)} | ${String(sV2c.totalT1).padStart(11)}`);
-  console.log(`Top-1% x random             | ${sV1.t1Edge.toFixed(2).padStart(10)}x | ${sV2a.t1Edge.toFixed(2).padStart(10)}x | ${sV2b.t1Edge.toFixed(2).padStart(10)}x | ${sV2c.t1Edge.toFixed(2).padStart(10)}x`);
-  console.log(`Top-0.1% hits               | ${String(sV1.totalT01).padStart(11)} | ${String(sV2a.totalT01).padStart(11)} | ${String(sV2b.totalT01).padStart(11)} | ${String(sV2c.totalT01).padStart(11)}`);
-  console.log(`Top-0.1% x random           | ${sV1.t01Edge.toFixed(2).padStart(10)}x | ${sV2a.t01Edge.toFixed(2).padStart(10)}x | ${sV2b.t01Edge.toFixed(2).padStart(10)}x | ${sV2c.t01Edge.toFixed(2).padStart(10)}x`);
-  console.log(`Mean Mahalanobis to pros    | ${sV1.meanMahal.toFixed(2).padStart(11)} | ${sV2a.meanMahal.toFixed(2).padStart(11)} | ${sV2b.meanMahal.toFixed(2).padStart(11)} | ${sV2c.meanMahal.toFixed(2).padStart(11)}`);
+  console.log('Metric                      | V1          | V3          | V2a         | V2b         | V2c         ');
+  console.log('-'.repeat(105));
+  console.log(`Total ROI                   | ${(sV1.roi*100).toFixed(1).padStart(8)}%   | ${(sV3.roi*100).toFixed(1).padStart(8)}%   | ${(sV2a.roi*100).toFixed(1).padStart(8)}%   | ${(sV2b.roi*100).toFixed(1).padStart(8)}%   | ${(sV2c.roi*100).toFixed(1).padStart(8)}%   `);
+  console.log(`Top-1% hits                 | ${String(sV1.totalT1).padStart(11)} | ${String(sV3.totalT1).padStart(11)} | ${String(sV2a.totalT1).padStart(11)} | ${String(sV2b.totalT1).padStart(11)} | ${String(sV2c.totalT1).padStart(11)}`);
+  console.log(`Top-1% x random             | ${sV1.t1Edge.toFixed(2).padStart(10)}x | ${sV3.t1Edge.toFixed(2).padStart(10)}x | ${sV2a.t1Edge.toFixed(2).padStart(10)}x | ${sV2b.t1Edge.toFixed(2).padStart(10)}x | ${sV2c.t1Edge.toFixed(2).padStart(10)}x`);
+  console.log(`Top-0.1% hits               | ${String(sV1.totalT01).padStart(11)} | ${String(sV3.totalT01).padStart(11)} | ${String(sV2a.totalT01).padStart(11)} | ${String(sV2b.totalT01).padStart(11)} | ${String(sV2c.totalT01).padStart(11)}`);
+  console.log(`Top-0.1% x random           | ${sV1.t01Edge.toFixed(2).padStart(10)}x | ${sV3.t01Edge.toFixed(2).padStart(10)}x | ${sV2a.t01Edge.toFixed(2).padStart(10)}x | ${sV2b.t01Edge.toFixed(2).padStart(10)}x | ${sV2c.t01Edge.toFixed(2).padStart(10)}x`);
+  console.log(`Mean Mahalanobis to pros    | ${sV1.meanMahal.toFixed(2).padStart(11)} | ${sV3.meanMahal.toFixed(2).padStart(11)} | ${sV2a.meanMahal.toFixed(2).padStart(11)} | ${sV2b.meanMahal.toFixed(2).padStart(11)} | ${sV2c.meanMahal.toFixed(2).padStart(11)}`);
   console.log('');
-  console.log('Variant      | Mahal pass?       | t1 pass? | t01 pass? | Verdict');
-  console.log('-'.repeat(80));
+  console.log('Variant            | Mahal pass?       | t1 pass? | t01 pass? | Verdict');
+  console.log('-'.repeat(85));
+  console.log(`V3  (W=0.05)       | mahal=${sV3.meanMahal.toFixed(2)}  t1=${sV3.t1Edge.toFixed(2)}x  t01=${sV3.t01Edge.toFixed(2)}x  | ${verdictV3.verdict}`);
+  console.log(`V3b (W=0.03)       | mahal=${sV3b.meanMahal.toFixed(2)}  t1=${sV3b.t1Edge.toFixed(2)}x  t01=${sV3b.t01Edge.toFixed(2)}x  | ${verdictV3b.verdict}`);
+  console.log(`V3c (W=0.04)       | mahal=${sV3c.meanMahal.toFixed(2)}  t1=${sV3c.t1Edge.toFixed(2)}x  t01=${sV3c.t01Edge.toFixed(2)}x  | ${verdictV3c.verdict}`);
   console.log(`V2a (scaling only) | ${verdictA.mahal.padEnd(15)} | ${verdictA.t1.padEnd(7)} | ${verdictA.t01.padEnd(8)} | ${verdictA.verdict}`);
   console.log(`V2b (top-5 only)   | ${verdictB.mahal.padEnd(15)} | ${verdictB.t1.padEnd(7)} | ${verdictB.t01.padEnd(8)} | ${verdictB.verdict}`);
   console.log(`V2c (top-1+scale)  | ${verdictC.mahal.padEnd(15)} | ${verdictC.t1.padEnd(7)} | ${verdictC.t01.padEnd(8)} | ${verdictC.verdict}`);
