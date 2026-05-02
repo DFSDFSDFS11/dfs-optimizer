@@ -38,7 +38,8 @@ const TODFS_V1 = {
   PITCHER_VS_HITTER_PENALTY: -0.10,
   MIN_PRIMARY_STACK: 4,
   W_PROJ: 1.0, W_LEV: 0.30, W_VAR: 0.15, W_CMB: 0.25,
-  EXPOSURE_CAP_HITTER: 0.50, EXPOSURE_CAP_PITCHER: 1.00,
+  EXPOSURE_CAP_HITTER: 0.20, EXPOSURE_CAP_PITCHER: 0.45,
+  TEAM_STACK_CAP: 0.15,
   BAND_HIGH_PCT: 0.20, BAND_MID_PCT: 0.60, BAND_LOW_PCT: 0.20,
   MAX_PAIRWISE_OVERLAP: 6,
   TRIPLE_FREQ_CAP: 5,
@@ -169,8 +170,16 @@ async function main() {
       uniqueness += -Math.log(t.f);
     }
 
+    // Leverage penalty: hitter ownership only. A7 finding (2026-05-02) showed V1 systematically
+    // over-uses leverage SPs (Gore +25pp, Ray +22pp) vs pro chalk aces (Woodruff -24pp,
+    // Yamamoto -12pp). Pitcher's contribution to lineup leverage was forcing this. Pitcher
+    // chalk-vs-leverage is a player-level decision; lineup-level leverage is a hitter-stack concept.
+    // Direct pitcher leverage (P-vs-opposing-stack) is already captured in correlation 1B.
     let logOwn = 0;
-    for (const p of lu.players) logOwn += Math.log(Math.max(0.1, p.ownership || 0.5));
+    for (const p of lu.players) {
+      if (isPitcher(p)) continue;
+      logOwn += Math.log(Math.max(0.1, p.ownership || 0.5));
+    }
     let ppd = 0;
     for (const p of lu.players) if (p.salary && p.projection) ppd += p.projection / (p.salary / 1000);
 
@@ -214,13 +223,32 @@ async function main() {
 
   const selected: S[] = [];
   const exposure = new Map<string, number>();
+  const teamStackCount = new Map<string, number>();
   const seen = new Set<string>();
+  function primaryStackTeamOf(s: S): string {
+    const tc = new Map<string, number>();
+    for (const p of s.lu.players) {
+      if (isPitcher(p)) continue;
+      const t = (p.team || '').toUpperCase();
+      if (t) tc.set(t, (tc.get(t) || 0) + 1);
+    }
+    let primary = '', max = 0;
+    for (const [t, c] of tc) if (c > max) { max = c; primary = t; }
+    return max >= 4 ? primary : '';
+  }
   function passes(s: S): boolean {
     if (seen.has(s.lu.hash)) return false;
+    // Hard mps=4 check (redundant with pool filter, but explicit).
+    if (s.primarySize < TODFS_V1.MIN_PRIMARY_STACK) return false;
     for (const p of s.lu.players) {
       const cur = exposure.get(p.id) || 0;
       const cap = isPitcher(p) ? TODFS_V1.EXPOSURE_CAP_PITCHER : TODFS_V1.EXPOSURE_CAP_HITTER;
       if ((cur + 1) / N > cap) return false;
+    }
+    const stackTeam = primaryStackTeamOf(s);
+    if (stackTeam) {
+      const cur = teamStackCount.get(stackTeam) || 0;
+      if ((cur + 1) / N > TODFS_V1.TEAM_STACK_CAP) return false;
     }
     const ids = new Set(s.lu.players.map(p => p.id));
     for (const sel of selected) {
@@ -232,6 +260,8 @@ async function main() {
   function add(s: S) {
     selected.push(s); seen.add(s.lu.hash);
     for (const p of s.lu.players) exposure.set(p.id, (exposure.get(p.id) || 0) + 1);
+    const stackTeam = primaryStackTeamOf(s);
+    if (stackTeam) teamStackCount.set(stackTeam, (teamStackCount.get(stackTeam) || 0) + 1);
   }
   function fillBand(bandPool: S[], target: number) {
     const sorted = [...bandPool].sort((a, b) => b.ev - a.ev);
