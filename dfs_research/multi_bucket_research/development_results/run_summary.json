@@ -1,0 +1,494 @@
+{
+  "generatedAt": "2026-05-04T22:13:45.973Z",
+  "totalRuntimeSec": "27.5",
+  "lockedConfig": {
+    "T_SIZE": 45,
+    "C_SIZE": 15,
+    "D_SIZE": 15,
+    "LAMBDA_T": 0.3,
+    "RHO_T": 0.25,
+    "RHO_C_FLOOR_WEIGHT": 0.5,
+    "RHO_C_INTERNAL_JAC": 0.5,
+    "DELTA_D": 5,
+    "MU_D": 2,
+    "D_PROJ_THRESHOLD": 0.8,
+    "GLOBAL_JAC_CAP": 0.7,
+    "MAX_GLOBAL_ITERS": 50,
+    "stackMix": {
+      "fivePlus": 0.6,
+      "fourBB": 0.3,
+      "threeThree": 0.1
+    }
+  },
+  "slates": [
+    {
+      "slate": "4-8-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5003,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 9,
+          "three-three": 2,
+          "four+naked": 2,
+          "other": 1,
+          "four+BB": 1
+        },
+        "meanJ": 0.14949256506531985,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 101.16,
+        "avgProj": 94.63066666666664,
+        "avgOwn": 21.526173333333336
+      }
+    },
+    {
+      "slate": "4-12-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5043,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 18,
+          "four+naked": 0,
+          "three-three": 0,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 14,
+          "four+BB": 1
+        },
+        "meanJ": 0.1528137316372612,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 1,
+        "decorrResolved": true,
+        "poolOptProj": 121.56,
+        "avgProj": 111.33746666666669,
+        "avgOwn": 16.361546666666666
+      }
+    },
+    {
+      "slate": "4-17-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5035,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 14,
+          "four+BB": 1
+        },
+        "meanJ": 0.12510369860215245,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 118.22999999999999,
+        "avgProj": 107.91586666666667,
+        "avgOwn": 13.381986666666661
+      }
+    },
+    {
+      "slate": "4-18-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5129,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 18,
+          "four+naked": 0,
+          "three-three": 0,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 7,
+          "four+naked": 5,
+          "four+BB": 3
+        },
+        "meanJ": 0.11935494130540679,
+        "maxJ": 0.5384615384615384,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 108.79000000000002,
+        "avgProj": 102.04813333333333,
+        "avgOwn": 15.84709333333334
+      }
+    },
+    {
+      "slate": "4-21-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5228,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 18,
+          "four+naked": 0,
+          "three-three": 0,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 14,
+          "four+BB": 1
+        },
+        "meanJ": 0.1410504993477121,
+        "maxJ": 0.5384615384615384,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 105.51,
+        "avgProj": 98.79120000000003,
+        "avgOwn": 18.399546666666666
+      }
+    },
+    {
+      "slate": "4-22-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5072,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 12,
+          "four+BB": 3
+        },
+        "meanJ": 0.1578546402695,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 2,
+        "decorrResolved": true,
+        "poolOptProj": 119.74,
+        "avgProj": 109.01266666666668,
+        "avgOwn": 16.77654666666667
+      }
+    },
+    {
+      "slate": "4-23-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5159,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 12,
+          "four+BB": 3
+        },
+        "meanJ": 0.14343478953386138,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 111.31,
+        "avgProj": 104.11653333333334,
+        "avgOwn": 16.968679999999992
+      }
+    },
+    {
+      "slate": "4-24-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5143,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 18,
+          "four+naked": 0,
+          "three-three": 0,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 14,
+          "four+naked": 1
+        },
+        "meanJ": 0.08424665198659181,
+        "maxJ": 0.5384615384615384,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 107.64,
+        "avgProj": 102.05040000000001,
+        "avgOwn": 9.473173333333332
+      }
+    },
+    {
+      "slate": "4-25-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5153,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "four+BB": 3,
+          "fivePlus": 12
+        },
+        "meanJ": 0.12162959441597226,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 1,
+        "decorrResolved": true,
+        "poolOptProj": 111.30000000000001,
+        "avgProj": 104.6982666666667,
+        "avgOwn": 14.418879999999996
+      }
+    },
+    {
+      "slate": "4-25-26-early",
+      "ok": true,
+      "summary": {
+        "candidates": 5121,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "four+naked": 1,
+          "fivePlus": 13,
+          "three-three": 1
+        },
+        "meanJ": 0.1254953810681371,
+        "maxJ": 0.5384615384615384,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 97.76999999999998,
+        "avgProj": 92.63586666666662,
+        "avgOwn": 16.439226666666674
+      }
+    },
+    {
+      "slate": "4-26-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5143,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 13,
+          "three-three": 1,
+          "four+naked": 1
+        },
+        "meanJ": 0.10457556900281458,
+        "maxJ": 0.5384615384615384,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 112.60000000000002,
+        "avgProj": 105.74386666666666,
+        "avgOwn": 11.66089333333333
+      }
+    },
+    {
+      "slate": "4-27-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5185,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "four+BB": 3,
+          "fivePlus": 11,
+          "three-three": 1
+        },
+        "meanJ": 0.11300443402610658,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 107.07,
+        "avgProj": 100.4973333333333,
+        "avgOwn": 14.874653333333333
+      }
+    },
+    {
+      "slate": "4-28-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5029,
+        "portfolioSize": 60,
+        "tStackMix": {
+          "fivePlus": 45,
+          "four+BB": 0,
+          "four+naked": 0,
+          "three-three": 0,
+          "other": 0
+        },
+        "cStackMix": {},
+        "dStackMix": {
+          "fivePlus": 15
+        },
+        "meanJ": 0.09443057520666906,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 109.06000000000002,
+        "avgProj": 100.33366666666666,
+        "avgOwn": 10.500249999999998
+      }
+    },
+    {
+      "slate": "4-29-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5137,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 12,
+          "four+BB": 1,
+          "other": 1,
+          "three-three": 1
+        },
+        "meanJ": 0.10824153653875147,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 104.32000000000001,
+        "avgProj": 92.60586666666667,
+        "avgOwn": 17.57884000000001
+      }
+    },
+    {
+      "slate": "5-2-26-main",
+      "ok": true,
+      "summary": {
+        "candidates": 5081,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "fivePlus": 15
+        },
+        "meanJ": 0.12960186635109375,
+        "maxJ": 0.5384615384615384,
+        "decorrIters": 1,
+        "decorrResolved": true,
+        "poolOptProj": 107.57999999999998,
+        "avgProj": 100.10506666666663,
+        "avgOwn": 15.470666666666663
+      }
+    },
+    {
+      "slate": "5-3-26",
+      "ok": true,
+      "summary": {
+        "candidates": 5154,
+        "portfolioSize": 75,
+        "tStackMix": {
+          "fivePlus": 27,
+          "four+BB": 14,
+          "four+naked": 0,
+          "three-three": 4,
+          "other": 0
+        },
+        "cStackMix": {
+          "four+naked": 15
+        },
+        "dStackMix": {
+          "four+BB": 3,
+          "fivePlus": 12
+        },
+        "meanJ": 0.11285503616773089,
+        "maxJ": 0.6666666666666666,
+        "decorrIters": 0,
+        "decorrResolved": true,
+        "poolOptProj": 108.1,
+        "avgProj": 100.43333333333335,
+        "avgOwn": 14.121186666666668
+      }
+    }
+  ]
+}

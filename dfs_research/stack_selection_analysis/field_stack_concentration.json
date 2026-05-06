@@ -1,0 +1,2695 @@
+{
+  "4-6-26": {
+    "n_teams": 14,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "HOU",
+        "field_stack_share": 0.0033308958592112867,
+        "mean_top6_own_pct": 24.023720343333334
+      },
+      {
+        "rank": 2,
+        "team": "LAD",
+        "field_stack_share": 0.0006506445934208463,
+        "mean_top6_own_pct": 15.971141459666667
+      },
+      {
+        "rank": 3,
+        "team": "COL",
+        "field_stack_share": 0.00039573701145954724,
+        "mean_top6_own_pct": 14.104304239833333
+      },
+      {
+        "rank": 4,
+        "team": "BAL",
+        "field_stack_share": 0.0002420500689679015,
+        "mean_top6_own_pct": 12.473154525
+      },
+      {
+        "rank": 5,
+        "team": "ATL",
+        "field_stack_share": 0.00011942756961382873,
+        "mean_top6_own_pct": 10.453847217
+      },
+      {
+        "rank": 6,
+        "team": "CWS",
+        "field_stack_share": 7.570206691989488e-05,
+        "mean_top6_own_pct": 9.3277507865
+      },
+      {
+        "rank": 7,
+        "team": "PHI",
+        "field_stack_share": 7.057911474271215e-05,
+        "mean_top6_own_pct": 9.165772038
+      },
+      {
+        "rank": 8,
+        "team": "TOR",
+        "field_stack_share": 6.920158580196368e-06,
+        "mean_top6_own_pct": 5.128956452333333
+      },
+      {
+        "rank": 9,
+        "team": "MIN",
+        "field_stack_share": 3.66148616691571e-06,
+        "mean_top6_own_pct": 4.3743582655
+      },
+      {
+        "rank": 10,
+        "team": "SF",
+        "field_stack_share": 1.9944590253766582e-06,
+        "mean_top6_own_pct": 3.757995706833333
+      },
+      {
+        "rank": 11,
+        "team": "DET",
+        "field_stack_share": 6.286391451448406e-07,
+        "mean_top6_own_pct": 2.8157906028333333
+      },
+      {
+        "rank": 12,
+        "team": "SEA",
+        "field_stack_share": 6.015041434533089e-07,
+        "mean_top6_own_pct": 2.7849003248333335
+      },
+      {
+        "rank": 13,
+        "team": "TEX",
+        "field_stack_share": 4.4531697404463975e-07,
+        "mean_top6_own_pct": 2.5832552003333333
+      },
+      {
+        "rank": 14,
+        "team": "LAA",
+        "field_stack_share": 1.7156757734184473e-07,
+        "mean_top6_own_pct": 2.0352080168333333
+      }
+    ],
+    "chalk_top3": [
+      "HOU",
+      "LAD",
+      "COL"
+    ],
+    "bottom_half": [
+      "TOR",
+      "MIN",
+      "SF",
+      "DET",
+      "SEA",
+      "TEX",
+      "LAA"
+    ]
+  },
+  "4-8-26": {
+    "n_teams": 8,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "NYY",
+        "field_stack_share": 0.01358075920876695,
+        "mean_top6_own_pct": 34.13744490833333
+      },
+      {
+        "rank": 2,
+        "team": "DET",
+        "field_stack_share": 0.0025934988556186606,
+        "mean_top6_own_pct": 22.56687977333333
+      },
+      {
+        "rank": 3,
+        "team": "CHC",
+        "field_stack_share": 0.0018296564440302729,
+        "mean_top6_own_pct": 20.681993028333334
+      },
+      {
+        "rank": 4,
+        "team": "TB",
+        "field_stack_share": 0.0006743061665524192,
+        "mean_top6_own_pct": 16.11440531
+      },
+      {
+        "rank": 5,
+        "team": "MIA",
+        "field_stack_share": 8.928723605871588e-05,
+        "mean_top6_own_pct": 9.720695628166666
+      },
+      {
+        "rank": 6,
+        "team": "CIN",
+        "field_stack_share": 5.835954261576109e-05,
+        "mean_top6_own_pct": 8.740332811666667
+      },
+      {
+        "rank": 7,
+        "team": "ATH",
+        "field_stack_share": 1.1094500589777471e-05,
+        "mean_top6_own_pct": 5.771343711166668
+      },
+      {
+        "rank": 8,
+        "team": "MIN",
+        "field_stack_share": 5.213852002592678e-07,
+        "mean_top6_own_pct": 2.6871361705
+      }
+    ],
+    "chalk_top3": [
+      "NYY",
+      "DET",
+      "CHC"
+    ],
+    "bottom_half": [
+      "MIA",
+      "CIN",
+      "ATH",
+      "MIN"
+    ]
+  },
+  "4-12-26": {
+    "n_teams": 22,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "PIT",
+        "field_stack_share": 0.020920658697014347,
+        "mean_top6_own_pct": 38.03153361333333
+      },
+      {
+        "rank": 2,
+        "team": "CHC",
+        "field_stack_share": 0.0044121633540388045,
+        "mean_top6_own_pct": 25.772876685
+      },
+      {
+        "rank": 3,
+        "team": "KC",
+        "field_stack_share": 0.0005600424466644082,
+        "mean_top6_own_pct": 15.383502840666665
+      },
+      {
+        "rank": 4,
+        "team": "MIL",
+        "field_stack_share": 3.0433373305082418e-05,
+        "mean_top6_own_pct": 7.427412142333334
+      },
+      {
+        "rank": 5,
+        "team": "LAA",
+        "field_stack_share": 2.0613219579906365e-05,
+        "mean_top6_own_pct": 6.738084567833333
+      },
+      {
+        "rank": 6,
+        "team": "BOS",
+        "field_stack_share": 1.6302787284742587e-05,
+        "mean_top6_own_pct": 6.354267087833333
+      },
+      {
+        "rank": 7,
+        "team": "ARI",
+        "field_stack_share": 4.639036816840564e-06,
+        "mean_top6_own_pct": 4.6409506978333335
+      },
+      {
+        "rank": 8,
+        "team": "NYY",
+        "field_stack_share": 3.3459996956790575e-06,
+        "mean_top6_own_pct": 4.276923421666667
+      },
+      {
+        "rank": 9,
+        "team": "SF",
+        "field_stack_share": 1.1810805183238318e-06,
+        "mean_top6_own_pct": 3.2966274951666663
+      },
+      {
+        "rank": 10,
+        "team": "STL",
+        "field_stack_share": 8.035762519359402e-07,
+        "mean_top6_own_pct": 2.994034314
+      },
+      {
+        "rank": 11,
+        "team": "PHI",
+        "field_stack_share": 7.384839370821917e-07,
+        "mean_top6_own_pct": 2.9314687125000005
+      },
+      {
+        "rank": 12,
+        "team": "BAL",
+        "field_stack_share": 4.6668216017673437e-07,
+        "mean_top6_own_pct": 2.613697364
+      },
+      {
+        "rank": 13,
+        "team": "NYM",
+        "field_stack_share": 2.7673755229930845e-07,
+        "mean_top6_own_pct": 2.2935965350000003
+      },
+      {
+        "rank": 14,
+        "team": "CIN",
+        "field_stack_share": 7.946760012865268e-08,
+        "mean_top6_own_pct": 1.6789877381666667
+      },
+      {
+        "rank": 15,
+        "team": "CWS",
+        "field_stack_share": 3.31143173686928e-08,
+        "mean_top6_own_pct": 1.348975157
+      },
+      {
+        "rank": 16,
+        "team": "MIN",
+        "field_stack_share": 2.294651297204855e-08,
+        "mean_top6_own_pct": 1.2307764408333333
+      },
+      {
+        "rank": 17,
+        "team": "DET",
+        "field_stack_share": 1.2481352955258462e-08,
+        "mean_top6_own_pct": 1.0569767056666668
+      },
+      {
+        "rank": 18,
+        "team": "TOR",
+        "field_stack_share": 4.750582363351448e-09,
+        "mean_top6_own_pct": 0.8302076158333334
+      },
+      {
+        "rank": 19,
+        "team": "TB",
+        "field_stack_share": 5.936005351830847e-10,
+        "mean_top6_own_pct": 0.49359820416666667
+      },
+      {
+        "rank": 20,
+        "team": "WSH",
+        "field_stack_share": 9.302598298620156e-11,
+        "mean_top6_own_pct": 0.310563968
+      },
+      {
+        "rank": 21,
+        "team": "ATH",
+        "field_stack_share": 7.195645599613674e-11,
+        "mean_top6_own_pct": 0.2912510108333333
+      },
+      {
+        "rank": 22,
+        "team": "MIA",
+        "field_stack_share": 1.834465232450865e-15,
+        "mean_top6_own_pct": 0.020695569
+      }
+    ],
+    "chalk_top3": [
+      "PIT",
+      "CHC",
+      "KC"
+    ],
+    "bottom_half": [
+      "BAL",
+      "NYM",
+      "CIN",
+      "CWS",
+      "MIN",
+      "DET",
+      "TOR",
+      "TB",
+      "WSH",
+      "ATH",
+      "MIA"
+    ]
+  },
+  "4-14-26": {
+    "n_teams": 20,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "HOU",
+        "field_stack_share": 0.0007481437672186261,
+        "mean_top6_own_pct": 16.538505634166665
+      },
+      {
+        "rank": 2,
+        "team": "NYY",
+        "field_stack_share": 0.0004824017545201949,
+        "mean_top6_own_pct": 14.820137044833332
+      },
+      {
+        "rank": 3,
+        "team": "TEX",
+        "field_stack_share": 0.00022841874838021615,
+        "mean_top6_own_pct": 12.293709226333334
+      },
+      {
+        "rank": 4,
+        "team": "CLE",
+        "field_stack_share": 0.00020673829347170198,
+        "mean_top6_own_pct": 11.990995272666666
+      },
+      {
+        "rank": 5,
+        "team": "ATL",
+        "field_stack_share": 0.00012184114202738305,
+        "mean_top6_own_pct": 10.506268372833333
+      },
+      {
+        "rank": 6,
+        "team": "TB",
+        "field_stack_share": 8.294526760313919e-05,
+        "mean_top6_own_pct": 9.5432852065
+      },
+      {
+        "rank": 7,
+        "team": "LAA",
+        "field_stack_share": 7.581112624310376e-05,
+        "mean_top6_own_pct": 9.331108452666667
+      },
+      {
+        "rank": 8,
+        "team": "BOS",
+        "field_stack_share": 4.830590865324474e-05,
+        "mean_top6_own_pct": 8.336813073666667
+      },
+      {
+        "rank": 9,
+        "team": "LAD",
+        "field_stack_share": 1.5548580165255082e-05,
+        "mean_top6_own_pct": 6.2794655803333335
+      },
+      {
+        "rank": 10,
+        "team": "MIA",
+        "field_stack_share": 1.5388360929357977e-05,
+        "mean_top6_own_pct": 6.263226116666666
+      },
+      {
+        "rank": 11,
+        "team": "STL",
+        "field_stack_share": 6.449863044406759e-06,
+        "mean_top6_own_pct": 5.039502015666667
+      },
+      {
+        "rank": 12,
+        "team": "COL",
+        "field_stack_share": 5.7675398012232805e-06,
+        "mean_top6_own_pct": 4.900581882
+      },
+      {
+        "rank": 13,
+        "team": "SEA",
+        "field_stack_share": 2.126569848658811e-06,
+        "mean_top6_own_pct": 3.8187384408333336
+      },
+      {
+        "rank": 14,
+        "team": "ATH",
+        "field_stack_share": 1.1711600880577465e-07,
+        "mean_top6_own_pct": 1.8499247631666667
+      },
+      {
+        "rank": 15,
+        "team": "MIN",
+        "field_stack_share": 9.936401574955296e-08,
+        "mean_top6_own_pct": 1.7754452474999998
+      },
+      {
+        "rank": 16,
+        "team": "CWS",
+        "field_stack_share": 7.98353260864784e-08,
+        "mean_top6_own_pct": 1.680926701
+      },
+      {
+        "rank": 17,
+        "team": "SD",
+        "field_stack_share": 6.952725952194394e-09,
+        "mean_top6_own_pct": 0.9131429656666666
+      },
+      {
+        "rank": 18,
+        "team": "MIL",
+        "field_stack_share": 3.3123248476624173e-09,
+        "mean_top6_own_pct": 0.7586356208333332
+      },
+      {
+        "rank": 19,
+        "team": "NYM",
+        "field_stack_share": 2.230793739588597e-09,
+        "mean_top6_own_pct": 0.6872501673333334
+      },
+      {
+        "rank": 20,
+        "team": "TOR",
+        "field_stack_share": 5.360620866211477e-10,
+        "mean_top6_own_pct": 0.4811757956666667
+      }
+    ],
+    "chalk_top3": [
+      "HOU",
+      "NYY",
+      "TEX"
+    ],
+    "bottom_half": [
+      "STL",
+      "COL",
+      "SEA",
+      "ATH",
+      "MIN",
+      "CWS",
+      "SD",
+      "MIL",
+      "NYM",
+      "TOR"
+    ]
+  },
+  "4-15-26": {
+    "n_teams": 16,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "NYY",
+        "field_stack_share": 0.008410057747756276,
+        "mean_top6_own_pct": 30.283059124999998
+      },
+      {
+        "rank": 2,
+        "team": "ATL",
+        "field_stack_share": 0.0005757909931867656,
+        "mean_top6_own_pct": 15.490527846500001
+      },
+      {
+        "rank": 3,
+        "team": "HOU",
+        "field_stack_share": 0.000321068168788255,
+        "mean_top6_own_pct": 13.385953522833333
+      },
+      {
+        "rank": 4,
+        "team": "TEX",
+        "field_stack_share": 0.00030507163244094377,
+        "mean_top6_own_pct": 13.216012979333334
+      },
+      {
+        "rank": 5,
+        "team": "LAA",
+        "field_stack_share": 0.0002264816440908371,
+        "mean_top6_own_pct": 12.267561736833335
+      },
+      {
+        "rank": 6,
+        "team": "ATH",
+        "field_stack_share": 3.258687137587643e-05,
+        "mean_top6_own_pct": 7.555455753666667
+      },
+      {
+        "rank": 7,
+        "team": "TB",
+        "field_stack_share": 1.8563593548803902e-05,
+        "mean_top6_own_pct": 6.563953756166668
+      },
+      {
+        "rank": 8,
+        "team": "SEA",
+        "field_stack_share": 4.522720148319696e-06,
+        "mean_top6_own_pct": 4.611581931833333
+      },
+      {
+        "rank": 9,
+        "team": "CWS",
+        "field_stack_share": 2.189407818950332e-06,
+        "mean_top6_own_pct": 3.846641087666667
+      },
+      {
+        "rank": 10,
+        "team": "LAD",
+        "field_stack_share": 9.65300507856233e-07,
+        "mean_top6_own_pct": 3.134480942333333
+      },
+      {
+        "rank": 11,
+        "team": "MIA",
+        "field_stack_share": 8.408958526319318e-07,
+        "mean_top6_own_pct": 3.0282069553333333
+      },
+      {
+        "rank": 12,
+        "team": "SD",
+        "field_stack_share": 4.062888956798265e-07,
+        "mean_top6_own_pct": 2.5246939433333333
+      },
+      {
+        "rank": 13,
+        "team": "COL",
+        "field_stack_share": 3.126364935548695e-07,
+        "mean_top6_own_pct": 2.3646121555
+      },
+      {
+        "rank": 14,
+        "team": "TOR",
+        "field_stack_share": 8.46568158474533e-08,
+        "mean_top6_own_pct": 1.7057504023333332
+      },
+      {
+        "rank": 15,
+        "team": "MIL",
+        "field_stack_share": 1.380918609984592e-10,
+        "mean_top6_own_pct": 0.342800953
+      },
+      {
+        "rank": 16,
+        "team": "NYM",
+        "field_stack_share": 5.372311052515081e-11,
+        "mean_top6_own_pct": 0.27073243383333334
+      }
+    ],
+    "chalk_top3": [
+      "NYY",
+      "ATL",
+      "HOU"
+    ],
+    "bottom_half": [
+      "CWS",
+      "LAD",
+      "MIA",
+      "SD",
+      "COL",
+      "TOR",
+      "MIL",
+      "NYM"
+    ]
+  },
+  "4-17-26": {
+    "n_teams": 20,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "LAD",
+        "field_stack_share": 0.0033685402782447694,
+        "mean_top6_own_pct": 24.091311116666663
+      },
+      {
+        "rank": 2,
+        "team": "CWS",
+        "field_stack_share": 0.0003578697739172831,
+        "mean_top6_own_pct": 13.754070773499999
+      },
+      {
+        "rank": 3,
+        "team": "TOR",
+        "field_stack_share": 0.00021167833975625132,
+        "mean_top6_own_pct": 12.061993917833334
+      },
+      {
+        "rank": 4,
+        "team": "ARI",
+        "field_stack_share": 6.421003859883304e-05,
+        "mean_top6_own_pct": 8.9516013425
+      },
+      {
+        "rank": 5,
+        "team": "MIL",
+        "field_stack_share": 5.8521939207301833e-05,
+        "mean_top6_own_pct": 8.746406889
+      },
+      {
+        "rank": 6,
+        "team": "ATH",
+        "field_stack_share": 5.112983878021445e-05,
+        "mean_top6_own_pct": 8.456070708666667
+      },
+      {
+        "rank": 7,
+        "team": "MIN",
+        "field_stack_share": 1.930619722586198e-05,
+        "mean_top6_own_pct": 6.628636205666666
+      },
+      {
+        "rank": 8,
+        "team": "LAA",
+        "field_stack_share": 1.01867791622085e-05,
+        "mean_top6_own_pct": 5.649489721166667
+      },
+      {
+        "rank": 9,
+        "team": "STL",
+        "field_stack_share": 8.01542571753135e-06,
+        "mean_top6_own_pct": 5.320857749333333
+      },
+      {
+        "rank": 10,
+        "team": "NYY",
+        "field_stack_share": 4.045090820706363e-06,
+        "mean_top6_own_pct": 4.4846862928333335
+      },
+      {
+        "rank": 11,
+        "team": "HOU",
+        "field_stack_share": 1.1061831454709525e-06,
+        "mean_top6_own_pct": 3.243073259166667
+      },
+      {
+        "rank": 12,
+        "team": "DET",
+        "field_stack_share": 9.386218027455282e-07,
+        "mean_top6_own_pct": 3.1125953155
+      },
+      {
+        "rank": 13,
+        "team": "MIA",
+        "field_stack_share": 8.797112499604261e-07,
+        "mean_top6_own_pct": 3.0625630361666665
+      },
+      {
+        "rank": 14,
+        "team": "BOS",
+        "field_stack_share": 4.871382192796769e-07,
+        "mean_top6_own_pct": 2.6418797806666667
+      },
+      {
+        "rank": 15,
+        "team": "SD",
+        "field_stack_share": 2.6620881879144255e-07,
+        "mean_top6_own_pct": 2.2714627000000003
+      },
+      {
+        "rank": 16,
+        "team": "KC",
+        "field_stack_share": 2.3374970713125382e-08,
+        "mean_top6_own_pct": 1.2364819155
+      },
+      {
+        "rank": 17,
+        "team": "CIN",
+        "field_stack_share": 1.59315078877406e-09,
+        "mean_top6_own_pct": 0.6317775956666667
+      },
+      {
+        "rank": 18,
+        "team": "COL",
+        "field_stack_share": 3.8639401321254525e-10,
+        "mean_top6_own_pct": 0.4433611115
+      },
+      {
+        "rank": 19,
+        "team": "SEA",
+        "field_stack_share": 1.2244684420142377e-10,
+        "mean_top6_own_pct": 0.33264951849999996
+      },
+      {
+        "rank": 20,
+        "team": "TEX",
+        "field_stack_share": 3.162127866345847e-12,
+        "mean_top6_own_pct": 0.133350564
+      }
+    ],
+    "chalk_top3": [
+      "LAD",
+      "CWS",
+      "TOR"
+    ],
+    "bottom_half": [
+      "HOU",
+      "DET",
+      "MIA",
+      "BOS",
+      "SD",
+      "KC",
+      "CIN",
+      "COL",
+      "SEA",
+      "TEX"
+    ]
+  },
+  "4-18-26": {
+    "n_teams": 12,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "LAD",
+        "field_stack_share": 0.003903390712269149,
+        "mean_top6_own_pct": 24.99542388333333
+      },
+      {
+        "rank": 2,
+        "team": "SD",
+        "field_stack_share": 0.0022991257272970715,
+        "mean_top6_own_pct": 21.897305643333336
+      },
+      {
+        "rank": 3,
+        "team": "TOR",
+        "field_stack_share": 0.0005460842418111489,
+        "mean_top6_own_pct": 15.286741127500001
+      },
+      {
+        "rank": 4,
+        "team": "LAA",
+        "field_stack_share": 0.0005177603321137068,
+        "mean_top6_own_pct": 15.084544256666666
+      },
+      {
+        "rank": 5,
+        "team": "ARI",
+        "field_stack_share": 0.00031591387504315525,
+        "mean_top6_own_pct": 13.331903921
+      },
+      {
+        "rank": 6,
+        "team": "STL",
+        "field_stack_share": 5.8831599320433463e-05,
+        "mean_top6_own_pct": 8.757954078500001
+      },
+      {
+        "rank": 7,
+        "team": "HOU",
+        "field_stack_share": 2.8109243979501978e-05,
+        "mean_top6_own_pct": 7.281356438833334
+      },
+      {
+        "rank": 8,
+        "team": "SEA",
+        "field_stack_share": 5.401558143897043e-07,
+        "mean_top6_own_pct": 2.7110015371666667
+      },
+      {
+        "rank": 9,
+        "team": "ATL",
+        "field_stack_share": 1.3720355602568171e-07,
+        "mean_top6_own_pct": 1.924603813
+      },
+      {
+        "rank": 10,
+        "team": "COL",
+        "field_stack_share": 3.020321811288565e-08,
+        "mean_top6_own_pct": 1.3182971243333332
+      },
+      {
+        "rank": 11,
+        "team": "PHI",
+        "field_stack_share": 2.329483279809399e-08,
+        "mean_top6_own_pct": 1.2354207726666668
+      },
+      {
+        "rank": 12,
+        "team": "TEX",
+        "field_stack_share": 1.2072573979333132e-08,
+        "mean_top6_own_pct": 1.0482140313333332
+      }
+    ],
+    "chalk_top3": [
+      "LAD",
+      "SD",
+      "TOR"
+    ],
+    "bottom_half": [
+      "HOU",
+      "SEA",
+      "ATL",
+      "COL",
+      "PHI",
+      "TEX"
+    ]
+  },
+  "4-19-26": {
+    "n_teams": 16,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "HOU",
+        "field_stack_share": 0.0007159633867064206,
+        "mean_top6_own_pct": 16.357717493666666
+      },
+      {
+        "rank": 2,
+        "team": "SF",
+        "field_stack_share": 0.00025649657373999474,
+        "mean_top6_own_pct": 12.655240184
+      },
+      {
+        "rank": 3,
+        "team": "TB",
+        "field_stack_share": 0.00022644682410789094,
+        "mean_top6_own_pct": 12.2670901965
+      },
+      {
+        "rank": 4,
+        "team": "STL",
+        "field_stack_share": 0.0001791809695360826,
+        "mean_top6_own_pct": 11.569723246833334
+      },
+      {
+        "rank": 5,
+        "team": "MIL",
+        "field_stack_share": 0.0001470923195577044,
+        "mean_top6_own_pct": 11.012793582833334
+      },
+      {
+        "rank": 6,
+        "team": "NYY",
+        "field_stack_share": 5.3183755489640196e-05,
+        "mean_top6_own_pct": 8.539742003166667
+      },
+      {
+        "rank": 7,
+        "team": "MIN",
+        "field_stack_share": 5.289987766101424e-05,
+        "mean_top6_own_pct": 8.528323521166667
+      },
+      {
+        "rank": 8,
+        "team": "CHC",
+        "field_stack_share": 4.478179179676683e-05,
+        "mean_top6_own_pct": 8.180415569333332
+      },
+      {
+        "rank": 9,
+        "team": "KC",
+        "field_stack_share": 3.3661670706445225e-05,
+        "mean_top6_own_pct": 7.616999319666667
+      },
+      {
+        "rank": 10,
+        "team": "CIN",
+        "field_stack_share": 2.783833103866909e-05,
+        "mean_top6_own_pct": 7.2637484995
+      },
+      {
+        "rank": 11,
+        "team": "NYM",
+        "field_stack_share": 2.488111726617005e-05,
+        "mean_top6_own_pct": 7.062646501
+      },
+      {
+        "rank": 12,
+        "team": "PIT",
+        "field_stack_share": 5.219412921465142e-06,
+        "mean_top6_own_pct": 4.779752555833333
+      },
+      {
+        "rank": 13,
+        "team": "MIA",
+        "field_stack_share": 1.4941319321184834e-06,
+        "mean_top6_own_pct": 3.4962077958333335
+      },
+      {
+        "rank": 14,
+        "team": "CLE",
+        "field_stack_share": 9.437349392660133e-07,
+        "mean_top6_own_pct": 3.1168256445
+      },
+      {
+        "rank": 15,
+        "team": "WSH",
+        "field_stack_share": 7.225960364913449e-07,
+        "mean_top6_own_pct": 2.9155728256666666
+      },
+      {
+        "rank": 16,
+        "team": "BAL",
+        "field_stack_share": 4.676505549150886e-08,
+        "mean_top6_own_pct": 1.4705519233333335
+      }
+    ],
+    "chalk_top3": [
+      "HOU",
+      "SF",
+      "TB"
+    ],
+    "bottom_half": [
+      "KC",
+      "CIN",
+      "NYM",
+      "PIT",
+      "MIA",
+      "CLE",
+      "WSH",
+      "BAL"
+    ]
+  },
+  "4-20-26": {
+    "n_teams": 16,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "LAD",
+        "field_stack_share": 0.029302642384647005,
+        "mean_top6_own_pct": 41.37392246333334
+      },
+      {
+        "rank": 2,
+        "team": "ATL",
+        "field_stack_share": 0.00022500456204404924,
+        "mean_top6_own_pct": 12.247510795000002
+      },
+      {
+        "rank": 3,
+        "team": "SEA",
+        "field_stack_share": 0.000123378684556808,
+        "mean_top6_own_pct": 10.539257945666668
+      },
+      {
+        "rank": 4,
+        "team": "COL",
+        "field_stack_share": 6.139731680400151e-05,
+        "mean_top6_own_pct": 8.851917303166667
+      },
+      {
+        "rank": 5,
+        "team": "BAL",
+        "field_stack_share": 2.9717585389855507e-05,
+        "mean_top6_own_pct": 7.383348701666667
+      },
+      {
+        "rank": 6,
+        "team": "CIN",
+        "field_stack_share": 2.1499588159252965e-05,
+        "mean_top6_own_pct": 6.809379441333334
+      },
+      {
+        "rank": 7,
+        "team": "MIA",
+        "field_stack_share": 1.4608026331706485e-05,
+        "mean_top6_own_pct": 6.182268826333334
+      },
+      {
+        "rank": 8,
+        "team": "STL",
+        "field_stack_share": 1.213102500349391e-05,
+        "mean_top6_own_pct": 5.9016625639999996
+      },
+      {
+        "rank": 9,
+        "team": "KC",
+        "field_stack_share": 1.2049254550962075e-05,
+        "mean_top6_own_pct": 5.8916921313333335
+      },
+      {
+        "rank": 10,
+        "team": "PHI",
+        "field_stack_share": 5.328820318429879e-06,
+        "mean_top6_own_pct": 4.804605887666667
+      },
+      {
+        "rank": 11,
+        "team": "TOR",
+        "field_stack_share": 4.1140851813605206e-06,
+        "mean_top6_own_pct": 4.503688242666667
+      },
+      {
+        "rank": 12,
+        "team": "TB",
+        "field_stack_share": 2.9999864242697867e-06,
+        "mean_top6_own_pct": 4.161786741999999
+      },
+      {
+        "rank": 13,
+        "team": "WSH",
+        "field_stack_share": 1.3970135944398324e-07,
+        "mean_top6_own_pct": 1.9333040381666666
+      },
+      {
+        "rank": 14,
+        "team": "CHC",
+        "field_stack_share": 1.8283274631844016e-08,
+        "mean_top6_own_pct": 1.1628226851666665
+      },
+      {
+        "rank": 15,
+        "team": "ATH",
+        "field_stack_share": 9.510929106213474e-09,
+        "mean_top6_own_pct": 0.987542366
+      },
+      {
+        "rank": 16,
+        "team": "LAA",
+        "field_stack_share": 6.539998369327146e-10,
+        "mean_top6_own_pct": 0.5057016958333334
+      }
+    ],
+    "chalk_top3": [
+      "LAD",
+      "ATL",
+      "SEA"
+    ],
+    "bottom_half": [
+      "KC",
+      "PHI",
+      "TOR",
+      "TB",
+      "WSH",
+      "CHC",
+      "ATH",
+      "LAA"
+    ]
+  },
+  "4-21-26": {
+    "n_teams": 10,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "KC",
+        "field_stack_share": 0.0018749017408423833,
+        "mean_top6_own_pct": 20.80868462333333
+      },
+      {
+        "rank": 2,
+        "team": "BAL",
+        "field_stack_share": 0.0012812312447670654,
+        "mean_top6_own_pct": 18.919379131666666
+      },
+      {
+        "rank": 3,
+        "team": "LAA",
+        "field_stack_share": 0.0009060767281912593,
+        "mean_top6_own_pct": 17.34967101166667
+      },
+      {
+        "rank": 4,
+        "team": "CIN",
+        "field_stack_share": 0.0003908537879137101,
+        "mean_top6_own_pct": 14.060591188166667
+      },
+      {
+        "rank": 5,
+        "team": "SEA",
+        "field_stack_share": 0.0003406794824832086,
+        "mean_top6_own_pct": 13.585839971833332
+      },
+      {
+        "rank": 6,
+        "team": "TB",
+        "field_stack_share": 0.0002964696073907884,
+        "mean_top6_own_pct": 13.121849264833335
+      },
+      {
+        "rank": 7,
+        "team": "CLE",
+        "field_stack_share": 0.00026965378242931797,
+        "mean_top6_own_pct": 12.814498929166668
+      },
+      {
+        "rank": 8,
+        "team": "HOU",
+        "field_stack_share": 1.476226485799807e-05,
+        "mean_top6_own_pct": 6.198523445666667
+      },
+      {
+        "rank": 9,
+        "team": "TOR",
+        "field_stack_share": 5.687214441112326e-07,
+        "mean_top6_own_pct": 2.746154081333333
+      },
+      {
+        "rank": 10,
+        "team": "ATH",
+        "field_stack_share": 2.838966149221444e-08,
+        "mean_top6_own_pct": 1.2980459113333334
+      }
+    ],
+    "chalk_top3": [
+      "KC",
+      "BAL",
+      "LAA"
+    ],
+    "bottom_half": [
+      "TB",
+      "CLE",
+      "HOU",
+      "TOR",
+      "ATH"
+    ]
+  },
+  "4-22-26": {
+    "n_teams": 18,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "SD",
+        "field_stack_share": 0.01940949503094083,
+        "mean_top6_own_pct": 37.32532167
+      },
+      {
+        "rank": 2,
+        "team": "COL",
+        "field_stack_share": 0.0007620068564216536,
+        "mean_top6_own_pct": 16.61459348716667
+      },
+      {
+        "rank": 3,
+        "team": "ATL",
+        "field_stack_share": 0.0006037789169411036,
+        "mean_top6_own_pct": 15.6754308305
+      },
+      {
+        "rank": 4,
+        "team": "ARI",
+        "field_stack_share": 0.0004727654119292694,
+        "mean_top6_own_pct": 14.745565203333333
+      },
+      {
+        "rank": 5,
+        "team": "NYY",
+        "field_stack_share": 1.1925521795442277e-05,
+        "mean_top6_own_pct": 5.876508215166667
+      },
+      {
+        "rank": 6,
+        "team": "CWS",
+        "field_stack_share": 3.526244323583895e-06,
+        "mean_top6_own_pct": 4.333393225166667
+      },
+      {
+        "rank": 7,
+        "team": "WSH",
+        "field_stack_share": 3.3182451724732015e-06,
+        "mean_top6_own_pct": 4.2680266035
+      },
+      {
+        "rank": 8,
+        "team": "CHC",
+        "field_stack_share": 2.6802019815723195e-06,
+        "mean_top6_own_pct": 4.0461490866666665
+      },
+      {
+        "rank": 9,
+        "team": "NYM",
+        "field_stack_share": 2.281899058191667e-06,
+        "mean_top6_own_pct": 3.886638132333333
+      },
+      {
+        "rank": 10,
+        "team": "DET",
+        "field_stack_share": 1.7026184863146672e-06,
+        "mean_top6_own_pct": 3.6122627788333332
+      },
+      {
+        "rank": 11,
+        "team": "LAD",
+        "field_stack_share": 9.82568436479121e-07,
+        "mean_top6_own_pct": 3.148405788833333
+      },
+      {
+        "rank": 12,
+        "team": "PIT",
+        "field_stack_share": 1.265005259184477e-07,
+        "mean_top6_own_pct": 1.8859192035
+      },
+      {
+        "rank": 13,
+        "team": "BOS",
+        "field_stack_share": 9.914270878090289e-08,
+        "mean_top6_own_pct": 1.7744558375
+      },
+      {
+        "rank": 14,
+        "team": "MIL",
+        "field_stack_share": 5.4458406575352934e-08,
+        "mean_top6_own_pct": 1.5276231546666665
+      },
+      {
+        "rank": 15,
+        "team": "TEX",
+        "field_stack_share": 1.294173311893169e-08,
+        "mean_top6_own_pct": 1.0665914793333333
+      },
+      {
+        "rank": 16,
+        "team": "MIN",
+        "field_stack_share": 9.775702532259116e-09,
+        "mean_top6_own_pct": 0.9943447715000001
+      },
+      {
+        "rank": 17,
+        "team": "PHI",
+        "field_stack_share": 1.4877765285078895e-09,
+        "mean_top6_own_pct": 0.6210612395
+      },
+      {
+        "rank": 18,
+        "team": "SF",
+        "field_stack_share": 2.764099470917197e-14,
+        "mean_top6_own_pct": 0.04077447866666666
+      }
+    ],
+    "chalk_top3": [
+      "SD",
+      "COL",
+      "ATL"
+    ],
+    "bottom_half": [
+      "DET",
+      "LAD",
+      "PIT",
+      "BOS",
+      "MIL",
+      "TEX",
+      "MIN",
+      "PHI",
+      "SF"
+    ]
+  },
+  "4-23-26": {
+    "n_teams": 12,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "SD",
+        "field_stack_share": 0.006691009278931718,
+        "mean_top6_own_pct": 28.600452743333335
+      },
+      {
+        "rank": 2,
+        "team": "ATL",
+        "field_stack_share": 0.0011166201404555864,
+        "mean_top6_own_pct": 18.280007275
+      },
+      {
+        "rank": 3,
+        "team": "PHI",
+        "field_stack_share": 0.0007986012121113458,
+        "mean_top6_own_pct": 16.810572006666664
+      },
+      {
+        "rank": 4,
+        "team": "COL",
+        "field_stack_share": 0.0004348761558393854,
+        "mean_top6_own_pct": 14.440804848333334
+      },
+      {
+        "rank": 5,
+        "team": "ARI",
+        "field_stack_share": 0.00010836751134762458,
+        "mean_top6_own_pct": 10.202926897
+      },
+      {
+        "rank": 6,
+        "team": "WSH",
+        "field_stack_share": 8.661716451790342e-05,
+        "mean_top6_own_pct": 9.647193525
+      },
+      {
+        "rank": 7,
+        "team": "DET",
+        "field_stack_share": 3.4585089585946295e-05,
+        "mean_top6_own_pct": 7.668708436333333
+      },
+      {
+        "rank": 8,
+        "team": "CHC",
+        "field_stack_share": 1.590614257843813e-05,
+        "mean_top6_own_pct": 6.315259746166667
+      },
+      {
+        "rank": 9,
+        "team": "CWS",
+        "field_stack_share": 1.797153770167025e-06,
+        "mean_top6_own_pct": 3.661392685333334
+      },
+      {
+        "rank": 10,
+        "team": "LAD",
+        "field_stack_share": 2.911896345008756e-07,
+        "mean_top6_own_pct": 2.3229720148333333
+      },
+      {
+        "rank": 11,
+        "team": "MIL",
+        "field_stack_share": 7.348925730022026e-10,
+        "mean_top6_own_pct": 0.5206620986666667
+      },
+      {
+        "rank": 12,
+        "team": "SF",
+        "field_stack_share": 7.170677096140967e-10,
+        "mean_top6_own_pct": 0.5174757963333333
+      }
+    ],
+    "chalk_top3": [
+      "SD",
+      "ATL",
+      "PHI"
+    ],
+    "bottom_half": [
+      "DET",
+      "CHC",
+      "CWS",
+      "LAD",
+      "MIL",
+      "SF"
+    ]
+  },
+  "4-24-26": {
+    "n_teams": 26,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "WSH",
+        "field_stack_share": 0.00024427966366808427,
+        "mean_top6_own_pct": 12.501779315
+      },
+      {
+        "rank": 2,
+        "team": "NYY",
+        "field_stack_share": 0.000156198120730144,
+        "mean_top6_own_pct": 11.179411727333333
+      },
+      {
+        "rank": 3,
+        "team": "SEA",
+        "field_stack_share": 0.00010843466503318415,
+        "mean_top6_own_pct": 10.204507179166667
+      },
+      {
+        "rank": 4,
+        "team": "CWS",
+        "field_stack_share": 6.2213657216641e-05,
+        "mean_top6_own_pct": 8.881195557166667
+      },
+      {
+        "rank": 5,
+        "team": "ATL",
+        "field_stack_share": 6.083574873715096e-05,
+        "mean_top6_own_pct": 8.83160658
+      },
+      {
+        "rank": 6,
+        "team": "BOS",
+        "field_stack_share": 5.699163281684506e-05,
+        "mean_top6_own_pct": 8.688659439
+      },
+      {
+        "rank": 7,
+        "team": "LAD",
+        "field_stack_share": 3.5995969526057904e-05,
+        "mean_top6_own_pct": 7.745749878333334
+      },
+      {
+        "rank": 8,
+        "team": "LAA",
+        "field_stack_share": 2.3878365080610217e-05,
+        "mean_top6_own_pct": 6.990385829333333
+      },
+      {
+        "rank": 9,
+        "team": "CLE",
+        "field_stack_share": 1.900444685796752e-05,
+        "mean_top6_own_pct": 6.6025820731666665
+      },
+      {
+        "rank": 10,
+        "team": "KC",
+        "field_stack_share": 1.5072630102385666e-05,
+        "mean_top6_own_pct": 6.230849484
+      },
+      {
+        "rank": 11,
+        "team": "NYM",
+        "field_stack_share": 1.310356318134621e-05,
+        "mean_top6_own_pct": 6.016547527833333
+      },
+      {
+        "rank": 12,
+        "team": "MIA",
+        "field_stack_share": 1.9146798600022703e-06,
+        "mean_top6_own_pct": 3.719838133833333
+      },
+      {
+        "rank": 13,
+        "team": "PHI",
+        "field_stack_share": 1.706209451347697e-06,
+        "mean_top6_own_pct": 3.6141659155000005
+      },
+      {
+        "rank": 14,
+        "team": "TEX",
+        "field_stack_share": 1.1400343900424854e-06,
+        "mean_top6_own_pct": 3.267604519666667
+      },
+      {
+        "rank": 15,
+        "team": "BAL",
+        "field_stack_share": 8.887325874892039e-07,
+        "mean_top6_own_pct": 3.0703845795
+      },
+      {
+        "rank": 16,
+        "team": "TOR",
+        "field_stack_share": 4.773373434569758e-07,
+        "mean_top6_own_pct": 2.6284901443333335
+      },
+      {
+        "rank": 17,
+        "team": "CHC",
+        "field_stack_share": 4.2428387528213467e-07,
+        "mean_top6_own_pct": 2.552196635
+      },
+      {
+        "rank": 18,
+        "team": "HOU",
+        "field_stack_share": 1.3860443089862322e-07,
+        "mean_top6_own_pct": 1.929497759
+      },
+      {
+        "rank": 19,
+        "team": "TB",
+        "field_stack_share": 1.1461689650779549e-07,
+        "mean_top6_own_pct": 1.8399760125
+      },
+      {
+        "rank": 20,
+        "team": "ATH",
+        "field_stack_share": 7.574832518896441e-08,
+        "mean_top6_own_pct": 1.6589880538333333
+      },
+      {
+        "rank": 21,
+        "team": "SF",
+        "field_stack_share": 6.387259219339194e-08,
+        "mean_top6_own_pct": 1.5897492745
+      },
+      {
+        "rank": 22,
+        "team": "MIN",
+        "field_stack_share": 4.329019882160129e-08,
+        "mean_top6_own_pct": 1.4424387973333335
+      },
+      {
+        "rank": 23,
+        "team": "PIT",
+        "field_stack_share": 9.50677411622272e-10,
+        "mean_top6_own_pct": 0.5552752211666666
+      },
+      {
+        "rank": 24,
+        "team": "STL",
+        "field_stack_share": 2.4690957635629217e-10,
+        "mean_top6_own_pct": 0.3964007646666667
+      },
+      {
+        "rank": 25,
+        "team": "MIL",
+        "field_stack_share": 5.906957754079912e-12,
+        "mean_top6_own_pct": 0.15589815166666668
+      },
+      {
+        "rank": 26,
+        "team": "COL",
+        "field_stack_share": 2.7453405880543936e-13,
+        "mean_top6_own_pct": 0.07238507983333334
+      }
+    ],
+    "chalk_top3": [
+      "WSH",
+      "NYY",
+      "SEA"
+    ],
+    "bottom_half": [
+      "TEX",
+      "BAL",
+      "TOR",
+      "CHC",
+      "HOU",
+      "TB",
+      "ATH",
+      "SF",
+      "MIN",
+      "PIT",
+      "STL",
+      "MIL",
+      "COL"
+    ]
+  },
+  "4-25-26": {
+    "n_teams": 14,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "NYY",
+        "field_stack_share": 0.0032305320622127934,
+        "mean_top6_own_pct": 23.84067316166667
+      },
+      {
+        "rank": 2,
+        "team": "DET",
+        "field_stack_share": 0.0007256118878039232,
+        "mean_top6_own_pct": 16.412551328333333
+      },
+      {
+        "rank": 3,
+        "team": "KC",
+        "field_stack_share": 0.00016612773469184655,
+        "mean_top6_own_pct": 11.3529973315
+      },
+      {
+        "rank": 4,
+        "team": "CIN",
+        "field_stack_share": 0.0001235170157112687,
+        "mean_top6_own_pct": 10.542210836499999
+      },
+      {
+        "rank": 5,
+        "team": "CHC",
+        "field_stack_share": 8.631827493756028e-05,
+        "mean_top6_own_pct": 9.638860348833333
+      },
+      {
+        "rank": 6,
+        "team": "MIL",
+        "field_stack_share": 6.471077731461858e-05,
+        "mean_top6_own_pct": 8.969002687833333
+      },
+      {
+        "rank": 7,
+        "team": "LAD",
+        "field_stack_share": 6.122557516460209e-05,
+        "mean_top6_own_pct": 8.845720615166666
+      },
+      {
+        "rank": 8,
+        "team": "PHI",
+        "field_stack_share": 1.8880627157497663e-05,
+        "mean_top6_own_pct": 6.591801244
+      },
+      {
+        "rank": 9,
+        "team": "LAA",
+        "field_stack_share": 7.435806789652499e-06,
+        "mean_top6_own_pct": 5.221941763666667
+      },
+      {
+        "rank": 10,
+        "team": "ATL",
+        "field_stack_share": 4.94468140853484e-06,
+        "mean_top6_own_pct": 4.715574154166666
+      },
+      {
+        "rank": 11,
+        "team": "HOU",
+        "field_stack_share": 1.3741153624517683e-06,
+        "mean_top6_own_pct": 3.423779590666667
+      },
+      {
+        "rank": 12,
+        "team": "TEX",
+        "field_stack_share": 7.88804328009307e-07,
+        "mean_top6_own_pct": 2.9801788016666664
+      },
+      {
+        "rank": 13,
+        "team": "ATH",
+        "field_stack_share": 3.0046712108191415e-07,
+        "mean_top6_own_pct": 2.3412578091666667
+      },
+      {
+        "rank": 14,
+        "team": "PIT",
+        "field_stack_share": 9.93819063698764e-09,
+        "mean_top6_own_pct": 0.9984511713333334
+      }
+    ],
+    "chalk_top3": [
+      "NYY",
+      "DET",
+      "KC"
+    ],
+    "bottom_half": [
+      "PHI",
+      "LAA",
+      "ATL",
+      "HOU",
+      "TEX",
+      "ATH",
+      "PIT"
+    ]
+  },
+  "4-25-26-early": {
+    "n_teams": 12,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "SEA",
+        "field_stack_share": 0.002678767736224258,
+        "mean_top6_own_pct": 22.750123830000003
+      },
+      {
+        "rank": 2,
+        "team": "CWS",
+        "field_stack_share": 0.001813375898906648,
+        "mean_top6_own_pct": 20.635830873333333
+      },
+      {
+        "rank": 3,
+        "team": "TB",
+        "field_stack_share": 0.001285706675334218,
+        "mean_top6_own_pct": 18.935879213333333
+      },
+      {
+        "rank": 4,
+        "team": "MIN",
+        "field_stack_share": 0.0008263452218028518,
+        "mean_top6_own_pct": 16.954710555000002
+      },
+      {
+        "rank": 5,
+        "team": "MIA",
+        "field_stack_share": 0.00031207045956174723,
+        "mean_top6_own_pct": 13.291168539166668
+      },
+      {
+        "rank": 6,
+        "team": "WSH",
+        "field_stack_share": 6.116907125092657e-05,
+        "mean_top6_own_pct": 8.843679021833333
+      },
+      {
+        "rank": 7,
+        "team": "TOR",
+        "field_stack_share": 5.595908424790672e-05,
+        "mean_top6_own_pct": 8.649034903
+      },
+      {
+        "rank": 8,
+        "team": "SF",
+        "field_stack_share": 9.599999463556221e-06,
+        "mean_top6_own_pct": 5.566315289666666
+      },
+      {
+        "rank": 9,
+        "team": "STL",
+        "field_stack_share": 1.946644412484427e-06,
+        "mean_top6_own_pct": 3.7352670506666663
+      },
+      {
+        "rank": 10,
+        "team": "CLE",
+        "field_stack_share": 1.2918661418738525e-06,
+        "mean_top6_own_pct": 3.371354172166667
+      },
+      {
+        "rank": 11,
+        "team": "COL",
+        "field_stack_share": 0.0,
+        "mean_top6_own_pct": 0.0
+      },
+      {
+        "rank": 12,
+        "team": "NYM",
+        "field_stack_share": 0.0,
+        "mean_top6_own_pct": 0.0
+      }
+    ],
+    "chalk_top3": [
+      "SEA",
+      "CWS",
+      "TB"
+    ],
+    "bottom_half": [
+      "TOR",
+      "SF",
+      "STL",
+      "CLE",
+      "COL",
+      "NYM"
+    ]
+  },
+  "4-26-26": {
+    "n_teams": 22,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "NYY",
+        "field_stack_share": 0.00124869874029227,
+        "mean_top6_own_pct": 18.798120032666667
+      },
+      {
+        "rank": 2,
+        "team": "SEA",
+        "field_stack_share": 0.00040940660972034313,
+        "mean_top6_own_pct": 14.224555774166667
+      },
+      {
+        "rank": 3,
+        "team": "TB",
+        "field_stack_share": 0.00018351438614384148,
+        "mean_top6_own_pct": 11.639049864999999
+      },
+      {
+        "rank": 4,
+        "team": "DET",
+        "field_stack_share": 7.469588424594895e-05,
+        "mean_top6_own_pct": 9.296600492333333
+      },
+      {
+        "rank": 5,
+        "team": "CIN",
+        "field_stack_share": 4.556318280236968e-05,
+        "mean_top6_own_pct": 8.215869143166667
+      },
+      {
+        "rank": 6,
+        "team": "ATL",
+        "field_stack_share": 3.429341129340017e-05,
+        "mean_top6_own_pct": 7.652488260666668
+      },
+      {
+        "rank": 7,
+        "team": "CLE",
+        "field_stack_share": 1.7728531374399608e-05,
+        "mean_top6_own_pct": 6.4888568011666665
+      },
+      {
+        "rank": 8,
+        "team": "TOR",
+        "field_stack_share": 1.3085728091188327e-05,
+        "mean_top6_own_pct": 6.014499220833334
+      },
+      {
+        "rank": 9,
+        "team": "HOU",
+        "field_stack_share": 1.1714057460687204e-05,
+        "mean_top6_own_pct": 5.8502824945
+      },
+      {
+        "rank": 10,
+        "team": "NYM",
+        "field_stack_share": 9.083330672224385e-06,
+        "mean_top6_own_pct": 5.489860148666666
+      },
+      {
+        "rank": 11,
+        "team": "TEX",
+        "field_stack_share": 5.12117321251362e-06,
+        "mean_top6_own_pct": 4.757100935166666
+      },
+      {
+        "rank": 12,
+        "team": "ATH",
+        "field_stack_share": 4.110291956810159e-06,
+        "mean_top6_own_pct": 4.502649773
+      },
+      {
+        "rank": 13,
+        "team": "MIN",
+        "field_stack_share": 2.1148991907111126e-06,
+        "mean_top6_own_pct": 3.8134882953333338
+      },
+      {
+        "rank": 14,
+        "team": "WSH",
+        "field_stack_share": 1.591874292368263e-06,
+        "mean_top6_own_pct": 3.552034639
+      },
+      {
+        "rank": 15,
+        "team": "PIT",
+        "field_stack_share": 7.649162363815233e-07,
+        "mean_top6_own_pct": 2.9573550656666665
+      },
+      {
+        "rank": 16,
+        "team": "MIL",
+        "field_stack_share": 4.7657698481251706e-07,
+        "mean_top6_own_pct": 2.627442777
+      },
+      {
+        "rank": 17,
+        "team": "STL",
+        "field_stack_share": 1.897037057734289e-07,
+        "mean_top6_own_pct": 2.086983203
+      },
+      {
+        "rank": 18,
+        "team": "CWS",
+        "field_stack_share": 7.522256758051164e-08,
+        "mean_top6_own_pct": 1.6561018346666667
+      },
+      {
+        "rank": 19,
+        "team": "COL",
+        "field_stack_share": 5.049048934868127e-08,
+        "mean_top6_own_pct": 1.4990026305
+      },
+      {
+        "rank": 20,
+        "team": "PHI",
+        "field_stack_share": 3.0551356068758615e-08,
+        "mean_top6_own_pct": 1.3220796576666667
+      },
+      {
+        "rank": 21,
+        "team": "BAL",
+        "field_stack_share": 1.5968524187363638e-08,
+        "mean_top6_own_pct": 1.1241291121666668
+      },
+      {
+        "rank": 22,
+        "team": "BOS",
+        "field_stack_share": 4.284034480852835e-09,
+        "mean_top6_own_pct": 0.8090274166666666
+      }
+    ],
+    "chalk_top3": [
+      "NYY",
+      "SEA",
+      "TB"
+    ],
+    "bottom_half": [
+      "ATH",
+      "MIN",
+      "WSH",
+      "PIT",
+      "MIL",
+      "STL",
+      "CWS",
+      "COL",
+      "PHI",
+      "BAL",
+      "BOS"
+    ]
+  },
+  "4-27-26": {
+    "n_teams": 14,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "LAD",
+        "field_stack_share": 0.00228065814508177,
+        "mean_top6_own_pct": 21.853200386666668
+      },
+      {
+        "rank": 2,
+        "team": "LAA",
+        "field_stack_share": 0.001052378945794574,
+        "mean_top6_own_pct": 18.011216131666668
+      },
+      {
+        "rank": 3,
+        "team": "SEA",
+        "field_stack_share": 0.0009823419584300379,
+        "mean_top6_own_pct": 17.703766526666666
+      },
+      {
+        "rank": 4,
+        "team": "NYY",
+        "field_stack_share": 0.0005068683111900576,
+        "mean_top6_own_pct": 15.004577986666668
+      },
+      {
+        "rank": 5,
+        "team": "CWS",
+        "field_stack_share": 0.00022958243338774072,
+        "mean_top6_own_pct": 12.309337053833334
+      },
+      {
+        "rank": 6,
+        "team": "STL",
+        "field_stack_share": 0.00012651081201630238,
+        "mean_top6_own_pct": 10.605518620833333
+      },
+      {
+        "rank": 7,
+        "team": "TOR",
+        "field_stack_share": 7.353410436988184e-06,
+        "mean_top6_own_pct": 5.2074151445
+      },
+      {
+        "rank": 8,
+        "team": "PIT",
+        "field_stack_share": 6.124662709307992e-06,
+        "mean_top6_own_pct": 4.9747417925
+      },
+      {
+        "rank": 9,
+        "team": "MIN",
+        "field_stack_share": 4.235974520248702e-06,
+        "mean_top6_own_pct": 4.536681962833334
+      },
+      {
+        "rank": 10,
+        "team": "SD",
+        "field_stack_share": 1.9410478185150513e-06,
+        "mean_top6_own_pct": 3.732579432333333
+      },
+      {
+        "rank": 11,
+        "team": "CHC",
+        "field_stack_share": 1.4197493578899855e-06,
+        "mean_top6_own_pct": 3.4518579881666667
+      },
+      {
+        "rank": 12,
+        "team": "BOS",
+        "field_stack_share": 1.0806008431930548e-08,
+        "mean_top6_own_pct": 1.0195683033333334
+      },
+      {
+        "rank": 13,
+        "team": "TEX",
+        "field_stack_share": 5.590514762195869e-09,
+        "mean_top6_own_pct": 0.8646950038333333
+      },
+      {
+        "rank": 14,
+        "team": "MIA",
+        "field_stack_share": 1.3224024294429972e-09,
+        "mean_top6_own_pct": 0.603032765
+      }
+    ],
+    "chalk_top3": [
+      "LAD",
+      "LAA",
+      "SEA"
+    ],
+    "bottom_half": [
+      "PIT",
+      "MIN",
+      "SD",
+      "CHC",
+      "BOS",
+      "TEX",
+      "MIA"
+    ]
+  },
+  "4-28-26": {
+    "n_teams": 20,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "KC",
+        "field_stack_share": 0.002244814285787536,
+        "mean_top6_own_pct": 21.766825938333337
+      },
+      {
+        "rank": 2,
+        "team": "ATL",
+        "field_stack_share": 0.0001785659054704303,
+        "mean_top6_own_pct": 11.559781762
+      },
+      {
+        "rank": 3,
+        "team": "DET",
+        "field_stack_share": 0.00015205548793485117,
+        "mean_top6_own_pct": 11.104538771833333
+      },
+      {
+        "rank": 4,
+        "team": "NYM",
+        "field_stack_share": 9.770319737361112e-05,
+        "mean_top6_own_pct": 9.942078642166667
+      },
+      {
+        "rank": 5,
+        "team": "CHC",
+        "field_stack_share": 8.999725755204416e-05,
+        "mean_top6_own_pct": 9.739963264666667
+      },
+      {
+        "rank": 6,
+        "team": "LAD",
+        "field_stack_share": 5.5555787629509396e-05,
+        "mean_top6_own_pct": 8.633409229833333
+      },
+      {
+        "rank": 7,
+        "team": "MIL",
+        "field_stack_share": 4.412119968075036e-05,
+        "mean_top6_own_pct": 8.150079182333334
+      },
+      {
+        "rank": 8,
+        "team": "LAA",
+        "field_stack_share": 1.9974502046379372e-05,
+        "mean_top6_own_pct": 6.685270591333333
+      },
+      {
+        "rank": 9,
+        "team": "SD",
+        "field_stack_share": 1.4220709496782137e-05,
+        "mean_top6_own_pct": 6.140875833333333
+      },
+      {
+        "rank": 10,
+        "team": "ATH",
+        "field_stack_share": 1.2215706088770112e-05,
+        "mean_top6_own_pct": 5.9119349085
+      },
+      {
+        "rank": 11,
+        "team": "ARI",
+        "field_stack_share": 3.821772583730421e-06,
+        "mean_top6_own_pct": 4.421465189666667
+      },
+      {
+        "rank": 12,
+        "team": "NYY",
+        "field_stack_share": 2.866309501981903e-06,
+        "mean_top6_own_pct": 4.114629835333333
+      },
+      {
+        "rank": 13,
+        "team": "SEA",
+        "field_stack_share": 2.7281871713087708e-06,
+        "mean_top6_own_pct": 4.064138883166667
+      },
+      {
+        "rank": 14,
+        "team": "TOR",
+        "field_stack_share": 1.1179346393519554e-06,
+        "mean_top6_own_pct": 3.251652323
+      },
+      {
+        "rank": 15,
+        "team": "BOS",
+        "field_stack_share": 2.658663773194505e-07,
+        "mean_top6_own_pct": 2.270731865333333
+      },
+      {
+        "rank": 16,
+        "team": "WSH",
+        "field_stack_share": 4.277971810289237e-08,
+        "mean_top6_own_pct": 1.4381675310000002
+      },
+      {
+        "rank": 17,
+        "team": "MIN",
+        "field_stack_share": 2.584800891047622e-09,
+        "mean_top6_own_pct": 0.7130283105
+      },
+      {
+        "rank": 18,
+        "team": "TEX",
+        "field_stack_share": 2.3107456372899265e-09,
+        "mean_top6_own_pct": 0.693326876
+      },
+      {
+        "rank": 19,
+        "team": "CWS",
+        "field_stack_share": 2.815626977518936e-10,
+        "mean_top6_own_pct": 0.409631909
+      },
+      {
+        "rank": 20,
+        "team": "MIA",
+        "field_stack_share": 3.53450823054356e-12,
+        "mean_top6_own_pct": 0.13711414166666666
+      }
+    ],
+    "chalk_top3": [
+      "KC",
+      "ATL",
+      "DET"
+    ],
+    "bottom_half": [
+      "ARI",
+      "NYY",
+      "SEA",
+      "TOR",
+      "BOS",
+      "WSH",
+      "MIN",
+      "TEX",
+      "CWS",
+      "MIA"
+    ]
+  },
+  "4-29-26": {
+    "n_teams": 14,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "CIN",
+        "field_stack_share": 0.0044986593609594215,
+        "mean_top6_own_pct": 25.89827138
+      },
+      {
+        "rank": 2,
+        "team": "DET",
+        "field_stack_share": 0.0012512232249007596,
+        "mean_top6_own_pct": 18.807613841666665
+      },
+      {
+        "rank": 3,
+        "team": "PIT",
+        "field_stack_share": 0.0007802923703357272,
+        "mean_top6_own_pct": 16.713382023333335
+      },
+      {
+        "rank": 4,
+        "team": "ARI",
+        "field_stack_share": 0.0006468270901190936,
+        "mean_top6_own_pct": 15.9476630145
+      },
+      {
+        "rank": 5,
+        "team": "COL",
+        "field_stack_share": 0.00025676264927782964,
+        "mean_top6_own_pct": 12.658520871833334
+      },
+      {
+        "rank": 6,
+        "team": "STL",
+        "field_stack_share": 8.937026391209462e-05,
+        "mean_top6_own_pct": 9.722954649833333
+      },
+      {
+        "rank": 7,
+        "team": "MIL",
+        "field_stack_share": 5.3576292730787686e-05,
+        "mean_top6_own_pct": 8.5554560515
+      },
+      {
+        "rank": 8,
+        "team": "NYM",
+        "field_stack_share": 2.1951136599225753e-05,
+        "mean_top6_own_pct": 6.844855008166667
+      },
+      {
+        "rank": 9,
+        "team": "ATL",
+        "field_stack_share": 1.290077995096392e-05,
+        "mean_top6_own_pct": 5.993134051333333
+      },
+      {
+        "rank": 10,
+        "team": "WSH",
+        "field_stack_share": 1.3791999508015064e-08,
+        "mean_top6_own_pct": 1.0836943478333334
+      },
+      {
+        "rank": 11,
+        "team": "SF",
+        "field_stack_share": 0.0,
+        "mean_top6_own_pct": 0.0
+      },
+      {
+        "rank": 12,
+        "team": "PHI",
+        "field_stack_share": 0.0,
+        "mean_top6_own_pct": 0.0
+      },
+      {
+        "rank": 13,
+        "team": "HOU",
+        "field_stack_share": 0.0,
+        "mean_top6_own_pct": 0.0
+      },
+      {
+        "rank": 14,
+        "team": "BAL",
+        "field_stack_share": 0.0,
+        "mean_top6_own_pct": 0.0
+      }
+    ],
+    "chalk_top3": [
+      "CIN",
+      "DET",
+      "PIT"
+    ],
+    "bottom_half": [
+      "NYM",
+      "ATL",
+      "WSH",
+      "SF",
+      "PHI",
+      "HOU",
+      "BAL"
+    ]
+  },
+  "5-1-26": {
+    "n_teams": 22,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "ATL",
+        "field_stack_share": 0.006093438439239245,
+        "mean_top6_own_pct": 27.939305533333336
+      },
+      {
+        "rank": 2,
+        "team": "CLE",
+        "field_stack_share": 0.000328660209445993,
+        "mean_top6_own_pct": 13.464393078666667
+      },
+      {
+        "rank": 3,
+        "team": "NYM",
+        "field_stack_share": 0.0001760901737034925,
+        "mean_top6_own_pct": 11.519504015166666
+      },
+      {
+        "rank": 4,
+        "team": "BOS",
+        "field_stack_share": 3.383306205883392e-05,
+        "mean_top6_own_pct": 7.626676517333333
+      },
+      {
+        "rank": 5,
+        "team": "LAD",
+        "field_stack_share": 3.085594832702939e-05,
+        "mean_top6_own_pct": 7.453061839
+      },
+      {
+        "rank": 6,
+        "team": "SD",
+        "field_stack_share": 1.4269829308639432e-05,
+        "mean_top6_own_pct": 6.146171784666667
+      },
+      {
+        "rank": 7,
+        "team": "COL",
+        "field_stack_share": 1.3965068346122721e-05,
+        "mean_top6_own_pct": 6.113089671166667
+      },
+      {
+        "rank": 8,
+        "team": "TOR",
+        "field_stack_share": 1.156408740454812e-05,
+        "mean_top6_own_pct": 5.831467256
+      },
+      {
+        "rank": 9,
+        "team": "HOU",
+        "field_stack_share": 1.0966018516433602e-05,
+        "mean_top6_own_pct": 5.7545616048333335
+      },
+      {
+        "rank": 10,
+        "team": "ATH",
+        "field_stack_share": 5.025622986510485e-06,
+        "mean_top6_own_pct": 4.734754618666667
+      },
+      {
+        "rank": 11,
+        "team": "NYY",
+        "field_stack_share": 4.620732109354306e-06,
+        "mean_top6_own_pct": 4.6363658433333335
+      },
+      {
+        "rank": 12,
+        "team": "PHI",
+        "field_stack_share": 3.3069015968643873e-06,
+        "mean_top6_own_pct": 4.264374306166666
+      },
+      {
+        "rank": 13,
+        "team": "MIN",
+        "field_stack_share": 1.8956792344564374e-06,
+        "mean_top6_own_pct": 3.7105749914999997
+      },
+      {
+        "rank": 14,
+        "team": "TB",
+        "field_stack_share": 1.5054026596230387e-06,
+        "mean_top6_own_pct": 3.5027824874999998
+      },
+      {
+        "rank": 15,
+        "team": "LAA",
+        "field_stack_share": 1.1324793385223596e-07,
+        "mean_top6_own_pct": 1.8344571501666669
+      },
+      {
+        "rank": 16,
+        "team": "CWS",
+        "field_stack_share": 4.8330536904173335e-08,
+        "mean_top6_own_pct": 1.4827072288333334
+      },
+      {
+        "rank": 17,
+        "team": "SEA",
+        "field_stack_share": 1.028299800741494e-08,
+        "mean_top6_own_pct": 1.0070010836666665
+      },
+      {
+        "rank": 18,
+        "team": "SF",
+        "field_stack_share": 6.5504398213292784e-09,
+        "mean_top6_own_pct": 0.8996376351666666
+      },
+      {
+        "rank": 19,
+        "team": "MIA",
+        "field_stack_share": 2.80418388638113e-09,
+        "mean_top6_own_pct": 0.727698739
+      },
+      {
+        "rank": 20,
+        "team": "BAL",
+        "field_stack_share": 9.548531629165504e-10,
+        "mean_top6_own_pct": 0.5558839665
+      },
+      {
+        "rank": 21,
+        "team": "KC",
+        "field_stack_share": 2.1458876748835745e-10,
+        "mean_top6_own_pct": 0.3827381438333333
+      },
+      {
+        "rank": 22,
+        "team": "STL",
+        "field_stack_share": 5.411672298712185e-11,
+        "mean_top6_own_pct": 0.2712269701666667
+      }
+    ],
+    "chalk_top3": [
+      "ATL",
+      "CLE",
+      "NYM"
+    ],
+    "bottom_half": [
+      "PHI",
+      "MIN",
+      "TB",
+      "LAA",
+      "CWS",
+      "SEA",
+      "SF",
+      "MIA",
+      "BAL",
+      "KC",
+      "STL"
+    ]
+  },
+  "5-2-26": {
+    "n_teams": 10,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "ATH",
+        "field_stack_share": 0.006178033776080673,
+        "mean_top6_own_pct": 28.035775236666666
+      },
+      {
+        "rank": 2,
+        "team": "CLE",
+        "field_stack_share": 0.0013732374247523746,
+        "mean_top6_own_pct": 19.250251493
+      },
+      {
+        "rank": 3,
+        "team": "PHI",
+        "field_stack_share": 0.00043184958856386707,
+        "mean_top6_own_pct": 14.415613424
+      },
+      {
+        "rank": 4,
+        "team": "BOS",
+        "field_stack_share": 0.0003084061365964612,
+        "mean_top6_own_pct": 13.251979419333333
+      },
+      {
+        "rank": 5,
+        "team": "MIA",
+        "field_stack_share": 0.00020052020288817806,
+        "mean_top6_own_pct": 11.899796481166668
+      },
+      {
+        "rank": 6,
+        "team": "PIT",
+        "field_stack_share": 0.00019227118905203183,
+        "mean_top6_own_pct": 11.775478206666667
+      },
+      {
+        "rank": 7,
+        "team": "HOU",
+        "field_stack_share": 8.107029803190517e-05,
+        "mean_top6_own_pct": 9.488890661833333
+      },
+      {
+        "rank": 8,
+        "team": "MIL",
+        "field_stack_share": 3.433184246753295e-05,
+        "mean_top6_own_pct": 7.654631315166667
+      },
+      {
+        "rank": 9,
+        "team": "CIN",
+        "field_stack_share": 4.1541220317021554e-07,
+        "mean_top6_own_pct": 2.5387492760000003
+      },
+      {
+        "rank": 10,
+        "team": "WSH",
+        "field_stack_share": 1.9728287465285745e-07,
+        "mean_top6_own_pct": 2.1075231163333332
+      }
+    ],
+    "chalk_top3": [
+      "ATH",
+      "CLE",
+      "PHI"
+    ],
+    "bottom_half": [
+      "PIT",
+      "HOU",
+      "MIL",
+      "CIN",
+      "WSH"
+    ]
+  },
+  "5-2-26-main": {
+    "n_teams": 12,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "ATL",
+        "field_stack_share": 0.006233045684246689,
+        "mean_top6_own_pct": 28.09797860666667
+      },
+      {
+        "rank": 2,
+        "team": "SD",
+        "field_stack_share": 0.0008623997811210673,
+        "mean_top6_own_pct": 17.136698638333332
+      },
+      {
+        "rank": 3,
+        "team": "TEX",
+        "field_stack_share": 0.0002488322489025701,
+        "mean_top6_own_pct": 12.5596248135
+      },
+      {
+        "rank": 4,
+        "team": "DET",
+        "field_stack_share": 8.2832809208452e-05,
+        "mean_top6_own_pct": 9.5400488295
+      },
+      {
+        "rank": 5,
+        "team": "NYM",
+        "field_stack_share": 7.672740386915146e-05,
+        "mean_top6_own_pct": 9.359176251
+      },
+      {
+        "rank": 6,
+        "team": "LAD",
+        "field_stack_share": 7.023252864128425e-05,
+        "mean_top6_own_pct": 9.154498887666668
+      },
+      {
+        "rank": 7,
+        "team": "SEA",
+        "field_stack_share": 5.068383178902064e-05,
+        "mean_top6_own_pct": 8.437569443666666
+      },
+      {
+        "rank": 8,
+        "team": "STL",
+        "field_stack_share": 1.157035878283729e-05,
+        "mean_top6_own_pct": 5.8322577183333335
+      },
+      {
+        "rank": 9,
+        "team": "KC",
+        "field_stack_share": 5.8238865755848554e-06,
+        "mean_top6_own_pct": 4.912507507
+      },
+      {
+        "rank": 10,
+        "team": "COL",
+        "field_stack_share": 1.5345146787023176e-06,
+        "mean_top6_own_pct": 3.519595565
+      },
+      {
+        "rank": 11,
+        "team": "CWS",
+        "field_stack_share": 6.015220945337797e-07,
+        "mean_top6_own_pct": 2.7849211025000002
+      },
+      {
+        "rank": 12,
+        "team": "LAA",
+        "field_stack_share": 3.753035828031199e-08,
+        "mean_top6_own_pct": 1.391860396
+      }
+    ],
+    "chalk_top3": [
+      "ATL",
+      "SD",
+      "TEX"
+    ],
+    "bottom_half": [
+      "SEA",
+      "STL",
+      "KC",
+      "COL",
+      "CWS",
+      "LAA"
+    ]
+  },
+  "5-2-26-night": {
+    "n_teams": 4,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "NYM",
+        "field_stack_share": 0.012951891048688673,
+        "mean_top6_own_pct": 33.735200496666664
+      },
+      {
+        "rank": 2,
+        "team": "SEA",
+        "field_stack_share": 0.005857446069774725,
+        "mean_top6_own_pct": 27.664770684999997
+      },
+      {
+        "rank": 3,
+        "team": "KC",
+        "field_stack_share": 0.004039507578924538,
+        "mean_top6_own_pct": 25.21053759833333
+      },
+      {
+        "rank": 4,
+        "team": "LAA",
+        "field_stack_share": 0.0018968903032848062,
+        "mean_top6_own_pct": 20.869428396666667
+      }
+    ],
+    "chalk_top3": [
+      "NYM",
+      "SEA",
+      "KC"
+    ],
+    "bottom_half": [
+      "KC",
+      "LAA"
+    ]
+  },
+  "5-3-26": {
+    "n_teams": 16,
+    "team_ranking": [
+      {
+        "rank": 1,
+        "team": "CHC",
+        "field_stack_share": 0.0050362471173651755,
+        "mean_top6_own_pct": 26.639542245
+      },
+      {
+        "rank": 2,
+        "team": "ARI",
+        "field_stack_share": 0.0017269458101973523,
+        "mean_top6_own_pct": 20.385420651666667
+      },
+      {
+        "rank": 3,
+        "team": "NYY",
+        "field_stack_share": 0.0006432806475319359,
+        "mean_top6_own_pct": 15.925758346666667
+      },
+      {
+        "rank": 4,
+        "team": "LAD",
+        "field_stack_share": 0.00026347108023532705,
+        "mean_top6_own_pct": 12.740405122333334
+      },
+      {
+        "rank": 5,
+        "team": "MIL",
+        "field_stack_share": 0.0002207761211133875,
+        "mean_top6_own_pct": 12.189559867999998
+      },
+      {
+        "rank": 6,
+        "team": "PHI",
+        "field_stack_share": 7.989401523400776e-05,
+        "mean_top6_own_pct": 9.454282213833332
+      },
+      {
+        "rank": 7,
+        "team": "BOS",
+        "field_stack_share": 7.309987780496968e-05,
+        "mean_top6_own_pct": 9.246538083999999
+      },
+      {
+        "rank": 8,
+        "team": "TB",
+        "field_stack_share": 3.2056333928490902e-06,
+        "mean_top6_own_pct": 4.231345259833334
+      },
+      {
+        "rank": 9,
+        "team": "STL",
+        "field_stack_share": 9.412175386351192e-07,
+        "mean_top6_own_pct": 3.114745039166667
+      },
+      {
+        "rank": 10,
+        "team": "SF",
+        "field_stack_share": 3.1951514514239414e-07,
+        "mean_top6_own_pct": 2.377512791333333
+      },
+      {
+        "rank": 11,
+        "team": "WSH",
+        "field_stack_share": 3.608795335429414e-08,
+        "mean_top6_own_pct": 1.3782898666666668
+      },
+      {
+        "rank": 12,
+        "team": "HOU",
+        "field_stack_share": 1.5135117650969143e-08,
+        "mean_top6_own_pct": 1.1091657495
+      },
+      {
+        "rank": 13,
+        "team": "MIA",
+        "field_stack_share": 5.750933243743912e-09,
+        "mean_top6_own_pct": 0.8708324053333333
+      },
+      {
+        "rank": 14,
+        "team": "CIN",
+        "field_stack_share": 2.7749498916634006e-09,
+        "mean_top6_own_pct": 0.7257946896666666
+      },
+      {
+        "rank": 15,
+        "team": "PIT",
+        "field_stack_share": 3.1354133777647286e-10,
+        "mean_top6_own_pct": 0.4207980336666666
+      },
+      {
+        "rank": 16,
+        "team": "BAL",
+        "field_stack_share": 3.010349197996089e-10,
+        "mean_top6_own_pct": 0.41653760833333336
+      }
+    ],
+    "chalk_top3": [
+      "CHC",
+      "ARI",
+      "NYY"
+    ],
+    "bottom_half": [
+      "STL",
+      "SF",
+      "WSH",
+      "HOU",
+      "MIA",
+      "CIN",
+      "PIT",
+      "BAL"
+    ]
+  }
+}

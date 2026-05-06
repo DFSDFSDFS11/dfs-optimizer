@@ -1,0 +1,11 @@
+Entity,jaccard_top2,jaccard_top3,jaccard_top5,n_slates
+V1,0.2361,0.2833,0.3502,24
+b_heals152,0.4394,0.4500,0.4430,22
+bgreseth,0.3333,0.3688,0.4814,16
+needlunchmoney,0.1754,0.2842,0.3350,19
+nerdytenor,0.4394,0.4864,0.4719,22
+shaidyadvice,0.3788,0.3500,0.4850,22
+shipmymoney,0.3485,0.4364,0.4861,22
+youdacao,0.3750,0.3625,0.4705,16
+zroth2,0.2899,0.3478,0.4988,23
+PRO_AVG,0.3475,0.3858,0.4590,

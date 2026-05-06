@@ -27,19 +27,19 @@ import { exportForDraftKings, exportDetailedLineups } from '../scoring';
 
 const DATA_DIR = 'C:/Users/colin/dfs opto';
 const PROJ_FILE = 'mlbdkprojpre.csv';
-const POOL_FILES = ['sspool1pre.csv', 'sspool2pre.csv', 'sspool3pre.csv'];
-const TARGET_COUNT = 75;
+const POOL_FILES = ['sspool2pre.csv', 'sspool3pre.csv'];  // night slate fresh pools
+const TARGET_COUNT = 1000;
 const N = TARGET_COUNT;
 
 const TODFS_V1 = {
-  STACK_BONUS_PER_HITTER: 0.10,
-  BRINGBACK_1: 0.05,
-  BRINGBACK_2: 0.08,
+  STACK_BONUS_PER_HITTER: 0,     // V1-NoCorr: zero correlation forcing. Let pool's natural stack mix flow through.
+  BRINGBACK_1: 0,                 // no forced bring-back (sim shows 5+2BB is -ROI)
+  BRINGBACK_2: 0,                 // no forced bring-back
   PITCHER_VS_HITTER_PENALTY: -0.10,
   MIN_PRIMARY_STACK: 4,
   W_PROJ: 1.0, W_LEV: 0.30, W_VAR: 0.15, W_CMB: 0.25,
-  EXPOSURE_CAP_HITTER: 0.20, EXPOSURE_CAP_PITCHER: 0.45,
-  TEAM_STACK_CAP: 0.15,
+  EXPOSURE_CAP_HITTER: 0.25, EXPOSURE_CAP_PITCHER: 0.45,
+  TEAM_STACK_CAP: 0.20,
   BAND_HIGH_PCT: 0.20, BAND_MID_PCT: 0.60, BAND_LOW_PCT: 0.20,
   MAX_PAIRWISE_OVERLAP: 6,
   TRIPLE_FREQ_CAP: 5,

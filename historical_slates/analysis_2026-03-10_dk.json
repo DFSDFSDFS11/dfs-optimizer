@@ -1,0 +1,4729 @@
+{
+  "sport": "nba",
+  "perSlate": [
+    {
+      "slate": "2026-03-10_dk",
+      "sport": "nba",
+      "site": "dk",
+      "numGames": 5,
+      "winnerAnatomy": {
+        "slate": "2026-03-10_dk",
+        "totalEntries": 18269,
+        "top1Count": 182,
+        "top1Threshold": 342,
+        "winnerAvgOwnership": 0.2316413617886178,
+        "winnerAvgProjection": 275.49373983739855,
+        "winnerAvgActual": 348.6844919786096,
+        "winnerAvgError": 72.60991869918702,
+        "winnerAvgSalary": 49888.617886178865,
+        "winnerAvgSalaryLeftover": 111.38211382113514,
+        "winnerAvgVariance": 712.3639233058921,
+        "winnerAvgStackDepth": 2.6097560975609757,
+        "fieldAvgOwnership": 0.2178325832368777,
+        "fieldAvgProjection": 267.61955062299467,
+        "fieldAvgActual": 280.22118199768505,
+        "fieldAvgError": 12.601631374685429,
+        "fieldAvgSalary": 49805.222305440184,
+        "fieldAvgSalaryLeftover": 194.77769455981615,
+        "fieldAvgVariance": 708.545860022428,
+        "fieldAvgStackDepth": 2.653435010553551,
+        "ownershipDirection": "chalkier",
+        "ownershipDelta": 1.3808778551740093,
+        "varianceDelta": 0.005388590208322164,
+        "projectionDelta": 0.029423071655540367,
+        "stackDepthDelta": -0.0436789129925752,
+        "alphaPlayers": [
+          {
+            "id": "42221373",
+            "name": "Rayan Rupert",
+            "team": "MEM",
+            "position": "SF/F/UTIL",
+            "salary": 4000,
+            "ownership": 0.14679999999999999,
+            "projection": 21,
+            "actual": 38.5,
+            "projectionError": 17.5,
+            "ceilingRealization": 0.8932507366418413,
+            "frequencyInTop1": 0.36585365853658536,
+            "frequencyInField": 0.07013004698032274,
+            "winnerLift": 5.216789012550319
+          },
+          {
+            "id": "42221074",
+            "name": "Karl-Anthony Towns",
+            "team": "NYK",
+            "position": "C/UTIL",
+            "salary": 8600,
+            "ownership": 0.1223,
+            "projection": 42.3,
+            "actual": 64,
+            "projectionError": 21.700000000000003,
+            "ceilingRealization": 1.0158730158730158,
+            "frequencyInTop1": 0.6016260162601627,
+            "frequencyInField": 0.13549397426295362,
+            "winnerLift": 4.44024185970503
+          },
+          {
+            "id": "42221045",
+            "name": "Shai Gilgeous-Alexander",
+            "team": "OKC",
+            "position": "PG/G/UTIL",
+            "salary": 10700,
+            "ownership": 0.275,
+            "projection": 52.7,
+            "actual": 75.75,
+            "projectionError": 23.049999999999997,
+            "ceilingRealization": 0.951035781544256,
+            "frequencyInTop1": 0.8292682926829268,
+            "frequencyInField": 0.28950772792265267,
+            "winnerLift": 2.8644081407888398
+          },
+          {
+            "id": "42221504",
+            "name": "Drake Powell",
+            "team": "BKN",
+            "position": "SG/G/UTIL",
+            "salary": 3000,
+            "ownership": 0.0018,
+            "projection": 17.6,
+            "actual": 16.75,
+            "projectionError": -0.8500000000000014,
+            "ceilingRealization": 0.46853146853146854,
+            "frequencyInTop1": 0.08943089430894309,
+            "frequencyInField": 0.031864914550282564,
+            "winnerLift": 2.8065631297338616
+          },
+          {
+            "id": "42221394",
+            "name": "EJ Harkless",
+            "team": "UTA",
+            "position": "PG/SG/G/UTIL",
+            "salary": 3900,
+            "ownership": 0.2086,
+            "projection": 18.04,
+            "actual": 29,
+            "projectionError": 10.96,
+            "ceilingRealization": 0.8332734717333524,
+            "frequencyInTop1": 0.11382113821138211,
+            "frequencyInField": 0.04282698985497379,
+            "winnerLift": 2.6576964338800777
+          },
+          {
+            "id": "42221183",
+            "name": "Jaylin Williams",
+            "team": "OKC",
+            "position": "PF/C/F/UTIL",
+            "salary": 5700,
+            "ownership": 0.2789,
+            "projection": 35,
+            "actual": 57,
+            "projectionError": 22,
+            "ceilingRealization": 1.0382513661202186,
+            "frequencyInTop1": 0.975609756097561,
+            "frequencyInField": 0.3757744944508749,
+            "winnerLift": 2.59626390429514
+          },
+          {
+            "id": "42221238",
+            "name": "Day'Ron Sharpe",
+            "team": "BKN",
+            "position": "C/UTIL",
+            "salary": 5000,
+            "ownership": 0.042300000000000004,
+            "projection": 26.8,
+            "actual": 33.75,
+            "projectionError": 6.949999999999999,
+            "ceilingRealization": 0.7627118644067796,
+            "frequencyInTop1": 0.0975609756097561,
+            "frequencyInField": 0.0502485190985225,
+            "winnerLift": 1.941569171789279
+          },
+          {
+            "id": "42221306",
+            "name": "Danny Wolf",
+            "team": "BKN",
+            "position": "PF/C/F/UTIL",
+            "salary": 4500,
+            "ownership": 0.4168,
+            "projection": 31.9,
+            "actual": 32.75,
+            "projectionError": 0.8500000000000014,
+            "ceilingRealization": 0.6185080264400378,
+            "frequencyInTop1": 0.7073170731707317,
+            "frequencyInField": 0.38605569551303875,
+            "winnerLift": 1.832163289886867
+          },
+          {
+            "id": "42221259",
+            "name": "Jaylen Wells",
+            "team": "MEM",
+            "position": "SF/F/UTIL",
+            "salary": 4800,
+            "ownership": 0.142,
+            "projection": 27.8,
+            "actual": 31.25,
+            "projectionError": 3.4499999999999993,
+            "ceilingRealization": 0.6175889328063241,
+            "frequencyInTop1": 0.3008130081300813,
+            "frequencyInField": 0.17484850548103764,
+            "winnerLift": 1.7204208140212245
+          },
+          {
+            "id": "42221332",
+            "name": "Nolan Traore",
+            "team": "BKN",
+            "position": "PG/G/UTIL",
+            "salary": 4400,
+            "ownership": 0.12300000000000001,
+            "projection": 27.9,
+            "actual": 27.75,
+            "projectionError": -0.14999999999999858,
+            "ceilingRealization": 0.6052212601688076,
+            "frequencyInTop1": 0.34146341463414637,
+            "frequencyInField": 0.20113025124259548,
+            "winnerLift": 1.6977228066119525
+          },
+          {
+            "id": "42221273",
+            "name": "Isaiah Joe",
+            "team": "OKC",
+            "position": "SG/G/UTIL",
+            "salary": 4700,
+            "ownership": 0.06860000000000001,
+            "projection": 25.5,
+            "actual": 26.5,
+            "projectionError": 1,
+            "ceilingRealization": 0.5908584169453734,
+            "frequencyInTop1": 0.08943089430894309,
+            "frequencyInField": 0.059780758493906176,
+            "winnerLift": 1.4959812582180492
+          },
+          {
+            "id": "42221220",
+            "name": "Javon Small",
+            "team": "MEM",
+            "position": "PG/G/UTIL",
+            "salary": 5400,
+            "ownership": 0.2893,
+            "projection": 31,
+            "actual": 36.75,
+            "projectionError": 5.75,
+            "ceilingRealization": 0.6441604879844349,
+            "frequencyInTop1": 0.5365853658536586,
+            "frequencyInField": 0.3731871723292708,
+            "winnerLift": 1.4378451502084808
+          },
+          {
+            "id": "42221423",
+            "name": "Quinten Post",
+            "team": "GSW",
+            "position": "C/UTIL",
+            "salary": 3500,
+            "ownership": 0.10640000000000001,
+            "projection": 21.9,
+            "actual": 19.5,
+            "projectionError": -2.3999999999999986,
+            "ceilingRealization": 0.4386951631046119,
+            "frequencyInTop1": 0.16260162601626016,
+            "frequencyInField": 0.12153605229114182,
+            "winnerLift": 1.3378880007287468
+          },
+          {
+            "id": "42221345",
+            "name": "John Konchar",
+            "team": "UTA",
+            "position": "SF/F/UTIL",
+            "salary": 4300,
+            "ownership": 0.114,
+            "projection": 22.5,
+            "actual": 25,
+            "projectionError": 2.5,
+            "ceilingRealization": 0.5359056806002144,
+            "frequencyInTop1": 0.056910569105691054,
+            "frequencyInField": 0.043507864097501195,
+            "winnerLift": 1.3080524701960634
+          },
+          {
+            "id": "42221170",
+            "name": "De'Anthony Melton",
+            "team": "GSW",
+            "position": "SG/SF/F/G/UTIL",
+            "salary": 5900,
+            "ownership": 0.21539999999999998,
+            "projection": 32.8,
+            "actual": 40.25,
+            "projectionError": 7.450000000000003,
+            "ceilingRealization": 0.8001590378211818,
+            "frequencyInTop1": 0.3089430894308943,
+            "frequencyInField": 0.2664941785252264,
+            "winnerLift": 1.1592864472334043
+          }
+        ],
+        "stackProfile": [
+          {
+            "team": "BKN",
+            "winnerRate": 0.008130081300813009,
+            "fieldRate": 0.0028596718186151017,
+            "winnerAvgDepth": 1.4471544715447155,
+            "fieldAvgDepth": 1.112616599714033,
+            "stackLift": 2.8430120015485874
+          },
+          {
+            "team": "MEM",
+            "winnerRate": 0.056910569105691054,
+            "fieldRate": 0.08197725880029959,
+            "winnerAvgDepth": 2.0569105691056913,
+            "fieldAvgDepth": 1.8925580445291754,
+            "stackLift": 0.6942238608432595
+          },
+          {
+            "team": "GSW",
+            "winnerRate": 0,
+            "fieldRate": 0.013413222577789883,
+            "winnerAvgDepth": 0.6178861788617886,
+            "fieldAvgDepth": 1.137468509566283,
+            "stackLift": 0
+          }
+        ]
+      },
+      "fieldAnalysis": {
+        "totalEntries": 18269,
+        "uniqueLineups": 14687,
+        "top5OwnedPlayers": [
+          {
+            "name": "Danny Wolf",
+            "team": "BKN",
+            "ownership": 0.4168,
+            "actual": 32.75,
+            "projectionError": 0.8500000000000014
+          },
+          {
+            "name": "Olivier-Maxence Prosper",
+            "team": "MEM",
+            "ownership": 0.35869999999999996,
+            "actual": 23.5,
+            "projectionError": -5.699999999999999
+          },
+          {
+            "name": "Quentin Grimes",
+            "team": "PHI",
+            "ownership": 0.349,
+            "actual": 28.25,
+            "projectionError": -7.450000000000003
+          },
+          {
+            "name": "Nikola Jokic",
+            "team": "DEN",
+            "ownership": 0.3301,
+            "actual": 75.5,
+            "projectionError": 14
+          },
+          {
+            "name": "Brice Sensabaugh",
+            "team": "UTA",
+            "ownership": 0.31129999999999997,
+            "actual": 31,
+            "projectionError": 0.3000000000000007
+          }
+        ],
+        "ownershipGini": 0.6940064220183486,
+        "top20Combos": [
+          {
+            "players": [
+              "Nikola Jokic",
+              "Cam Spencer",
+              "Danny Wolf"
+            ],
+            "frequency": 0.11084632668346156,
+            "avgActual": 291.0456081081081,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Javon Small",
+              "Cam Spencer"
+            ],
+            "frequency": 0.10893987880438483,
+            "avgActual": 290.59625,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Javon Small",
+              "Danny Wolf"
+            ],
+            "frequency": 0.09750119152992442,
+            "avgActual": 294.51518854748605,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Jaylin Williams",
+              "Cam Spencer"
+            ],
+            "frequency": 0.08667529107373868,
+            "avgActual": 303.44501178318933,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Javon Small",
+              "Cam Spencer",
+              "Danny Wolf"
+            ],
+            "frequency": 0.08613059167971676,
+            "avgActual": 295.0699604743083,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Quentin Grimes",
+              "Cam Spencer"
+            ],
+            "frequency": 0.08102403486076122,
+            "avgActual": 281.37584033613444,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Olivier-Maxence Prosper",
+              "Cam Spencer"
+            ],
+            "frequency": 0.07891332470892626,
+            "avgActual": 283.0776531492666,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Cam Spencer",
+              "Walter Clayton Jr."
+            ],
+            "frequency": 0.07632600258732213,
+            "avgActual": 284.1380463871543,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Javon Small",
+              "Olivier-Maxence Prosper"
+            ],
+            "frequency": 0.07564512834479471,
+            "avgActual": 285.3951395139514,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Shai Gilgeous-Alexander",
+              "Cam Spencer",
+              "Danny Wolf"
+            ],
+            "frequency": 0.0724450194049159,
+            "avgActual": 302.2164003759398,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Jaylin Williams",
+              "Cam Spencer",
+              "Danny Wolf"
+            ],
+            "frequency": 0.07115135834411385,
+            "avgActual": 306.9433014354067,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Jaylin Williams",
+              "Javon Small",
+              "Cam Spencer"
+            ],
+            "frequency": 0.07101518349560836,
+            "avgActual": 307.1232023010547,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Jaylin Williams",
+              "Javon Small"
+            ],
+            "frequency": 0.06978960985905903,
+            "avgActual": 307.25853658536585,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Quentin Grimes",
+              "Danny Wolf"
+            ],
+            "frequency": 0.06951726016204807,
+            "avgActual": 284.6907443682664,
+            "hitTop1": false
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Quentin Grimes",
+              "Javon Small"
+            ],
+            "frequency": 0.06781507455572956,
+            "avgActual": 286.3918172690763,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Quentin Grimes",
+              "Cam Spencer",
+              "Danny Wolf"
+            ],
+            "frequency": 0.06747463743446586,
+            "avgActual": 284.4936932391524,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Javon Small",
+              "Olivier-Maxence Prosper",
+              "Cam Spencer"
+            ],
+            "frequency": 0.06665758834343297,
+            "avgActual": 286.7308478038815,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Walter Clayton Jr.",
+              "Danny Wolf"
+            ],
+            "frequency": 0.06379791652481787,
+            "avgActual": 288.58591248665954,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Quentin Grimes",
+              "Jaylin Williams",
+              "Cam Spencer"
+            ],
+            "frequency": 0.06379791652481787,
+            "avgActual": 295.23906083244395,
+            "hitTop1": true
+          },
+          {
+            "players": [
+              "Nikola Jokic",
+              "Danny Wolf",
+              "Nolan Traore"
+            ],
+            "frequency": 0.062368080615510316,
+            "avgActual": 294.74754366812226,
+            "hitTop1": true
+          }
+        ],
+        "chalkComboHitRate": 0.95,
+        "exactDuplicateCount": 3560,
+        "avgDuplicatesPerLineup": 0.24239123033975624,
+        "fieldStackDistribution": [
+          {
+            "team": "MEM",
+            "fraction": 0.08197725880029959
+          },
+          {
+            "team": "GSW",
+            "fraction": 0.013413222577789883
+          },
+          {
+            "team": "PHI",
+            "fraction": 0.008987540001361748
+          },
+          {
+            "team": "CLE",
+            "fraction": 0.003132021515626064
+          },
+          {
+            "team": "BKN",
+            "fraction": 0.0028596718186151017
+          },
+          {
+            "team": "UTA",
+            "fraction": 0.001974535303329475
+          },
+          {
+            "team": "LAC",
+            "fraction": 0.0012255736365493293
+          },
+          {
+            "team": "OKC",
+            "fraction": 0.0010893987880438484
+          },
+          {
+            "team": "NYK",
+            "fraction": 0.0008170490910328862
+          },
+          {
+            "team": "DEN",
+            "fraction": 0.0002723496970109621
+          }
+        ],
+        "understackedTeams": [
+          "DEN",
+          "OKC",
+          "LAC",
+          "CLE",
+          "NYK",
+          "GSW",
+          "UTA",
+          "PHI",
+          "BKN"
+        ],
+        "fieldAnchorDistribution": [
+          {
+            "name": "Nikola Jokic",
+            "ownership": 0.3301,
+            "fraction": 0.4669435555252945,
+            "actual": 75.5
+          },
+          {
+            "name": "Shai Gilgeous-Alexander",
+            "ownership": 0.275,
+            "fraction": 0.22945461973173556,
+            "actual": 75.75
+          },
+          {
+            "name": "Donovan Mitchell",
+            "ownership": 0.157,
+            "fraction": 0.06420644107033431,
+            "actual": 33.75
+          },
+          {
+            "name": "Kawhi Leonard",
+            "ownership": 0.0674,
+            "fraction": 0.06338939197930142,
+            "actual": 54.25
+          },
+          {
+            "name": "Karl-Anthony Towns",
+            "ownership": 0.1223,
+            "fraction": 0.04657179818887452,
+            "actual": 64
+          },
+          {
+            "name": "Evan Mobley",
+            "ownership": 0.11900000000000001,
+            "fraction": 0.030503166065227752,
+            "actual": 32
+          },
+          {
+            "name": "Jalen Brunson",
+            "ownership": 0.10980000000000001,
+            "fraction": 0.02764349424661265,
+            "actual": 46.5
+          },
+          {
+            "name": "James Harden",
+            "ownership": 0.09369999999999999,
+            "fraction": 0.020766664397085858,
+            "actual": 37.25
+          },
+          {
+            "name": "Jamal Murray",
+            "ownership": 0.1963,
+            "fraction": 0.01960917818478927,
+            "actual": 42
+          },
+          {
+            "name": "Kyle Filipowski",
+            "ownership": 0.1431,
+            "fraction": 0.017566555457207055,
+            "actual": 51.25
+          }
+        ],
+        "chalkAnchorActualVsProj": 0.22764227642276422,
+        "slateType": "chalk_won"
+      },
+      "proAnalysis": {
+        "prosDetected": 57,
+        "minEntriesThreshold": 100,
+        "topPros": [
+          {
+            "username": "bgreseth",
+            "entries": 150,
+            "top1Hits": 15,
+            "top1Rate": 0.1,
+            "top5Hits": 42,
+            "top5Rate": 0.28,
+            "avgActual": 312.255,
+            "bestRank": 6,
+            "avgProjection": 282.09460000000007,
+            "avgVariance": 731.3995796681799,
+            "avgOwnership": 0.25685116666666674,
+            "maxExposure": 0.88,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.5567999999999986,
+            "avgPairwiseOverlap": 3.466666666666667,
+            "avgStackDepth": 2.7133333333333334,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.4266666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.2925376148641827
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.38666666666666666,
+                "fieldOwnership": 0.275,
+                "leverage": 1.406060606060606
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.08,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.1869436201780414
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.04666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.29723991507430997
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.04,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.3270645952575634
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 6,
+                "actual": 360.25,
+                "projection": 285.59999999999997,
+                "ownership": 0.2498625,
+                "variance": 718.700992927192,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 33,
+                "actual": 353.5,
+                "projection": 280.13,
+                "ownership": 0.22156250000000002,
+                "variance": 742.603831803424,
+                "stackTeam": "BKN",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 33,
+                "actual": 353.5,
+                "projection": 278.23,
+                "ownership": 0.23317500000000002,
+                "variance": 748.171729549272,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 37,
+                "actual": 353,
+                "projection": 284.73,
+                "ownership": 0.259375,
+                "variance": 763.6496386366919,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 46,
+                "actual": 352.75,
+                "projection": 283.9,
+                "ownership": 0.2444,
+                "variance": 721.2148243525161,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 78,
+                "actual": 348.25,
+                "projection": 282.43,
+                "ownership": 0.25020000000000003,
+                "variance": 754.7263259437839,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 99,
+                "actual": 346.5,
+                "projection": 281.23,
+                "ownership": 0.2592875,
+                "variance": 741.8411222076198,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 99,
+                "actual": 346.5,
+                "projection": 283.13000000000005,
+                "ownership": 0.24767500000000003,
+                "variance": 702.908644770252,
+                "stackTeam": "BKN",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 110,
+                "actual": 346.25,
+                "projection": 280.4,
+                "ownership": 0.24431250000000002,
+                "variance": 701.9765445557799,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 116,
+                "actual": 345.25,
+                "projection": 279.4,
+                "ownership": 0.2300375,
+                "variance": 726.9761287377801,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "ckk-244ayk",
+            "entries": 150,
+            "top1Hits": 9,
+            "top1Rate": 0.06,
+            "top5Hits": 19,
+            "top5Rate": 0.12666666666666668,
+            "avgActual": 300.7583333333333,
+            "bestRank": 1,
+            "avgProjection": 276.6568666666667,
+            "avgVariance": 707.9136875599992,
+            "avgOwnership": 0.22660175,
+            "maxExposure": 0.8,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 2.879555555555554,
+            "avgPairwiseOverlap": 2.8266666666666667,
+            "avgStackDepth": 2.5,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.4,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.2117540139351712
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.3333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 1.212121212121212
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.18,
+                "fieldOwnership": 0.0674,
+                "leverage": 2.6706231454005933
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.04666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.29723991507430997
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.02,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 0.21344717182497333
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 1,
+                "actual": 362.5,
+                "projection": 277.20000000000005,
+                "ownership": 0.20196250000000002,
+                "variance": 696.3663939635001,
+                "stackTeam": "BKN",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 4,
+                "actual": 362,
+                "projection": 275.79999999999995,
+                "ownership": 0.219125,
+                "variance": 715.8793322626241,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 5,
+                "actual": 361.25,
+                "projection": 274.8,
+                "ownership": 0.19516250000000002,
+                "variance": 705.422261400332,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 20,
+                "actual": 357.25,
+                "projection": 281.40000000000003,
+                "ownership": 0.21898750000000003,
+                "variance": 702.1968569991001,
+                "stackTeam": "BKN",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 56,
+                "actual": 351,
+                "projection": 273.1,
+                "ownership": 0.187075,
+                "variance": 756.1543191698838,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 68,
+                "actual": 349.5,
+                "projection": 275.5,
+                "ownership": 0.21210000000000004,
+                "variance": 693.8344759203321,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 74,
+                "actual": 348.5,
+                "projection": 272.1,
+                "ownership": 0.19934999999999997,
+                "variance": 723.440109082036,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 94,
+                "actual": 347,
+                "projection": 279,
+                "ownership": 0.2346375,
+                "variance": 700.50399973726,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 113,
+                "actual": 345.5,
+                "projection": 279.3,
+                "ownership": 0.2333125,
+                "variance": 709.5210772463039,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "invertedcheese",
+            "entries": 150,
+            "top1Hits": 8,
+            "top1Rate": 0.05333333333333334,
+            "top5Hits": 23,
+            "top5Rate": 0.15333333333333332,
+            "avgActual": 305.15166666666664,
+            "bestRank": 33,
+            "avgProjection": 281.5811333333334,
+            "avgVariance": 740.4688097066756,
+            "avgOwnership": 0.26594375000000003,
+            "maxExposure": 0.8733333333333333,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.4052444444444423,
+            "avgPairwiseOverlap": 3.3866666666666667,
+            "avgStackDepth": 2.7533333333333334,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.4666666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.4137130162576996
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.44666666666666666,
+                "fieldOwnership": 0.275,
+                "leverage": 1.624242424242424
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.7912957467853611
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.10902153175252112
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.12143290831815422
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 33,
+                "actual": 353.5,
+                "projection": 278.23,
+                "ownership": 0.23317500000000002,
+                "variance": 748.171729549272,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 37,
+                "actual": 353,
+                "projection": 284.73,
+                "ownership": 0.259375,
+                "variance": 763.6496386366919,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 58,
+                "actual": 350.5,
+                "projection": 283.70000000000005,
+                "ownership": 0.2609125,
+                "variance": 741.80579572992,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 78,
+                "actual": 348.25,
+                "projection": 282.43,
+                "ownership": 0.25020000000000003,
+                "variance": 754.7263259437839,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 85,
+                "actual": 348,
+                "projection": 279.90000000000003,
+                "ownership": 0.26413749999999997,
+                "variance": 742.9490073037398,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 99,
+                "actual": 346.5,
+                "projection": 281.23,
+                "ownership": 0.2592875,
+                "variance": 741.8411222076198,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 99,
+                "actual": 346.5,
+                "projection": 283.13000000000005,
+                "ownership": 0.24767500000000003,
+                "variance": 702.908644770252,
+                "stackTeam": "BKN",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 116,
+                "actual": 345.25,
+                "projection": 279.4,
+                "ownership": 0.2300375,
+                "variance": 726.9761287377801,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "Jthayesjr",
+            "entries": 100,
+            "top1Hits": 5,
+            "top1Rate": 0.05,
+            "top5Hits": 9,
+            "top5Rate": 0.09,
+            "avgActual": 299.06,
+            "bestRank": 78,
+            "avgProjection": 279.21750000000003,
+            "avgVariance": 736.9177794918046,
+            "avgOwnership": 0.25644887499999985,
+            "maxExposure": 0.7,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.0676000000000005,
+            "avgPairwiseOverlap": 2.97,
+            "avgStackDepth": 2.74,
+            "uniqueStackTeams": 4,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.66,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.9993941229930325
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.26,
+                "fieldOwnership": 0.275,
+                "leverage": 0.9454545454545454
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.03,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.44510385756676557
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.03,
+                "fieldOwnership": 0.157,
+                "leverage": 0.19108280254777069
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.02,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.1635322976287817
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 78,
+                "actual": 348.25,
+                "projection": 282.43,
+                "ownership": 0.25020000000000003,
+                "variance": 754.7263259437839,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 97,
+                "actual": 346.75,
+                "projection": 282.90000000000003,
+                "ownership": 0.2402125,
+                "variance": 727.4320871117999,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 116,
+                "actual": 345.25,
+                "projection": 279.4,
+                "ownership": 0.2300375,
+                "variance": 726.9761287377801,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 170,
+                "actual": 342.5,
+                "projection": 281.6,
+                "ownership": 0.23658750000000003,
+                "variance": 688.868675451432,
+                "stackTeam": "GSW",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 175,
+                "actual": 342.25,
+                "projection": 275.73,
+                "ownership": 0.2327375,
+                "variance": 717.4331641008679,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "bhy101",
+            "entries": 150,
+            "top1Hits": 6,
+            "top1Rate": 0.04,
+            "top5Hits": 24,
+            "top5Rate": 0.16,
+            "avgActual": 303.91,
+            "bestRank": 20,
+            "avgProjection": 277.5480666666665,
+            "avgVariance": 739.0100539632136,
+            "avgOwnership": 0.24808766666666643,
+            "maxExposure": 0.8333333333333334,
+            "maxExposurePlayer": "Javon Small",
+            "exposureHHI": 3.405688888888886,
+            "avgPairwiseOverlap": 3.31,
+            "avgStackDepth": 2.7666666666666666,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.7333333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.2215490255478136
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.26666666666666666,
+                "fieldOwnership": 0.275,
+                "leverage": 0.9696969696969696
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 20,
+                "actual": 357.25,
+                "projection": 267.2,
+                "ownership": 0.20223750000000001,
+                "variance": 711.856674172284,
+                "stackTeam": "GSW",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 26,
+                "actual": 356.5,
+                "projection": 270.5,
+                "ownership": 0.24224999999999997,
+                "variance": 752.390665742684,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 58,
+                "actual": 350.5,
+                "projection": 274.29999999999995,
+                "ownership": 0.2549125,
+                "variance": 720.7514241850159,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 68,
+                "actual": 349.5,
+                "projection": 277.09999999999997,
+                "ownership": 0.22107500000000002,
+                "variance": 667.87278323166,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 89,
+                "actual": 347.5,
+                "projection": 268.03999999999996,
+                "ownership": 0.24952500000000002,
+                "variance": 686.22703210302,
+                "stackTeam": "UTA",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 148,
+                "actual": 343.25,
+                "projection": 280.94,
+                "ownership": 0.252125,
+                "variance": 691.87507119912,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "squirrelpatroldk",
+            "entries": 150,
+            "top1Hits": 5,
+            "top1Rate": 0.03333333333333333,
+            "top5Hits": 12,
+            "top5Rate": 0.08,
+            "avgActual": 302.0966666666667,
+            "bestRank": 31,
+            "avgProjection": 281.5336666666669,
+            "avgVariance": 749.2829533823119,
+            "avgOwnership": 0.26858224999999986,
+            "maxExposure": 0.7066666666666667,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.380266666666665,
+            "avgPairwiseOverlap": 3.3466666666666667,
+            "avgStackDepth": 2.8533333333333335,
+            "uniqueStackTeams": 5,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.5,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.5146925174189638
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.4266666666666667,
+                "fieldOwnership": 0.275,
+                "leverage": 1.5515151515151515
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.16985138004246286
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.02,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 0.21344717182497333
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.10902153175252112
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 31,
+                "actual": 353.75,
+                "projection": 282.09999999999997,
+                "ownership": 0.24977500000000002,
+                "variance": 699.02878858164,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 54,
+                "actual": 351.5,
+                "projection": 284.00000000000006,
+                "ownership": 0.23046250000000001,
+                "variance": 711.56267799324,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 78,
+                "actual": 348.25,
+                "projection": 282.43,
+                "ownership": 0.25020000000000003,
+                "variance": 754.7263259437839,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 90,
+                "actual": 347.25,
+                "projection": 277.1,
+                "ownership": 0.21244999999999997,
+                "variance": 750.0503944881359,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 148,
+                "actual": 343.25,
+                "projection": 280.94,
+                "ownership": 0.252125,
+                "variance": 691.87507119912,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "sullybrochill",
+            "entries": 150,
+            "top1Hits": 4,
+            "top1Rate": 0.02666666666666667,
+            "top5Hits": 9,
+            "top5Rate": 0.06,
+            "avgActual": 297.345,
+            "bestRank": 3,
+            "avgProjection": 281.5984,
+            "avgVariance": 740.6778742992827,
+            "avgOwnership": 0.2652029166666667,
+            "maxExposure": 0.8466666666666667,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.4661333333333353,
+            "avgPairwiseOverlap": 3.3,
+            "avgStackDepth": 2.6933333333333334,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.8333333333333334,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.5244875290316067
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.14,
+                "fieldOwnership": 0.275,
+                "leverage": 0.5090909090909091
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.02,
+                "fieldOwnership": 0.157,
+                "leverage": 0.12738853503184713
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.033961623365596876
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 3,
+                "actual": 362.25,
+                "projection": 277.40000000000003,
+                "ownership": 0.21841250000000004,
+                "variance": 659.2884896192601,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 22,
+                "actual": 357,
+                "projection": 279.7,
+                "ownership": 0.24705000000000002,
+                "variance": 718.7405899591159,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 74,
+                "actual": 348.5,
+                "projection": 276.74,
+                "ownership": 0.2351,
+                "variance": 686.0446081635199,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 148,
+                "actual": 343.25,
+                "projection": 280.94,
+                "ownership": 0.252125,
+                "variance": 691.87507119912,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "Skol_Krusher",
+            "entries": 150,
+            "top1Hits": 4,
+            "top1Rate": 0.02666666666666667,
+            "top5Hits": 11,
+            "top5Rate": 0.07333333333333333,
+            "avgActual": 297.11833333333334,
+            "bestRank": 6,
+            "avgProjection": 279.7976000000001,
+            "avgVariance": 742.0496009946754,
+            "avgOwnership": 0.25709550000000003,
+            "maxExposure": 0.8,
+            "maxExposurePlayer": "Javon Small",
+            "exposureHHI": 3.3093333333333335,
+            "avgPairwiseOverlap": 3.2466666666666666,
+            "avgStackDepth": 2.8,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.7466666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.2619408260123195
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.17333333333333334,
+                "fieldOwnership": 0.275,
+                "leverage": 0.6303030303030303
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.16980811682798438
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.16985138004246286
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.10902153175252112
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 6,
+                "actual": 360.25,
+                "projection": 285.59999999999997,
+                "ownership": 0.2498625,
+                "variance": 718.700992927192,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 37,
+                "actual": 353,
+                "projection": 284.73,
+                "ownership": 0.259375,
+                "variance": 763.6496386366919,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 112,
+                "actual": 345.75,
+                "projection": 275.3,
+                "ownership": 0.2707875,
+                "variance": 731.405665118524,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 123,
+                "actual": 345,
+                "projection": 281.2,
+                "ownership": 0.268625,
+                "variance": 711.93419776336,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "conradical907",
+            "entries": 150,
+            "top1Hits": 4,
+            "top1Rate": 0.02666666666666667,
+            "top5Hits": 16,
+            "top5Rate": 0.10666666666666667,
+            "avgActual": 299.16833333333335,
+            "bestRank": 19,
+            "avgProjection": 280.5926666666668,
+            "avgVariance": 745.6518391510309,
+            "avgOwnership": 0.2608204999999999,
+            "maxExposure": 0.9066666666666666,
+            "maxExposurePlayer": "Javon Small",
+            "exposureHHI": 3.8250666666666646,
+            "avgPairwiseOverlap": 3.89,
+            "avgStackDepth": 2.94,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.88,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.6658588306573767
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.11333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 0.41212121212121205
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.042462845010615716
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 19,
+                "actual": 357.5,
+                "projection": 280.2,
+                "ownership": 0.2487375,
+                "variance": 704.537559474832,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 22,
+                "actual": 357,
+                "projection": 279.7,
+                "ownership": 0.24705000000000002,
+                "variance": 718.7405899591159,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 63,
+                "actual": 350,
+                "projection": 283.2,
+                "ownership": 0.26748750000000004,
+                "variance": 761.9644182698358,
+                "stackTeam": "MEM",
+                "stackDepth": 4,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 68,
+                "actual": 349.5,
+                "projection": 272.9,
+                "ownership": 0.22038750000000001,
+                "variance": 697.835391399128,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "CJCashing",
+            "entries": 150,
+            "top1Hits": 4,
+            "top1Rate": 0.02666666666666667,
+            "top5Hits": 16,
+            "top5Rate": 0.10666666666666667,
+            "avgActual": 297.5133333333333,
+            "bestRank": 37,
+            "avgProjection": 279.3742,
+            "avgVariance": 740.0700673044687,
+            "avgOwnership": 0.25632483333333334,
+            "maxExposure": 0.8733333333333333,
+            "maxExposurePlayer": "Javon Small",
+            "exposureHHI": 3.509599999999998,
+            "avgPairwiseOverlap": 3.533333333333333,
+            "avgStackDepth": 2.7933333333333334,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.8666666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.625467030192871
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.12,
+                "fieldOwnership": 0.275,
+                "leverage": 0.4363636363636363
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.157,
+                "leverage": 0.08492569002123143
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 37,
+                "actual": 353,
+                "projection": 284.73,
+                "ownership": 0.259375,
+                "variance": 763.6496386366919,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 68,
+                "actual": 349.5,
+                "projection": 272.9,
+                "ownership": 0.22038750000000001,
+                "variance": 697.835391399128,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 99,
+                "actual": 346.5,
+                "projection": 283.13000000000005,
+                "ownership": 0.24767500000000003,
+                "variance": 702.908644770252,
+                "stackTeam": "BKN",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 123,
+                "actual": 345,
+                "projection": 277.5,
+                "ownership": 0.24318750000000003,
+                "variance": 689.9873386033199,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "dacoltz",
+            "entries": 150,
+            "top1Hits": 4,
+            "top1Rate": 0.02666666666666667,
+            "top5Hits": 11,
+            "top5Rate": 0.07333333333333333,
+            "avgActual": 292.8566666666667,
+            "bestRank": 37,
+            "avgProjection": 275.1454666666666,
+            "avgVariance": 710.8764866028055,
+            "avgOwnership": 0.22020216666666662,
+            "maxExposure": 0.5533333333333333,
+            "maxExposurePlayer": "Jaylin Williams",
+            "exposureHHI": 2.674844444444444,
+            "avgPairwiseOverlap": 2.6566666666666667,
+            "avgStackDepth": 2.513333333333333,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.36,
+                "fieldOwnership": 0.275,
+                "leverage": 1.3090909090909089
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.31333333333333335,
+                "fieldOwnership": 0.3301,
+                "leverage": 0.9492073109158842
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.12666666666666668,
+                "fieldOwnership": 0.157,
+                "leverage": 0.8067940552016986
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.10666666666666667,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.5825914935707222
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.04666666666666667,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 0.4980434009249378
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 37,
+                "actual": 353,
+                "projection": 284.73,
+                "ownership": 0.259375,
+                "variance": 763.6496386366919,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 97,
+                "actual": 346.75,
+                "projection": 277.83000000000004,
+                "ownership": 0.221525,
+                "variance": 735.5243459711119,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 164,
+                "actual": 343,
+                "projection": 281.2,
+                "ownership": 0.2487875,
+                "variance": 736.45214883198,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 175,
+                "actual": 342.25,
+                "projection": 283.43,
+                "ownership": 0.2308125,
+                "variance": 754.511206689592,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "3rd_and_schlong",
+            "entries": 150,
+            "top1Hits": 4,
+            "top1Rate": 0.02666666666666667,
+            "top5Hits": 14,
+            "top5Rate": 0.09333333333333334,
+            "avgActual": 296.96666666666664,
+            "bestRank": 61,
+            "avgProjection": 280.8425333333334,
+            "avgVariance": 723.0864384633459,
+            "avgOwnership": 0.2543829166666666,
+            "maxExposure": 0.7733333333333333,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 3.152355555555554,
+            "avgPairwiseOverlap": 3.1033333333333335,
+            "avgStackDepth": 2.493333333333333,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.38666666666666666,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.1713622134706654
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.35333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 1.2848484848484847
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.12,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.7804154302670623
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.157,
+                "leverage": 0.3397027600849257
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.24286581663630843
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 61,
+                "actual": 350.25,
+                "projection": 281.23,
+                "ownership": 0.24663750000000004,
+                "variance": 690.3821741301399,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 99,
+                "actual": 346.5,
+                "projection": 281.23,
+                "ownership": 0.2592875,
+                "variance": 741.8411222076198,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 123,
+                "actual": 345,
+                "projection": 281.2,
+                "ownership": 0.268625,
+                "variance": 711.93419776336,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 146,
+                "actual": 343.5,
+                "projection": 286.33000000000004,
+                "ownership": 0.2319375,
+                "variance": 766.500412642052,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "oxenduck",
+            "entries": 150,
+            "top1Hits": 3,
+            "top1Rate": 0.02,
+            "top5Hits": 12,
+            "top5Rate": 0.08,
+            "avgActual": 300.5566666666667,
+            "bestRank": 6,
+            "avgProjection": 285.00233333333347,
+            "avgVariance": 724.0229168582655,
+            "avgOwnership": 0.27445225,
+            "maxExposure": 0.96,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 4.088355555555558,
+            "avgPairwiseOverlap": 4.096666666666667,
+            "avgStackDepth": 2.12,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.6466666666666666,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.9590023225285265
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.2866666666666667,
+                "fieldOwnership": 0.275,
+                "leverage": 1.0424242424242425
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.4360861270100845
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.033961623365596876
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.06071645415907711
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 6,
+                "actual": 360.25,
+                "projection": 285.59999999999997,
+                "ownership": 0.2498625,
+                "variance": 718.700992927192,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 85,
+                "actual": 348,
+                "projection": 281.8,
+                "ownership": 0.252525,
+                "variance": 688.23524416302,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 170,
+                "actual": 342.5,
+                "projection": 281.63,
+                "ownership": 0.258625,
+                "variance": 706.5860903420399,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "B_Heals152",
+            "entries": 150,
+            "top1Hits": 3,
+            "top1Rate": 0.02,
+            "top5Hits": 13,
+            "top5Rate": 0.08666666666666667,
+            "avgActual": 295.195,
+            "bestRank": 6,
+            "avgProjection": 279.8196,
+            "avgVariance": 747.7738066582212,
+            "avgOwnership": 0.26413916666666676,
+            "maxExposure": 0.82,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.362133333333334,
+            "avgPairwiseOverlap": 3.316666666666667,
+            "avgStackDepth": 2.8466666666666667,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.66,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.9993941229930325
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.26,
+                "fieldOwnership": 0.275,
+                "leverage": 0.9454545454545454
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.04,
+                "fieldOwnership": 0.157,
+                "leverage": 0.25477707006369427
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.02,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 0.21344717182497333
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.19782393669634027
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 6,
+                "actual": 360.25,
+                "projection": 285.59999999999997,
+                "ownership": 0.2498625,
+                "variance": 718.700992927192,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 22,
+                "actual": 357,
+                "projection": 278.3,
+                "ownership": 0.251925,
+                "variance": 703.572722005216,
+                "stackTeam": "GSW",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 46,
+                "actual": 352.75,
+                "projection": 283.9,
+                "ownership": 0.2444,
+                "variance": 721.2148243525161,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "Hebrewcheetah",
+            "entries": 150,
+            "top1Hits": 3,
+            "top1Rate": 0.02,
+            "top5Hits": 6,
+            "top5Rate": 0.04,
+            "avgActual": 284.6766666666667,
+            "bestRank": 6,
+            "avgProjection": 276.8121333333334,
+            "avgVariance": 738.8581311461104,
+            "avgOwnership": 0.2531119166666667,
+            "maxExposure": 0.7466666666666667,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.138488888888888,
+            "avgPairwiseOverlap": 2.9833333333333334,
+            "avgStackDepth": 2.4066666666666667,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.4866666666666667,
+                "fieldOwnership": 0.275,
+                "leverage": 1.7696969696969695
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.4533333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.373321215793194
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.19782393669634027
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.06792324673119375
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.157,
+                "leverage": 0.08492569002123143
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 6,
+                "actual": 360.25,
+                "projection": 285.59999999999997,
+                "ownership": 0.2498625,
+                "variance": 718.700992927192,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 113,
+                "actual": 345.5,
+                "projection": 283.1,
+                "ownership": 0.2654375,
+                "variance": 728.698780931632,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 146,
+                "actual": 343.5,
+                "projection": 286.33000000000004,
+                "ownership": 0.2319375,
+                "variance": 766.500412642052,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "TazMazz13",
+            "entries": 150,
+            "top1Hits": 3,
+            "top1Rate": 0.02,
+            "top5Hits": 13,
+            "top5Rate": 0.08666666666666667,
+            "avgActual": 296.06166666666667,
+            "bestRank": 6,
+            "avgProjection": 280.52880000000016,
+            "avgVariance": 741.4545078519508,
+            "avgOwnership": 0.26406558333333324,
+            "maxExposure": 0.7733333333333333,
+            "maxExposurePlayer": "Javon Small",
+            "exposureHHI": 3.380711111111111,
+            "avgPairwiseOverlap": 3.283333333333333,
+            "avgStackDepth": 2.82,
+            "uniqueStackTeams": 5,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.7333333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.2215490255478136
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.2,
+                "fieldOwnership": 0.275,
+                "leverage": 0.7272727272727273
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.04,
+                "fieldOwnership": 0.157,
+                "leverage": 0.25477707006369427
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.19782393669634027
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.05451076587626056
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 6,
+                "actual": 360.25,
+                "projection": 285.59999999999997,
+                "ownership": 0.2498625,
+                "variance": 718.700992927192,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 57,
+                "actual": 350.75,
+                "projection": 280,
+                "ownership": 0.2222,
+                "variance": 692.495988221944,
+                "stackTeam": "BKN",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 148,
+                "actual": 343.25,
+                "projection": 279.40000000000003,
+                "ownership": 0.2102,
+                "variance": 726.0157082727039,
+                "stackTeam": "BKN",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "cameronhart23",
+            "entries": 150,
+            "top1Hits": 3,
+            "top1Rate": 0.02,
+            "top5Hits": 11,
+            "top5Rate": 0.07333333333333333,
+            "avgActual": 288.8233333333333,
+            "bestRank": 28,
+            "avgProjection": 271.4200666666666,
+            "avgVariance": 704.6875942759052,
+            "avgOwnership": 0.22443366666666673,
+            "maxExposure": 0.5333333333333333,
+            "maxExposurePlayer": "Nikola Jokic",
+            "exposureHHI": 2.119822222222222,
+            "avgPairwiseOverlap": 2.0933333333333333,
+            "avgStackDepth": 2.5733333333333333,
+            "uniqueStackTeams": 8,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.5333333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.6156720185802282
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.22666666666666666,
+                "fieldOwnership": 0.275,
+                "leverage": 0.8242424242424241
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.08,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.1869436201780414
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.04666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.42501517911353975
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.04,
+                "fieldOwnership": 0.157,
+                "leverage": 0.25477707006369427
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 28,
+                "actual": 356,
+                "projection": 279.9,
+                "ownership": 0.2602125,
+                "variance": 686.99055222122,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 65,
+                "actual": 349.75,
+                "projection": 275.73,
+                "ownership": 0.25062500000000004,
+                "variance": 690.1771228207399,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 166,
+                "actual": 342.75,
+                "projection": 276.1,
+                "ownership": 0.22455,
+                "variance": 717.9478717511158,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "billsfan777",
+            "entries": 150,
+            "top1Hits": 3,
+            "top1Rate": 0.02,
+            "top5Hits": 9,
+            "top5Rate": 0.06,
+            "avgActual": 294.55,
+            "bestRank": 37,
+            "avgProjection": 280.23113333333345,
+            "avgVariance": 754.4089531338254,
+            "avgOwnership": 0.2573824166666667,
+            "maxExposure": 0.7,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.394133333333333,
+            "avgPairwiseOverlap": 3.3633333333333333,
+            "avgStackDepth": 2.953333333333333,
+            "uniqueStackTeams": 5,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.6466666666666666,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.9590023225285265
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.3466666666666667,
+                "fieldOwnership": 0.275,
+                "leverage": 1.2606060606060605
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.06071645415907711
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 37,
+                "actual": 353,
+                "projection": 284.73,
+                "ownership": 0.259375,
+                "variance": 763.6496386366919,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 94,
+                "actual": 347,
+                "projection": 281.90000000000003,
+                "ownership": 0.27015,
+                "variance": 806.3435288685719,
+                "stackTeam": "MEM",
+                "stackDepth": 4,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 131,
+                "actual": 344.75,
+                "projection": 279.90000000000003,
+                "ownership": 0.246425,
+                "variance": 772.6492912370119,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "ShaidyAdvice",
+            "entries": 150,
+            "top1Hits": 3,
+            "top1Rate": 0.02,
+            "top5Hits": 13,
+            "top5Rate": 0.08666666666666667,
+            "avgActual": 290.0833333333333,
+            "bestRank": 90,
+            "avgProjection": 274.93366666666685,
+            "avgVariance": 745.6409173508079,
+            "avgOwnership": 0.2435310833333334,
+            "maxExposure": 0.5933333333333334,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 2.6079111111111093,
+            "avgPairwiseOverlap": 2.69,
+            "avgStackDepth": 3.013333333333333,
+            "uniqueStackTeams": 8,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.4533333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.373321215793194
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.35333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 1.2848484848484847
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.08,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.1869436201780414
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.04,
+                "fieldOwnership": 0.157,
+                "leverage": 0.25477707006369427
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.16980811682798438
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 90,
+                "actual": 347.25,
+                "projection": 273.84,
+                "ownership": 0.233975,
+                "variance": 674.05540221106,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 137,
+                "actual": 344.25,
+                "projection": 275.9,
+                "ownership": 0.1977375,
+                "variance": 746.9727479290641,
+                "stackTeam": "BKN",
+                "stackDepth": 4,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 137,
+                "actual": 344.25,
+                "projection": 279.1,
+                "ownership": 0.2429,
+                "variance": 705.0664363677199,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "TeeJayOrTj",
+            "entries": 150,
+            "top1Hits": 2,
+            "top1Rate": 0.013333333333333334,
+            "top5Hits": 5,
+            "top5Rate": 0.03333333333333333,
+            "avgActual": 293.31333333333333,
+            "bestRank": 6,
+            "avgProjection": 280.9071333333335,
+            "avgVariance": 728.4242647381537,
+            "avgOwnership": 0.25111183333333337,
+            "maxExposure": 0.7866666666666666,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 3.4658666666666664,
+            "avgPairwiseOverlap": 3.4,
+            "avgStackDepth": 2.5533333333333332,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.6666666666666666,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.0195900232252852
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.23333333333333334,
+                "fieldOwnership": 0.275,
+                "leverage": 0.8484848484848484
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.04,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.3270645952575634
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.4945598417408506
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.02,
+                "fieldOwnership": 0.157,
+                "leverage": 0.12738853503184713
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 6,
+                "actual": 360.25,
+                "projection": 285.59999999999997,
+                "ownership": 0.2498625,
+                "variance": 718.700992927192,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 142,
+                "actual": 343.75,
+                "projection": 280.2,
+                "ownership": 0.2013375,
+                "variance": 708.9063152615599,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "Firedog50",
+            "entries": 150,
+            "top1Hits": 2,
+            "top1Rate": 0.013333333333333334,
+            "top5Hits": 9,
+            "top5Rate": 0.06,
+            "avgActual": 292.92833333333334,
+            "bestRank": 15,
+            "avgProjection": 277.9629999999999,
+            "avgVariance": 726.9163212442901,
+            "avgOwnership": 0.2464521666666668,
+            "maxExposure": 0.66,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 2.7238222222222204,
+            "avgPairwiseOverlap": 2.6,
+            "avgStackDepth": 2.5733333333333333,
+            "uniqueStackTeams": 8,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.6133333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.8580228213672623
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.23333333333333334,
+                "fieldOwnership": 0.275,
+                "leverage": 0.8484848484848484
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.06666666666666667,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.9891196834817012
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.2725538293813028
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.16985138004246286
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 15,
+                "actual": 358.75,
+                "projection": 276.1,
+                "ownership": 0.221975,
+                "variance": 696.9443414271001,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 181,
+                "actual": 342,
+                "projection": 276.90000000000003,
+                "ownership": 0.2133,
+                "variance": 716.8119118860799,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "bpcologna",
+            "entries": 150,
+            "top1Hits": 2,
+            "top1Rate": 0.013333333333333334,
+            "top5Hits": 35,
+            "top5Rate": 0.23333333333333334,
+            "avgActual": 309.275,
+            "bestRank": 31,
+            "avgProjection": 282.1588,
+            "avgVariance": 732.334592371659,
+            "avgOwnership": 0.25997799999999993,
+            "maxExposure": 1,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.6368888888888873,
+            "avgPairwiseOverlap": 3.5366666666666666,
+            "avgStackDepth": 2.546666666666667,
+            "uniqueStackTeams": 5,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.5533333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 2.012121212121212
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.41333333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.2521458143996769
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.39564787339268054
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.05451076587626056
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 31,
+                "actual": 353.75,
+                "projection": 282.09999999999997,
+                "ownership": 0.24977500000000002,
+                "variance": 699.02878858164,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 78,
+                "actual": 348.25,
+                "projection": 282.43,
+                "ownership": 0.25020000000000003,
+                "variance": 754.7263259437839,
+                "stackTeam": "OKC",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "hixx",
+            "entries": 150,
+            "top1Hits": 2,
+            "top1Rate": 0.013333333333333334,
+            "top5Hits": 12,
+            "top5Rate": 0.08,
+            "avgActual": 295.38,
+            "bestRank": 37,
+            "avgProjection": 279.5926,
+            "avgVariance": 756.2058271063576,
+            "avgOwnership": 0.265102,
+            "maxExposure": 0.8133333333333334,
+            "maxExposurePlayer": "Javon Small",
+            "exposureHHI": 3.5294222222222205,
+            "avgPairwiseOverlap": 3.5733333333333333,
+            "avgStackDepth": 2.973333333333333,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.76,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.3023326264768254
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.18,
+                "fieldOwnership": 0.275,
+                "leverage": 0.6545454545454544
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.16985138004246286
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.19782393669634027
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.033961623365596876
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 37,
+                "actual": 353,
+                "projection": 284.73,
+                "ownership": 0.259375,
+                "variance": 763.6496386366919,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 85,
+                "actual": 348,
+                "projection": 276.8,
+                "ownership": 0.22333750000000002,
+                "variance": 784.3080051485719,
+                "stackTeam": "MEM",
+                "stackDepth": 4,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "Kobe108",
+            "entries": 150,
+            "top1Hits": 2,
+            "top1Rate": 0.013333333333333334,
+            "top5Hits": 11,
+            "top5Rate": 0.07333333333333333,
+            "avgActual": 298.485,
+            "bestRank": 53,
+            "avgProjection": 277.30960000000005,
+            "avgVariance": 734.1781904890719,
+            "avgOwnership": 0.24614424999999993,
+            "maxExposure": 0.8466666666666667,
+            "maxExposurePlayer": "Nikola Jokic",
+            "exposureHHI": 3.2712888888888885,
+            "avgPairwiseOverlap": 3.22,
+            "avgStackDepth": 2.7666666666666666,
+            "uniqueStackTeams": 8,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.8466666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.564879329496112
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.11333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 0.41212121212121205
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.19782393669634027
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.157,
+                "leverage": 0.08492569002123143
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.05451076587626056
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 53,
+                "actual": 351.75,
+                "projection": 279.1,
+                "ownership": 0.24808750000000002,
+                "variance": 709.2375602848879,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              },
+              {
+                "rank": 61,
+                "actual": 350.25,
+                "projection": 273.8,
+                "ownership": 0.22782500000000003,
+                "variance": 694.717720894268,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "gregr1224",
+            "entries": 150,
+            "top1Hits": 2,
+            "top1Rate": 0.013333333333333334,
+            "top5Hits": 5,
+            "top5Rate": 0.03333333333333333,
+            "avgActual": 289.61833333333334,
+            "bestRank": 90,
+            "avgProjection": 269.68240000000014,
+            "avgVariance": 707.9925982978493,
+            "avgOwnership": 0.21626150000000013,
+            "maxExposure": 0.5333333333333333,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 2.259199999999999,
+            "avgPairwiseOverlap": 2.2466666666666666,
+            "avgStackDepth": 2.46,
+            "uniqueStackTeams": 8,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.44,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.3329294153286884
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.3333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 1.212121212121212
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.16,
+                "fieldOwnership": 0.0674,
+                "leverage": 2.373887240356083
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.1358464934623875
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.02,
+                "fieldOwnership": 0.157,
+                "leverage": 0.12738853503184713
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 90,
+                "actual": 347.25,
+                "projection": 277.1,
+                "ownership": 0.21244999999999997,
+                "variance": 750.0503944881359,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 134,
+                "actual": 344.5,
+                "projection": 269.74,
+                "ownership": 0.2543625,
+                "variance": 708.4054256691599,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "youdacao",
+            "entries": 150,
+            "top1Hits": 2,
+            "top1Rate": 0.013333333333333334,
+            "top5Hits": 6,
+            "top5Rate": 0.04,
+            "avgActual": 291.77,
+            "bestRank": 99,
+            "avgProjection": 278.2684,
+            "avgVariance": 719.997735823047,
+            "avgOwnership": 0.2393914166666666,
+            "maxExposure": 0.92,
+            "maxExposurePlayer": "Nikola Jokic",
+            "exposureHHI": 3.427111111111111,
+            "avgPairwiseOverlap": 3.35,
+            "avgStackDepth": 2.68,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.92,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.787034232050894
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.08,
+                "fieldOwnership": 0.275,
+                "leverage": 0.2909090909090909
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 99,
+                "actual": 346.5,
+                "projection": 283.13000000000005,
+                "ownership": 0.24767500000000003,
+                "variance": 702.908644770252,
+                "stackTeam": "BKN",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              },
+              {
+                "rank": 123,
+                "actual": 345,
+                "projection": 277.5,
+                "ownership": 0.24318750000000003,
+                "variance": 689.9873386033199,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "44scorcher",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 20,
+            "top5Rate": 0.13333333333333333,
+            "avgActual": 305.03,
+            "bestRank": 6,
+            "avgProjection": 284.5219333333334,
+            "avgVariance": 724.2872807902748,
+            "avgOwnership": 0.2708942499999999,
+            "maxExposure": 0.8666666666666667,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 4.110666666666668,
+            "avgPairwiseOverlap": 4.056666666666667,
+            "avgStackDepth": 2.0866666666666664,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.7266666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.201353125315561
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.25333333333333335,
+                "fieldOwnership": 0.275,
+                "leverage": 0.9212121212121213
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.19782393669634027
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.042462845010615716
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 6,
+                "actual": 360.25,
+                "projection": 285.59999999999997,
+                "ownership": 0.2498625,
+                "variance": 718.700992927192,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "Dpac2",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 9,
+            "top5Rate": 0.06,
+            "avgActual": 294.935,
+            "bestRank": 16,
+            "avgProjection": 280.06453333333343,
+            "avgVariance": 740.3694473291594,
+            "avgOwnership": 0.26061658333333343,
+            "maxExposure": 0.88,
+            "maxExposurePlayer": "Nikola Jokic",
+            "exposureHHI": 3.651200000000001,
+            "avgPairwiseOverlap": 3.52,
+            "avgStackDepth": 2.8466666666666667,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.88,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.6658588306573767
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.08,
+                "fieldOwnership": 0.275,
+                "leverage": 0.2909090909090909
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.10902153175252112
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.19782393669634027
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 0.07114905727499111
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 16,
+                "actual": 358.25,
+                "projection": 282.6,
+                "ownership": 0.248175,
+                "variance": 730.7297959115759,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "kszng",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 10,
+            "top5Rate": 0.06666666666666667,
+            "avgActual": 288.55833333333334,
+            "bestRank": 18,
+            "avgProjection": 267.2445333333335,
+            "avgVariance": 698.5132073378433,
+            "avgOwnership": 0.20653383333333344,
+            "maxExposure": 0.47333333333333333,
+            "maxExposurePlayer": "Gregory Jackson",
+            "exposureHHI": 2.2912888888888885,
+            "avgPairwiseOverlap": 2.23,
+            "avgStackDepth": 2.2933333333333334,
+            "uniqueStackTeams": 3,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.35333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 1.2848484848484847
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.26,
+                "fieldOwnership": 0.0674,
+                "leverage": 3.857566765578635
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.24,
+                "fieldOwnership": 0.3301,
+                "leverage": 0.7270524083611026
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.06666666666666667,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.33961623365596877
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.06666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.607164541590771
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 18,
+                "actual": 358,
+                "projection": 268.5,
+                "ownership": 0.23061250000000003,
+                "variance": 678.2254628157879,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "sbcousle",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 4,
+            "top5Rate": 0.02666666666666667,
+            "avgActual": 281.34166666666664,
+            "bestRank": 22,
+            "avgProjection": 267.4194000000003,
+            "avgVariance": 689.8581046000298,
+            "avgOwnership": 0.20753633333333335,
+            "maxExposure": 0.5666666666666667,
+            "maxExposurePlayer": "Nikola Jokic",
+            "exposureHHI": 1.8649777777777783,
+            "avgPairwiseOverlap": 1.77,
+            "avgStackDepth": 2.3866666666666667,
+            "uniqueStackTeams": 10,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.5666666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.7166515197414924
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.22666666666666666,
+                "fieldOwnership": 0.275,
+                "leverage": 0.8242424242424241
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.06,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.8902077151335311
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.157,
+                "leverage": 0.3397027600849257
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.04666666666666667,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.38157536113382395
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 22,
+                "actual": 357,
+                "projection": 263.90000000000003,
+                "ownership": 0.20863750000000003,
+                "variance": 668.1501913636599,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "moklovin",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 13,
+            "top5Rate": 0.08666666666666667,
+            "avgActual": 302.1116666666667,
+            "bestRank": 37,
+            "avgProjection": 285.7425333333335,
+            "avgVariance": 760.9189190600579,
+            "avgOwnership": 0.2859948333333332,
+            "maxExposure": 0.8133333333333334,
+            "maxExposurePlayer": "Nikola Jokic",
+            "exposureHHI": 4.326755555555555,
+            "avgPairwiseOverlap": 4.176666666666667,
+            "avgStackDepth": 2.9133333333333336,
+            "uniqueStackTeams": 5,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.8133333333333334,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.463899828334848
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.18666666666666668,
+                "fieldOwnership": 0.275,
+                "leverage": 0.6787878787878787
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 37,
+                "actual": 353,
+                "projection": 284.73,
+                "ownership": 0.259375,
+                "variance": 763.6496386366919,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "RichGreen4",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 11,
+            "top5Rate": 0.07333333333333333,
+            "avgActual": 293.16833333333335,
+            "bestRank": 54,
+            "avgProjection": 278.8838666666667,
+            "avgVariance": 731.3256012738086,
+            "avgOwnership": 0.2548549166666667,
+            "maxExposure": 0.76,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 2.985955555555555,
+            "avgPairwiseOverlap": 2.9466666666666668,
+            "avgStackDepth": 2.7266666666666666,
+            "uniqueStackTeams": 8,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.5066666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.534888417651217
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.2866666666666667,
+                "fieldOwnership": 0.275,
+                "leverage": 1.0424242424242425
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.1,
+                "fieldOwnership": 0.157,
+                "leverage": 0.6369426751592357
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.4945598417408506
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.24286581663630843
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 54,
+                "actual": 351.5,
+                "projection": 284.00000000000006,
+                "ownership": 0.23046250000000001,
+                "variance": 711.56267799324,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "mrgoodseats",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 6,
+            "top5Rate": 0.04,
+            "avgActual": 280.19666666666666,
+            "bestRank": 78,
+            "avgProjection": 273.9158000000001,
+            "avgVariance": 725.4577163880338,
+            "avgOwnership": 0.23571691666666658,
+            "maxExposure": 0.6266666666666667,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 2.454488888888888,
+            "avgPairwiseOverlap": 2.3566666666666665,
+            "avgStackDepth": 2.7466666666666666,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.47333333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.4339089164899526
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.32666666666666666,
+                "fieldOwnership": 0.275,
+                "leverage": 1.1878787878787878
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.06666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.42462845010615713
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.04666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.42501517911353975
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.02,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.10188487009679063
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 78,
+                "actual": 348.25,
+                "projection": 268.64,
+                "ownership": 0.23664999999999997,
+                "variance": 661.136191113124,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "cheddabisque",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 12,
+            "top5Rate": 0.08,
+            "avgActual": 300.615,
+            "bestRank": 99,
+            "avgProjection": 279.0144000000001,
+            "avgVariance": 743.4801271527616,
+            "avgOwnership": 0.26184058333333327,
+            "maxExposure": 0.6533333333333333,
+            "maxExposurePlayer": "Nikola Jokic",
+            "exposureHHI": 3.3535111111111084,
+            "avgPairwiseOverlap": 3.34,
+            "avgStackDepth": 2.88,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.6533333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.9791982227607794
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.30666666666666664,
+                "fieldOwnership": 0.275,
+                "leverage": 1.115151515151515
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.04,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.5934718100890207
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 99,
+                "actual": 346.5,
+                "projection": 280,
+                "ownership": 0.21941249999999998,
+                "variance": 711.8979772493799,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "fjbourne",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 27,
+            "top5Rate": 0.18,
+            "avgActual": 309.43666666666667,
+            "bestRank": 116,
+            "avgProjection": 282.0392666666669,
+            "avgVariance": 772.1865926373407,
+            "avgOwnership": 0.27171175000000003,
+            "maxExposure": 0.8866666666666667,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 4.5623111111111125,
+            "avgPairwiseOverlap": 4.433333333333334,
+            "avgStackDepth": 2.9266666666666667,
+            "uniqueStackTeams": 4,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.6466666666666666,
+                "fieldOwnership": 0.275,
+                "leverage": 2.351515151515151
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.35333333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.0703827123094012
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 116,
+                "actual": 345.25,
+                "projection": 276.43,
+                "ownership": 0.2661125,
+                "variance": 750.9513569343079,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "skijmb",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 9,
+            "top5Rate": 0.06,
+            "avgActual": 288.53333333333336,
+            "bestRank": 137,
+            "avgProjection": 273.3262000000001,
+            "avgVariance": 741.0998220395654,
+            "avgOwnership": 0.22848758333333333,
+            "maxExposure": 0.8,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 2.954844444444444,
+            "avgPairwiseOverlap": 2.9833333333333334,
+            "avgStackDepth": 2.9133333333333336,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.44,
+                "fieldOwnership": 0.275,
+                "leverage": 1.5999999999999999
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.41333333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.2521458143996769
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.06666666666666667,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 0.7114905727499111
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.157,
+                "leverage": 0.21231422505307856
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.02,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.1635322976287817
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 137,
+                "actual": 344.25,
+                "projection": 269.9,
+                "ownership": 0.2104,
+                "variance": 702.510945934076,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "jpm11",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 14,
+            "top5Rate": 0.09333333333333334,
+            "avgActual": 302.0833333333333,
+            "bestRank": 148,
+            "avgProjection": 278.50126666666694,
+            "avgVariance": 734.7918178251462,
+            "avgOwnership": 0.2630577499999999,
+            "maxExposure": 0.72,
+            "maxExposurePlayer": "Nikola Jokic",
+            "exposureHHI": 3.681866666666665,
+            "avgPairwiseOverlap": 3.7,
+            "avgStackDepth": 2.486666666666667,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.72,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.181157225083308
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.25333333333333335,
+                "fieldOwnership": 0.275,
+                "leverage": 0.9212121212121213
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.02,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.29673590504451036
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.05451076587626056
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 148,
+                "actual": 343.25,
+                "projection": 280.94,
+                "ownership": 0.252125,
+                "variance": 691.87507119912,
+                "stackTeam": "OKC",
+                "stackDepth": 2,
+                "anchor": "Nikola Jokic"
+              }
+            ]
+          },
+          {
+            "username": "keg4540",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 8,
+            "top5Rate": 0.05333333333333334,
+            "avgActual": 293.50666666666666,
+            "bestRank": 148,
+            "avgProjection": 276.37120000000016,
+            "avgVariance": 773.3074359283488,
+            "avgOwnership": 0.28863083333333334,
+            "maxExposure": 1,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 5.116622222222227,
+            "avgPairwiseOverlap": 5.036666666666667,
+            "avgStackDepth": 3.3066666666666666,
+            "uniqueStackTeams": 3,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.4866666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.4743007169544582
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.38,
+                "fieldOwnership": 0.275,
+                "leverage": 1.3818181818181816
+              },
+              {
+                "name": "Kelly Oubre Jr.",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.2034,
+                "leverage": 0.1638806948541462
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.1358464934623875
+              },
+              {
+                "name": "Gregory Jackson",
+                "exposure": 0.02,
+                "fieldOwnership": 0.2193,
+                "leverage": 0.09119927040583675
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 148,
+                "actual": 343.25,
+                "projection": 279.90000000000003,
+                "ownership": 0.28192500000000004,
+                "variance": 747.250004159292,
+                "stackTeam": "MEM",
+                "stackDepth": 3,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "zky63",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 9,
+            "top5Rate": 0.06,
+            "avgActual": 283.93333333333334,
+            "bestRank": 148,
+            "avgProjection": 266.1728666666668,
+            "avgVariance": 702.0922431631557,
+            "avgOwnership": 0.22380524999999993,
+            "maxExposure": 0.5,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 2.2032000000000007,
+            "avgPairwiseOverlap": 2.1633333333333336,
+            "avgStackDepth": 2.566666666666667,
+            "uniqueStackTeams": 8,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.3933333333333333,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.1915581137029183
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.19333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 0.703030303030303
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.13333333333333333,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.9782393669634024
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.10666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.6794055201698515
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.09333333333333334,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.4754627271183563
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 148,
+                "actual": 343.25,
+                "projection": 259.24,
+                "ownership": 0.20733750000000006,
+                "variance": 634.407104487468,
+                "stackTeam": "BKN",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "lostories",
+            "entries": 150,
+            "top1Hits": 1,
+            "top1Rate": 0.006666666666666667,
+            "top5Hits": 6,
+            "top5Rate": 0.04,
+            "avgActual": 285.6566666666667,
+            "bestRank": 170,
+            "avgProjection": 268.6070666666665,
+            "avgVariance": 698.5430960919256,
+            "avgOwnership": 0.21434283333333332,
+            "maxExposure": 0.5933333333333334,
+            "maxExposurePlayer": "Nikola Jokic",
+            "exposureHHI": 2.056622222222223,
+            "avgPairwiseOverlap": 1.95,
+            "avgStackDepth": 2.5533333333333332,
+            "uniqueStackTeams": 9,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.5933333333333334,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.797435120670504
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.23333333333333334,
+                "fieldOwnership": 0.275,
+                "leverage": 0.8484848484848484
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.7912957467853611
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.04666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.29723991507430997
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.2725538293813028
+              }
+            ],
+            "hittingEntries": [
+              {
+                "rank": 170,
+                "actual": 342.5,
+                "projection": 268.5,
+                "ownership": 0.19692500000000002,
+                "variance": 675.4647002600761,
+                "stackTeam": "GSW",
+                "stackDepth": 2,
+                "anchor": "Shai Gilgeous-Alexander"
+              }
+            ]
+          },
+          {
+            "username": "RoyalPain21",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 4,
+            "top5Rate": 0.02666666666666667,
+            "avgActual": 284.16333333333336,
+            "bestRank": 215,
+            "avgProjection": 277.9473333333334,
+            "avgVariance": 764.8644439892529,
+            "avgOwnership": 0.2629236666666667,
+            "maxExposure": 0.78,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 3.229599999999998,
+            "avgPairwiseOverlap": 3.24,
+            "avgStackDepth": 3.0733333333333333,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.54,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.6358679188124812
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.32666666666666666,
+                "fieldOwnership": 0.275,
+                "leverage": 1.1878787878787878
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.10666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.6794055201698515
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.06792324673119375
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.06071645415907711
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "ShipMyMoney",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 3,
+            "top5Rate": 0.02,
+            "avgActual": 280.8616666666667,
+            "bestRank": 251,
+            "avgProjection": 270.81600000000003,
+            "avgVariance": 696.7685323365653,
+            "avgOwnership": 0.2123159166666666,
+            "maxExposure": 0.44,
+            "maxExposurePlayer": "Jaylin Williams",
+            "exposureHHI": 2.204888888888889,
+            "avgPairwiseOverlap": 2.1466666666666665,
+            "avgStackDepth": 2.5733333333333333,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.43333333333333335,
+                "fieldOwnership": 0.275,
+                "leverage": 1.5757575757575757
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.2,
+                "fieldOwnership": 0.0674,
+                "leverage": 2.967359050445104
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.15333333333333332,
+                "fieldOwnership": 0.157,
+                "leverage": 0.9766454352441613
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.08,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.7285974499089253
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.4360861270100845
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "xmalachi",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 2,
+            "top5Rate": 0.013333333333333334,
+            "avgActual": 268.59833333333336,
+            "bestRank": 275,
+            "avgProjection": 267.95053333333345,
+            "avgVariance": 697.8638274344215,
+            "avgOwnership": 0.21541300000000002,
+            "maxExposure": 0.58,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 2.0025777777777773,
+            "avgPairwiseOverlap": 1.9466666666666668,
+            "avgStackDepth": 2.56,
+            "uniqueStackTeams": 10,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.3466666666666667,
+                "fieldOwnership": 0.275,
+                "leverage": 1.2606060606060605
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.2866666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 0.8684237099868727
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.07333333333333333,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.0880316518298714
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.06,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.3056546102903719
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.06,
+                "fieldOwnership": 0.157,
+                "leverage": 0.38216560509554137
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "zroth2",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 4,
+            "top5Rate": 0.02666666666666667,
+            "avgActual": 276.87833333333333,
+            "bestRank": 302,
+            "avgProjection": 273.0950000000002,
+            "avgVariance": 763.0183620112905,
+            "avgOwnership": 0.24364800000000006,
+            "maxExposure": 0.74,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 2.863733333333333,
+            "avgPairwiseOverlap": 2.8066666666666666,
+            "avgStackDepth": 3.066666666666667,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.5066666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.534888417651217
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.3333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 1.212121212121212
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.06666666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 0.42462845010615713
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.16980811682798438
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.24286581663630843
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "giantsquid",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 5,
+            "top5Rate": 0.03333333333333333,
+            "avgActual": 294.43333333333334,
+            "bestRank": 385,
+            "avgProjection": 279.3502666666667,
+            "avgVariance": 742.6914485139183,
+            "avgOwnership": 0.25913458333333333,
+            "maxExposure": 0.7066666666666667,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.052266666666666,
+            "avgPairwiseOverlap": 3.1066666666666665,
+            "avgStackDepth": 2.7066666666666666,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.5866666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.777239220438251
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.2866666666666667,
+                "fieldOwnership": 0.275,
+                "leverage": 1.0424242424242425
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.7912957467853611
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.157,
+                "leverage": 0.21231422505307856
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.013333333333333334,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.12143290831815422
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "rsbathla",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 9,
+            "top5Rate": 0.06,
+            "avgActual": 290.89,
+            "bestRank": 394,
+            "avgProjection": 275.35200000000003,
+            "avgVariance": 724.7372109300978,
+            "avgOwnership": 0.24117133333333343,
+            "maxExposure": 0.6066666666666667,
+            "maxExposurePlayer": "De'Anthony Melton",
+            "exposureHHI": 2.788266666666667,
+            "avgPairwiseOverlap": 2.76,
+            "avgStackDepth": 2.7466666666666666,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.38,
+                "fieldOwnership": 0.275,
+                "leverage": 1.3818181818181816
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.26666666666666666,
+                "fieldOwnership": 0.3301,
+                "leverage": 0.8078360092901141
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.11333333333333333,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.9266830198964294
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.1,
+                "fieldOwnership": 0.157,
+                "leverage": 0.6369426751592357
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.06666666666666667,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.9891196834817012
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "karatesbadboy",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 4,
+            "top5Rate": 0.02666666666666667,
+            "avgActual": 279.2966666666667,
+            "bestRank": 416,
+            "avgProjection": 273.6556000000001,
+            "avgVariance": 739.9440496298389,
+            "avgOwnership": 0.24634374999999992,
+            "maxExposure": 0.5066666666666667,
+            "maxExposurePlayer": "Olivier-Maxence Prosper",
+            "exposureHHI": 2.3697777777777778,
+            "avgPairwiseOverlap": 2.4133333333333336,
+            "avgStackDepth": 2.7866666666666666,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.38,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.1511663132384127
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.32,
+                "fieldOwnership": 0.275,
+                "leverage": 1.1636363636363636
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.1,
+                "fieldOwnership": 0.157,
+                "leverage": 0.6369426751592357
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.271692986924775
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.04666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.42501517911353975
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "lozingitall",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 8,
+            "top5Rate": 0.05333333333333334,
+            "avgActual": 288.155,
+            "bestRank": 426,
+            "avgProjection": 280.2145333333334,
+            "avgVariance": 738.4282036683218,
+            "avgOwnership": 0.25450291666666675,
+            "maxExposure": 0.84,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 3.166933333333332,
+            "avgPairwiseOverlap": 3.18,
+            "avgStackDepth": 2.7866666666666666,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.5066666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.534888417651217
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.3933333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 1.4303030303030302
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.7912957467853611
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.04,
+                "fieldOwnership": 0.157,
+                "leverage": 0.25477707006369427
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.006666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.06071645415907711
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "nicoh22",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 4,
+            "top5Rate": 0.02666666666666667,
+            "avgActual": 288.04333333333335,
+            "bestRank": 579,
+            "avgProjection": 273.73260000000016,
+            "avgVariance": 737.1209008454318,
+            "avgOwnership": 0.24089491666666674,
+            "maxExposure": 0.6333333333333333,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 2.98,
+            "avgPairwiseOverlap": 2.9433333333333334,
+            "avgStackDepth": 2.8,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.5666666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.7166515197414924
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.29333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 1.0666666666666667
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.06,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.3056546102903719
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.03333333333333333,
+                "fieldOwnership": 0.0674,
+                "leverage": 0.4945598417408506
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.02666666666666667,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.24286581663630843
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "ImnotNavT",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 0,
+            "top5Rate": 0,
+            "avgActual": 281.0466666666667,
+            "bestRank": 1101,
+            "avgProjection": 281.44473333333326,
+            "avgVariance": 785.7362007927235,
+            "avgOwnership": 0.2666903333333333,
+            "maxExposure": 0.9866666666666667,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 4.812,
+            "avgPairwiseOverlap": 4.786666666666667,
+            "avgStackDepth": 3.3733333333333335,
+            "uniqueStackTeams": 4,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.8866666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.6860547308896296
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.11333333333333333,
+                "fieldOwnership": 0.275,
+                "leverage": 0.41212121212121205
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "dannyoms",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 0,
+            "top5Rate": 0,
+            "avgActual": 278.1716666666667,
+            "bestRank": 1571,
+            "avgProjection": 272.60613333333345,
+            "avgVariance": 700.1358160272047,
+            "avgOwnership": 0.23341916666666657,
+            "maxExposure": 0.6533333333333333,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 2.3568888888888897,
+            "avgPairwiseOverlap": 2.1766666666666667,
+            "avgStackDepth": 2.3066666666666666,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.3466666666666667,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.0501868120771483
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.26,
+                "fieldOwnership": 0.275,
+                "leverage": 0.9454545454545454
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.11333333333333333,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.681503461918892
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.07333333333333333,
+                "fieldOwnership": 0.157,
+                "leverage": 0.46709129511677283
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.48573163327261687
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "narendra22",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 0,
+            "top5Rate": 0,
+            "avgActual": 270.6433333333333,
+            "bestRank": 1936,
+            "avgProjection": 271.1565999999999,
+            "avgVariance": 727.1504468678144,
+            "avgOwnership": 0.25842008333333333,
+            "maxExposure": 0.7533333333333333,
+            "maxExposurePlayer": "Danny Wolf",
+            "exposureHHI": 2.9369777777777775,
+            "avgPairwiseOverlap": 2.973333333333333,
+            "avgStackDepth": 2.6533333333333333,
+            "uniqueStackTeams": 6,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.6933333333333334,
+                "fieldOwnership": 0.3301,
+                "leverage": 2.1003736241542965
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.12666666666666668,
+                "fieldOwnership": 0.275,
+                "leverage": 0.46060606060606063
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.05333333333333334,
+                "fieldOwnership": 0.157,
+                "leverage": 0.3397027600849257
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.04666666666666667,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.23773136355917815
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.04,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 0.42689434364994666
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "Headdie_Brosevelt",
+            "entries": 150,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 0,
+            "top5Rate": 0,
+            "avgActual": 240.31,
+            "bestRank": 5797,
+            "avgProjection": 255.1148000000002,
+            "avgVariance": 654.3214204164838,
+            "avgOwnership": 0.1528796666666666,
+            "maxExposure": 0.47333333333333333,
+            "maxExposurePlayer": "Walter Clayton Jr.",
+            "exposureHHI": 2.3247999999999984,
+            "avgPairwiseOverlap": 2.34,
+            "avgStackDepth": 2.546666666666667,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.3466666666666667,
+                "fieldOwnership": 0.0674,
+                "leverage": 5.143422354104847
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.3466666666666667,
+                "fieldOwnership": 0.157,
+                "leverage": 2.208067940552017
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.11333333333333333,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 1.209533973674849
+              },
+              {
+                "name": "Karl-Anthony Towns",
+                "exposure": 0.08666666666666667,
+                "fieldOwnership": 0.1223,
+                "leverage": 0.7086399563913873
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.08,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.7285974499089253
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "GDDC4",
+            "entries": 137,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 2,
+            "top5Rate": 0.014598540145985401,
+            "avgActual": 274.23175182481754,
+            "bestRank": 667,
+            "avgProjection": 271.60649635036503,
+            "avgVariance": 700.9001008203744,
+            "avgOwnership": 0.22317691605839407,
+            "maxExposure": 0.6131386861313869,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 2.492088017475625,
+            "avgPairwiseOverlap": 2.4433333333333334,
+            "avgStackDepth": 2.4306569343065694,
+            "uniqueStackTeams": 10,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.31386861313868614,
+                "fieldOwnership": 0.3301,
+                "leverage": 0.9508288795476708
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.1678832116788321,
+                "fieldOwnership": 0.275,
+                "leverage": 0.610484406104844
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.16058394160583941,
+                "fieldOwnership": 0.0674,
+                "leverage": 2.3825510624011783
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.10948905109489052,
+                "fieldOwnership": 0.157,
+                "leverage": 0.6973824910502581
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.10218978102189781,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 1.090605987426871
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "loegs14",
+            "entries": 115,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 0,
+            "top5Rate": 0,
+            "avgActual": 273.54782608695655,
+            "bestRank": 1038,
+            "avgProjection": 268.630347826087,
+            "avgVariance": 697.542148789503,
+            "avgOwnership": 0.2215764130434781,
+            "maxExposure": 0.7043478260869566,
+            "maxExposurePlayer": "Cam Spencer",
+            "exposureHHI": 2.306086956521737,
+            "avgPairwiseOverlap": 2.1733333333333333,
+            "avgStackDepth": 2.4956521739130433,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.391304347826087,
+                "fieldOwnership": 0.275,
+                "leverage": 1.4229249011857708
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.33043478260869563,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.0010141854247065
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.10434782608695652,
+                "fieldOwnership": 0.157,
+                "leverage": 0.6646358349487677
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.09565217391304348,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.487275465680303
+              },
+              {
+                "name": "James Harden",
+                "exposure": 0.05217391304347826,
+                "fieldOwnership": 0.09369999999999999,
+                "leverage": 0.5568187091086261
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "band_dana",
+            "entries": 100,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 3,
+            "top5Rate": 0.03,
+            "avgActual": 283.2475,
+            "bestRank": 344,
+            "avgProjection": 271.0627999999999,
+            "avgVariance": 714.3317356326937,
+            "avgOwnership": 0.23358174999999995,
+            "maxExposure": 0.56,
+            "maxExposurePlayer": "Jaylin Williams",
+            "exposureHHI": 2.4892000000000016,
+            "avgPairwiseOverlap": 2.4166666666666665,
+            "avgStackDepth": 2.54,
+            "uniqueStackTeams": 7,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.38,
+                "fieldOwnership": 0.275,
+                "leverage": 1.3818181818181816
+              },
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.2,
+                "fieldOwnership": 0.3301,
+                "leverage": 0.6058770069675856
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.12,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.7804154302670623
+              },
+              {
+                "name": "Jamal Murray",
+                "exposure": 0.1,
+                "fieldOwnership": 0.1963,
+                "leverage": 0.5094243504839532
+              },
+              {
+                "name": "Jalen Brunson",
+                "exposure": 0.07,
+                "fieldOwnership": 0.10980000000000001,
+                "leverage": 0.6375227686703097
+              }
+            ],
+            "hittingEntries": []
+          },
+          {
+            "username": "Hurliss",
+            "entries": 100,
+            "top1Hits": 0,
+            "top1Rate": 0,
+            "top5Hits": 2,
+            "top5Rate": 0.02,
+            "avgActual": 279.36,
+            "bestRank": 667,
+            "avgProjection": 271.62469999999985,
+            "avgVariance": 715.4223454239313,
+            "avgOwnership": 0.24040050000000007,
+            "maxExposure": 0.58,
+            "maxExposurePlayer": "Javon Small",
+            "exposureHHI": 2.700400000000001,
+            "avgPairwiseOverlap": 2.6066666666666665,
+            "avgStackDepth": 2.63,
+            "uniqueStackTeams": 5,
+            "bringBackRate": 0,
+            "anchorDistribution": [
+              {
+                "name": "Nikola Jokic",
+                "exposure": 0.41,
+                "fieldOwnership": 0.3301,
+                "leverage": 1.2420478642835504
+              },
+              {
+                "name": "Shai Gilgeous-Alexander",
+                "exposure": 0.17,
+                "fieldOwnership": 0.275,
+                "leverage": 0.6181818181818182
+              },
+              {
+                "name": "Donovan Mitchell",
+                "exposure": 0.1,
+                "fieldOwnership": 0.157,
+                "leverage": 0.6369426751592357
+              },
+              {
+                "name": "Keyonte George",
+                "exposure": 0.09,
+                "fieldOwnership": 0.10310000000000001,
+                "leverage": 0.8729388942774005
+              },
+              {
+                "name": "Kawhi Leonard",
+                "exposure": 0.08,
+                "fieldOwnership": 0.0674,
+                "leverage": 1.1869436201780414
+              }
+            ],
+            "hittingEntries": []
+          }
+        ],
+        "fieldAvgs": {
+          "top1Rate": 0.01,
+          "avgOwnership": 0.2178325832368777,
+          "avgVariance": 708.545860022428,
+          "avgProjection": 267.61955062299467,
+          "maxExposure": 0.4673520800708109
+        }
+      },
+      "poolGap": null
+    }
+  ],
+  "crossSlate": null
+}

@@ -1,30 +1,44 @@
 /**
- * Chimera Pre-Slate — supersedes Phoenix (shipped 2026-04-26).
+ * Hermes Pre-Slate — supersedes Cerberus (2026-04-29).
  *
- * CHIMERA: dispersion-aware top winner from the rank-dispersion analysis.
- * Phoenix had +248.5% ROI but was rank #141 of 200 on dispersion (clumping —
- * 150 lineups all finishing in similar rank windows). Chimera produces both
- * higher ROI (+278.9%) AND smoother rank distribution (#15 of 200).
+ * HERMES is the parametric synthesis of the d<1.3 Mahalanobis-cluster from 92K-config
+ * sweep evaluated against 7-pro slate-relative consensus across 18 slates. NOT a single
+ * sweep config — synthesized from cluster modal/median values to avoid config-level
+ * overfitting within an otherwise validated archetype.
  *
- * Config: λ=0.62, γ=6, teamCap=0.24, corner=ON, bins 5/5/85/3/2 (same as Phoenix),
- *         minPrimaryStack=5, maxExposure=0.16, maxExposurePitcher=0.41,
- *         combo power=2 (vs Phoenix's 3).
+ * Config: λ=0.58, γ=6, tc=0.20, mps=4, me=0.21, mep=0.45, corner=ON, comboPower=4,
+ *         fl=0, bins=[chalk 0.50, core 0.30, value 0.20, contra 0, deep 0]
  *
- * Why Chimera differs from Phoenix:
- *   - λ: 0.14 → 0.62 (4× combo leverage push toward rare 5-stack constructions)
- *   - corner: OFF → ON (caps Q5×Q5 chalk corner + Q1×Q1 junk corner)
- *   - mps: 3 → 5 (FORCED 5-player primary stack — biggest dispersion driver)
- *   - me: 0.20 → 0.16 (tighter hitter cap)
- *   - combo power: 3 → 2 (different combo frequency weighting)
- *   - Bin allocation unchanged (5/5/85/3/2 value-extreme)
+ * Validation hierarchy (all four gates passed):
+ *   1. Multi-pro slate-relative consensus tracking — d=1.24 (top 0.4% closest to pros)
+ *   2. 17-slate backtest ROI — +60.0% (within [+50%, +150%] cluster range)
+ *   3. LOO within d<1.3 cluster — +60.5%, d<1.4 cluster +22.8% (matches nerdy's +21.6%)
+ *   4. Avg ownership percentile — 0.934 (pros: 0.935 — exact match)
  *
- * Direct head-to-head on 15 MLB slates:
- *   Phoenix  | full15 $156,817 | ROI +248.5% | IQR/F 47.9% (rank #141)
- *   Chimera  | full15 $170,510 | ROI +278.9% | IQR/F 50.1% (rank #15)
+ * Why this differs from Cerberus (and is the OPPOSITE direction):
+ *   - bins: value-extreme [4.7/0.6/87.3/4.8/2.6] → pure-chalk [50/30/20/0/0]
+ *   - λ: 0.421 → 0.58
+ *   - mps: 5 (forced 5-stack) → 4 (cluster modal)
+ *   - tc: 0.192 → 0.20
+ *   - comboPower: 1 → 4
+ *
+ * The CHALK-CENTRIC direction was counterintuitive but validated: pros target ~88% of
+ * optimal projection with avgPlayerOwnPctile=0.94, both pulling toward chalk. Cerberus's
+ * value-extreme allocation was structurally OPPOSITE from pro consensus (d=2.33).
+ *
+ * Cerberus was overfit. Triple confirmation:
+ *   - LOO -39.5% on Cerberus archetype (top 50 by full ROI)
+ *   - Mahalanobis rank #1131 of 2376 (mid-pack tracking)
+ *   - +283% backtest in the noise-overfit zone
+ *
+ * Deployment plan:
+ *   - Ship Hermes 2026-04-29
+ *   - Run REDUCED ENTRY SIZE (75 lineups instead of 150) for first 10 live slates
+ *   - Expected live ROI range: +15% to +35% (matching pros' realistic edge)
+ *   - Scale to full 150 after 10 slates of confirmation
+ *   - Reassess at slate 28 (17 + 10 forward)
  *
  * Reads mlbdkprojpre.csv + sspool{1,2,3}pre.csv from DATA_DIR.
- * Merges/dedupes pools by lineup hash, precomputes combo frequencies, runs selection,
- * exports DK upload CSV + detailed CSV.
  */
 
 import * as fs from 'fs';
@@ -39,7 +53,7 @@ import { precomputeComboFrequencies } from '../selection/combo-leverage';
 
 // Sim-ROI filter: reject lineups below this percentile of pool sim ROI for target contest.
 // 0.0 = disabled (accept all). 0.5 = reject bottom half. 0.75 = top quartile only.
-const MIN_SIM_ROI_PERCENTILE = 0.5;
+const MIN_SIM_ROI_PERCENTILE = 0;  // Disabled for Hermes — validation was on unfiltered pool. Filter removes chalky lineups, breaks consensus alignment.
 const SIM_ROI_CONTEST = 'Small Slate | 10k-50k'; // 2-game slate → Small Slate bracket
 
 function parsePoolSimROI(filePath: string, rosterSize: number, roiCol: string): Map<string, number> {
@@ -69,33 +83,40 @@ function lineupHash(lu: Lineup): string {
 const DATA_DIR = 'C:/Users/colin/dfs opto';
 const PROJ_FILE = 'mlbdkprojpre.csv';
 const POOL_FILES = ['sspool1pre.csv', 'sspool2pre.csv', 'sspool3pre.csv'];
-const TARGET_COUNT = 150;
+const TARGET_COUNT = 75;
 
-// ============ CHIMERA CONFIG ============
-// Named preset: dispersion-aware multi-mechanism winner.
-// Top of "Smooth Winners" analysis — best combined ROI rank × dispersion rank.
-// Beats Phoenix on both ROI (+278.9% vs +248.5%) AND rank dispersion (#15 vs #141).
-const CHIMERA_LAMBDA   = 0.62;
-const CHIMERA_GAMMA    = 6;
-const CHIMERA_TEAM_CAP = 0.24;
-const CHIMERA_CORNER   = true;
-const CHIMERA_MIN_STACK = 5;        // FORCED 5-player primary stack — key dispersion driver
-const CHIMERA_MAX_EXPOSURE = 0.16;  // tighter hitter cap (24 lineups max per hitter at N=150)
-const CHIMERA_MAX_EXPOSURE_P = 0.41; // pitcher cap
-const CHIMERA_COMBO_POWER = 2;      // combo frequency weighting (vs default 3)
-const CHIMERA_BINS = { chalk: 0.05, core: 0.05, value: 0.85, contra: 0.03, deep: 0.02 };
+// ============ HERMES CONFIG ============
+// Parametric synthesis of d<1.3 Mahalanobis-cluster vs 7-pro slate-relative consensus.
+// Validated by: multi-pro tracking + backtest ROI + LOO within consensus-aligned subset.
+// 17-slate backtest: +60.0% ROI, distance 1.24, ownership pctile 0.934 (matches pros 0.935).
+// HERMES-A — actual sweep config (cluster best, not synthesis)
+// F:pure-chalk|p4|l0.58|g5|fl0.00|tc0.26|c1|mps4|me0.21|mep0.41
+// Mahalanobis d=1.46, KS=0.188, Full17 ROI +136%, OOS5 ROI +186% (matched in/out)
+// Beats V1 (synthesis) on distance AND ROI. Step 2 local search confirmed:
+// going further from this point loses ROI even when distance improves.
+const CERBERUS_LAMBDA   = 0.58;
+const CERBERUS_GAMMA    = 5;          // was 6 (V1 synthesis)
+const CERBERUS_TEAM_CAP = 0.35;       // 2-game slate override (was 0.26 for main)
+const CERBERUS_CORNER   = true;
+const CERBERUS_MIN_STACK = 3;         // 2-game slate override (was 4 for main)
+const CERBERUS_MAX_EXPOSURE = 0.21;
+const CERBERUS_MAX_EXPOSURE_P = 1.00; // 2-game slate override (was 0.41 for main)
+const CERBERUS_COMBO_POWER = 4;
+const CERBERUS_BINS = { chalk: 0.50, core: 0.30, value: 0.20, contra: 0.00, deep: 0.00 };
+// pure-chalk allocation matches pros' chalk-centric construction (avgPlayerOwnPctile 0.94)
 // =========================================
 
-const LAMBDA = CHIMERA_LAMBDA;
-const GAMMA = CHIMERA_GAMMA;
+const LAMBDA = CERBERUS_LAMBDA;
+const GAMMA = CERBERUS_GAMMA;
 
 const OUTPUT_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}.csv`);
 const DETAILED_FILE = path.join(DATA_DIR, `production_mlb_preslate_${TARGET_COUNT}_detailed.csv`);
 
 async function main() {
   console.log('================================================================');
-  console.log(`CHIMERA PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, teamCap=${CHIMERA_TEAM_CAP}, cornerCap=${CHIMERA_CORNER}, mps=${CHIMERA_MIN_STACK}, N=${TARGET_COUNT}`);
-  console.log(`  Bins: ${JSON.stringify(CHIMERA_BINS)}  comboPower=${CHIMERA_COMBO_POWER}  me=${CHIMERA_MAX_EXPOSURE} mep=${CHIMERA_MAX_EXPOSURE_P}`);
+  console.log(`HERMES PRE-SLATE — λ=${LAMBDA}, γ=${GAMMA}, teamCap=${CERBERUS_TEAM_CAP}, cornerCap=${CERBERUS_CORNER}, mps=${CERBERUS_MIN_STACK}, N=${TARGET_COUNT}`);
+  console.log(`  Bins: ${JSON.stringify(CERBERUS_BINS)}  comboPower=${CERBERUS_COMBO_POWER}  me=${CERBERUS_MAX_EXPOSURE} mep=${CERBERUS_MAX_EXPOSURE_P}`);
+  console.log('  ⚠️  REDUCED ENTRY SIZE — run 75 entries (half) for first 10 live slates per Hermes deployment plan.');
   console.log('================================================================\n');
 
   // 1. Load projections
@@ -144,6 +165,22 @@ async function main() {
     }
     console.log(`  Excluded ${before - candidates.length} lineups containing: ${ZERO_PROJ_PLAYERS.join(', ')}`);
     console.log(`  Pool after exclusions: ${candidates.length} lineups\n`);
+  }
+
+  // Team-level exclusions (postponed games / weather / etc.)
+  const EXCLUDED_TEAMS: string[] = [];
+  if (EXCLUDED_TEAMS.length > 0) {
+    const teamSet = new Set(EXCLUDED_TEAMS.map(t => t.toUpperCase()));
+    const before = candidates.length;
+    candidates = candidates.filter(lu => !lu.players.some(p => teamSet.has((p.team || '').toUpperCase())));
+    for (const p of pool.players) {
+      if (teamSet.has((p.team || '').toUpperCase())) {
+        p.projection = 0;
+        p.ownership = 0;
+      }
+    }
+    console.log(`  Excluded ${before - candidates.length} lineups containing players from teams: ${EXCLUDED_TEAMS.join(', ')}`);
+    console.log(`  Pool after team exclusions: ${candidates.length} lineups\n`);
   }
 
 
@@ -197,10 +234,10 @@ async function main() {
     process.exit(1);
   }
 
-  // 3. Precompute combo frequencies from the merged pool (Chimera uses power=2)
-  console.log(`Precomputing combo frequencies (projection^${CHIMERA_COMBO_POWER} weighted)...`);
+  // 3. Precompute combo frequencies from the merged pool (Cerberus uses power=1)
+  console.log(`Precomputing combo frequencies (projection^${CERBERUS_COMBO_POWER} weighted)...`);
   const t0 = Date.now();
-  const comboFreq = precomputeComboFrequencies(candidates, CHIMERA_COMBO_POWER);
+  const comboFreq = precomputeComboFrequencies(candidates, CERBERUS_COMBO_POWER);
   console.log(`  ${comboFreq.size} unique combo keys in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
 
   // 4. Run production selector
@@ -210,14 +247,14 @@ async function main() {
     N: TARGET_COUNT,
     lambda: LAMBDA,
     comboFreq,
-    maxOverlap: GAMMA, // Chimera γ=6
-    teamCapPct: CHIMERA_TEAM_CAP, // 0.24 — slightly higher than Phoenix
-    minPrimaryStack: CHIMERA_MIN_STACK, // 5 — FORCED 5-player primary stack (dispersion driver)
-    maxExposure: CHIMERA_MAX_EXPOSURE, // 0.16 hitter cap (24 lineups max per hitter)
-    maxExposurePitcher: CHIMERA_MAX_EXPOSURE_P, // 0.41 pitcher cap
+    maxOverlap: GAMMA,
+    teamCapPct: CERBERUS_TEAM_CAP,
+    minPrimaryStack: CERBERUS_MIN_STACK,
+    maxExposure: CERBERUS_MAX_EXPOSURE,
+    maxExposurePitcher: CERBERUS_MAX_EXPOSURE_P,
     useOwnershipCeiling: false,
-    extremeCornerCap: CHIMERA_CORNER, // Chimera: corner cap ON
-    binAllocation: CHIMERA_BINS, // 5/5/85/3/2 — value-extreme (same as Phoenix)
+    extremeCornerCap: CERBERUS_CORNER,
+    binAllocation: CERBERUS_BINS,
   });
   console.log(`  Selected ${result.portfolio.length} lineups in ${((Date.now() - t1) / 1000).toFixed(1)}s`);
 

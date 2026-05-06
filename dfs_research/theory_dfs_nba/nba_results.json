@@ -1,0 +1,290 @@
+{
+  "params": {
+    "W_PROJ": 1,
+    "W_LEV": 0.3,
+    "W_RV": 0.2,
+    "W_CMB": 0.25,
+    "W_VAR": 0.15,
+    "W_CEIL_EFF": 0.1,
+    "GAME_STACK_BONUS": 0.05,
+    "OPPOSING_TEAM_BONUS": 0.03,
+    "TEAM_NEGATIVE_PER_EXTRA": -0.04,
+    "OWNERSHIP_EFFICIENCY_EXPONENT": 0.5,
+    "DIRECT_LEVERAGE_BONUS": 0.03,
+    "PAIR_CORR_SAME_TEAM": 1.5,
+    "PAIR_CORR_OPPOSING": 0.7,
+    "PAIR_CORR_UNRELATED": 1,
+    "TRIPLES_EVALUATED": 3,
+    "HITTER_VARIANCE_MULT": 1,
+    "PITCHER_VARIANCE_MULT": 1,
+    "PROJ_FLOOR_SMALL": 0.05,
+    "PROJ_FLOOR_MEDIUM": 0.08,
+    "PROJ_FLOOR_LARGE": 0.12,
+    "BAND_HIGH_PCT": 0.2,
+    "BAND_MID_PCT": 0.6,
+    "BAND_LOW_PCT": 0.2,
+    "EXPLOITATIVE_EXPONENT": 1.5,
+    "EXPOSURE_CAP_HITTER": 0.4,
+    "EXPOSURE_CAP_PITCHER": 0.4,
+    "MAX_PAIRWISE_OVERLAP": 5,
+    "TRIPLE_FREQ_CAP": 5,
+    "PPD_OWN_BUMP_PP": 3,
+    "PPD_TOP_PCT": 0.1,
+    "PPD_LINEUP_PENALTY": 0.1,
+    "PPD_LINEUP_TOP_PCT": 0.1,
+    "ULTRA_CHALK_PLAYER_THRESHOLD_PCT": 0.75,
+    "ULTRA_CHALK_LINEUP_MIN_COUNT": 4,
+    "ULTRA_CHALK_PENALTY": 0.05
+  },
+  "summary": {
+    "slatesRun": 12,
+    "totalFees": 36000,
+    "todfs": {
+      "payout": 70788.11467894893,
+      "roi": 0.9663365188596924,
+      "t1": 20,
+      "t01": 1,
+      "t01EdgeRatio": 0.5555555555555556,
+      "t1EdgeRatio": 1.1111111111111112,
+      "slatesWithT01": 1
+    },
+    "random": {
+      "payout": 103087.54158224826,
+      "roi": 1.8635428217291183,
+      "t1": 21,
+      "t01": 3,
+      "t01EdgeRatio": 1.6666666666666667,
+      "t1EdgeRatio": 1.1666666666666667
+    }
+  },
+  "perSlate": [
+    {
+      "slate": "2026-01-16",
+      "numGames": 4,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 95.0226029848381,
+        "t1": 1,
+        "t01": 0,
+        "gameStack": 1,
+        "uniquePlayers": 66
+      },
+      "random": {
+        "payout": 92.06122914631815,
+        "t1": 0,
+        "t01": 0,
+        "gameStack": 0.9666666666666667,
+        "uniquePlayers": 66
+      }
+    },
+    {
+      "slate": "2026-01-17",
+      "numGames": 7,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 2835.427010833727,
+        "t1": 3,
+        "t01": 0,
+        "gameStack": 0.9,
+        "uniquePlayers": 111
+      },
+      "random": {
+        "payout": 7011.994720557096,
+        "t1": 5,
+        "t01": 1,
+        "gameStack": 0.8133333333333334,
+        "uniquePlayers": 118
+      }
+    },
+    {
+      "slate": "2026-01-18",
+      "numGames": 5,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 119.50032451093938,
+        "t1": 0,
+        "t01": 0,
+        "gameStack": 0.9703703703703703,
+        "uniquePlayers": 70
+      },
+      "random": {
+        "payout": 636.0678141925042,
+        "t1": 2,
+        "t01": 0,
+        "gameStack": 0.96,
+        "uniquePlayers": 79
+      }
+    },
+    {
+      "slate": "2026-01-19",
+      "numGames": 4,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 49.08898280593783,
+        "t1": 0,
+        "t01": 0,
+        "gameStack": 1,
+        "uniquePlayers": 67
+      },
+      "random": {
+        "payout": 35.202060474908606,
+        "t1": 0,
+        "t01": 0,
+        "gameStack": 1,
+        "uniquePlayers": 66
+      }
+    },
+    {
+      "slate": "2026-01-20",
+      "numGames": 7,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 151.25501461442028,
+        "t1": 2,
+        "t01": 0,
+        "gameStack": 0.9333333333333333,
+        "uniquePlayers": 97
+      },
+      "random": {
+        "payout": 107.66138584194111,
+        "t1": 1,
+        "t01": 0,
+        "gameStack": 0.8933333333333333,
+        "uniquePlayers": 102
+      }
+    },
+    {
+      "slate": "2026-02-25",
+      "numGames": 5,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 44.592801414898176,
+        "t1": 0,
+        "t01": 0,
+        "gameStack": 0.9666666666666667,
+        "uniquePlayers": 73
+      },
+      "random": {
+        "payout": 67.40832209898953,
+        "t1": 0,
+        "t01": 0,
+        "gameStack": 0.9333333333333333,
+        "uniquePlayers": 74
+      }
+    },
+    {
+      "slate": "2026-02-26",
+      "numGames": 3,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 1851.378151549451,
+        "t1": 3,
+        "t01": 0,
+        "gameStack": 1,
+        "uniquePlayers": 56
+      },
+      "random": {
+        "payout": 591.7817191066385,
+        "t1": 2,
+        "t01": 0,
+        "gameStack": 1,
+        "uniquePlayers": 55
+      }
+    },
+    {
+      "slate": "2026-02-27",
+      "numGames": 5,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 509.3548610817488,
+        "t1": 6,
+        "t01": 0,
+        "gameStack": 1,
+        "uniquePlayers": 77
+      },
+      "random": {
+        "payout": 500.65672826877824,
+        "t1": 5,
+        "t01": 0,
+        "gameStack": 0.9866666666666667,
+        "uniquePlayers": 79
+      }
+    },
+    {
+      "slate": "2026-02-28",
+      "numGames": 3,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 40.81273928236473,
+        "t1": 0,
+        "t01": 0,
+        "gameStack": 1,
+        "uniquePlayers": 49
+      },
+      "random": {
+        "payout": 101.00460283178732,
+        "t1": 0,
+        "t01": 0,
+        "gameStack": 1,
+        "uniquePlayers": 52
+      }
+    },
+    {
+      "slate": "2026-03-03",
+      "numGames": 8,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 64718.36619078843,
+        "t1": 3,
+        "t01": 1,
+        "gameStack": 0.94,
+        "uniquePlayers": 109
+      },
+      "random": {
+        "payout": 93698.09707981112,
+        "t1": 5,
+        "t01": 2,
+        "gameStack": 0.86,
+        "uniquePlayers": 120
+      }
+    },
+    {
+      "slate": "2026-03-05",
+      "numGames": 6,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 208.84577541187812,
+        "t1": 1,
+        "t01": 0,
+        "gameStack": 1,
+        "uniquePlayers": 94
+      },
+      "random": {
+        "payout": 173.68880577916107,
+        "t1": 1,
+        "t01": 0,
+        "gameStack": 0.9533333333333334,
+        "uniquePlayers": 93
+      }
+    },
+    {
+      "slate": "2026-03-06",
+      "numGames": 6,
+      "poolSize": 500,
+      "todfs": {
+        "payout": 164.470223670307,
+        "t1": 1,
+        "t01": 0,
+        "gameStack": 0.96,
+        "uniquePlayers": 83
+      },
+      "random": {
+        "payout": 71.91711413900654,
+        "t1": 0,
+        "t01": 0,
+        "gameStack": 0.8733333333333333,
+        "uniquePlayers": 87
+      }
+    }
+  ]
+}

@@ -1,0 +1,1260 @@
+{
+  "params": {
+    "STACK_BONUS_PER_HITTER": 0.1,
+    "BRINGBACK_1": 0.05,
+    "BRINGBACK_2": 0.08,
+    "PITCHER_VS_HITTER_PENALTY": -0.1,
+    "MIN_PRIMARY_STACK": 4,
+    "OWNERSHIP_EFFICIENCY_EXPONENT": 0.5,
+    "DIRECT_LEVERAGE_BONUS": 0.03,
+    "PAIR_CORR_SAME_TEAM": 1.5,
+    "PAIR_CORR_OPPOSING": 0.7,
+    "PAIR_CORR_UNRELATED": 1,
+    "TRIPLES_EVALUATED": 3,
+    "HITTER_VARIANCE_MULT": 1.3,
+    "PITCHER_VARIANCE_MULT": 1,
+    "W_PROJ": 1,
+    "W_LEV": 0.3,
+    "W_RV": 0.2,
+    "W_CMB": 0.25,
+    "W_VAR": 0.15,
+    "W_CEIL_EFF": 0.1,
+    "EXPLOITATIVE_EXPONENT": 1.5,
+    "EXPOSURE_CAP_HITTER": 0.5,
+    "EXPOSURE_CAP_PITCHER": 1,
+    "BAND_HIGH_PCT": 0.2,
+    "BAND_MID_PCT": 0.6,
+    "BAND_LOW_PCT": 0.2,
+    "MAX_PAIRWISE_OVERLAP": 6,
+    "TRIPLE_FREQ_CAP": 5,
+    "SIM_OPTIMALS_OWN_BUMP_PP": 5,
+    "SIM_OPTIMALS_TOP_PCT": 0.05,
+    "PPD_OWN_BUMP_PP": 3,
+    "PPD_TOP_PCT": 0.1,
+    "PPD_LINEUP_PENALTY": 0.1,
+    "PPD_LINEUP_TOP_PCT": 0.1,
+    "FRAGILITY_OWN_BUMP_PP": 2,
+    "FRAGILITY_TOP_PCT": 0.1,
+    "ULTRA_CHALK_PLAYER_THRESHOLD_PCT": 0.75,
+    "ULTRA_CHALK_LINEUP_MIN_COUNT": 5,
+    "ULTRA_CHALK_PENALTY": 0.05,
+    "PPD_STACK_PENALTY": 0.05,
+    "NUTS_GAP_HIGH_THRESHOLD": 0.08,
+    "NUTS_GAP_LOW_THRESHOLD": 0.03
+  },
+  "hermesA": {
+    "lambda": 0.58,
+    "gamma": 5,
+    "teamCapPct": 0.26,
+    "minPrimaryStack": 4,
+    "maxExposure": 0.21,
+    "maxExposurePitcher": 0.41,
+    "extremeCornerCap": true,
+    "comboPower": 4,
+    "binAllocation": {
+      "chalk": 0.5,
+      "core": 0.3,
+      "value": 0.2,
+      "contra": 0,
+      "deep": 0
+    }
+  },
+  "summary": {
+    "slatesRun": 18,
+    "totalFees": 54000,
+    "todfs": {
+      "payout": 35141.54783464756,
+      "roi": -0.34923059565467485,
+      "t1": 19,
+      "t01": 4,
+      "meanMahal": 2.029113984856492,
+      "slatesWonPayout": 6,
+      "slatesWonMahal": 2
+    },
+    "hermes": {
+      "payout": 122210.98651302289,
+      "roi": 1.2631664169078314,
+      "t1": 41,
+      "t01": 5,
+      "meanMahal": 1.2228780445768512,
+      "slatesWonPayout": 12,
+      "slatesWonMahal": 16
+    },
+    "outcome": "C — Theory-DFS substantially worse than Hermes-A. Investigate before shipping."
+  },
+  "perSlate": [
+    {
+      "slate": "4-6-26",
+      "todfs": {
+        "payout": 157.0668158215433,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 0.8732668818393821,
+        "metrics": {
+          "projRatioToOptimal": 0.8717978889081155,
+          "ceilingRatioToOptimal": 0.9153400360917753,
+          "avgPlayerOwnPctile": 0.9225509181969945,
+          "ownStdRatio": 6.469896069460297,
+          "ownDeltaFromAnchor": -6.660469999999997
+        },
+        "uniquePlayers": 138,
+        "teamStacks": {
+          "HOU": 30,
+          "BAL": 14,
+          "CWS": 6,
+          "LAD": 13,
+          "COL": 10,
+          "TEX": 5,
+          "LAA": 15,
+          "PHI": 16,
+          "SF": 12,
+          "MIN": 2,
+          "ATL": 6,
+          "TOR": 8,
+          "DET": 5,
+          "SEA": 8
+        }
+      },
+      "hermes": {
+        "payout": 1062.1652408422326,
+        "t1": 2,
+        "t01": 0,
+        "mahal": 0.7139948723142652,
+        "metrics": {
+          "projRatioToOptimal": 0.8737693949356867,
+          "ceilingRatioToOptimal": 0.9142810861905986,
+          "avgPlayerOwnPctile": 0.931633834168058,
+          "ownStdRatio": 6.020060117647191,
+          "ownDeltaFromAnchor": -6.190983333333337
+        },
+        "uniquePlayers": 135,
+        "teamStacks": {
+          "DET": 11,
+          "COL": 14,
+          "CWS": 12,
+          "TOR": 6,
+          "SF": 9,
+          "MIN": 4,
+          "TEX": 5,
+          "HOU": 27,
+          "LAD": 18,
+          "BAL": 15,
+          "PHI": 13,
+          "ATL": 5,
+          "SEA": 5,
+          "LAA": 6
+        }
+      }
+    },
+    {
+      "slate": "4-8-26",
+      "todfs": {
+        "payout": 243.67618370544923,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 1.2178003707468887,
+        "metrics": {
+          "projRatioToOptimal": 0.9024017651448784,
+          "ceilingRatioToOptimal": 0.9067187665190778,
+          "avgPlayerOwnPctile": 0.9222954091816363,
+          "ownStdRatio": 4.401059884599714,
+          "ownDeltaFromAnchor": -8.33991666666667
+        },
+        "uniquePlayers": 80,
+        "teamStacks": {
+          "CHC": 23,
+          "NYY": 31,
+          "DET": 14,
+          "MIA": 15,
+          "ATH": 20,
+          "CIN": 21,
+          "MIN": 7,
+          "TB": 19
+        }
+      },
+      "hermes": {
+        "payout": 128.15203148231134,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 0.5680466974176834,
+        "metrics": {
+          "projRatioToOptimal": 0.9012374864608879,
+          "ceilingRatioToOptimal": 0.9084186812768574,
+          "avgPlayerOwnPctile": 0.9263995817888034,
+          "ownStdRatio": 4.090537754867785,
+          "ownDeltaFromAnchor": -8.188755079365073
+        },
+        "uniquePlayers": 79,
+        "teamStacks": {
+          "NYY": 26,
+          "MIA": 15,
+          "TB": 17,
+          "DET": 21,
+          "CHC": 19,
+          "MIN": 7,
+          "ATH": 11,
+          "CIN": 10
+        }
+      }
+    },
+    {
+      "slate": "4-12-26",
+      "todfs": {
+        "payout": 205.36267232944633,
+        "t1": 1,
+        "t01": 0,
+        "mahal": 0.9348416570075964,
+        "metrics": {
+          "projRatioToOptimal": 0.8510759629868737,
+          "ceilingRatioToOptimal": 0.8802952234420367,
+          "avgPlayerOwnPctile": 0.9231235230934484,
+          "ownStdRatio": 12.022562066172505,
+          "ownDeltaFromAnchor": -13.301383333333302
+        },
+        "uniquePlayers": 192,
+        "teamStacks": {
+          "CHC": 25,
+          "PIT": 20,
+          "LAA": 10,
+          "TB": 4,
+          "TOR": 7,
+          "WSH": 13,
+          "CIN": 10,
+          "CWS": 8,
+          "SF": 10,
+          "KC": 4,
+          "MIN": 8,
+          "BAL": 10,
+          "MIL": 4,
+          "ARI": 1,
+          "STL": 1,
+          "DET": 1,
+          "NYY": 5,
+          "NYM": 3,
+          "BOS": 3,
+          "PHI": 3
+        }
+      },
+      "hermes": {
+        "payout": 679.1151215979993,
+        "t1": 2,
+        "t01": 0,
+        "mahal": 0.7805108543304937,
+        "metrics": {
+          "projRatioToOptimal": 0.8417516677426298,
+          "ceilingRatioToOptimal": 0.8892715430977636,
+          "avgPlayerOwnPctile": 0.9450497672753314,
+          "ownStdRatio": 9.336677615648462,
+          "ownDeltaFromAnchor": -12.813536666666637
+        },
+        "uniquePlayers": 168,
+        "teamStacks": {
+          "WSH": 3,
+          "TOR": 2,
+          "LAA": 23,
+          "MIN": 2,
+          "KC": 15,
+          "BOS": 13,
+          "SF": 6,
+          "PIT": 22,
+          "CHC": 30,
+          "NYY": 13,
+          "MIL": 8,
+          "CWS": 3,
+          "ARI": 1,
+          "STL": 2,
+          "DET": 2,
+          "PHI": 1,
+          "NYM": 1,
+          "BAL": 3
+        }
+      }
+    },
+    {
+      "slate": "4-14-26",
+      "todfs": {
+        "payout": 2247.424855722157,
+        "t1": 3,
+        "t01": 1,
+        "mahal": 3.3713597309041696,
+        "metrics": {
+          "projRatioToOptimal": 0.8584572858472997,
+          "ceilingRatioToOptimal": 0.8761224269588312,
+          "avgPlayerOwnPctile": 0.8974286840031518,
+          "ownStdRatio": 7.264346976934846,
+          "ownDeltaFromAnchor": -7.74000666666667
+        },
+        "uniquePlayers": 186,
+        "teamStacks": {
+          "MIA": 12,
+          "SEA": 17,
+          "TEX": 9,
+          "BOS": 11,
+          "TB": 3,
+          "ATL": 6,
+          "COL": 15,
+          "MIN": 8,
+          "TOR": 16,
+          "LAA": 5,
+          "MIL": 10,
+          "NYM": 16,
+          "SD": 9,
+          "ATH": 4,
+          "CWS": 2,
+          "LAD": 2,
+          "STL": 4,
+          "NYY": 1
+        }
+      },
+      "hermes": {
+        "payout": 459.0000796344323,
+        "t1": 2,
+        "t01": 0,
+        "mahal": 2.884317995998281,
+        "metrics": {
+          "projRatioToOptimal": 0.8680138500931098,
+          "ceilingRatioToOptimal": 0.8767485059760958,
+          "avgPlayerOwnPctile": 0.9064452324665092,
+          "ownStdRatio": 7.158370277084123,
+          "ownDeltaFromAnchor": -7.398973333333334
+        },
+        "uniquePlayers": 183,
+        "teamStacks": {
+          "MIL": 16,
+          "STL": 7,
+          "CWS": 17,
+          "ATH": 4,
+          "SD": 3,
+          "ATL": 12,
+          "MIN": 10,
+          "TB": 4,
+          "TOR": 7,
+          "NYM": 7,
+          "LAA": 4,
+          "COL": 4,
+          "LAD": 4,
+          "SEA": 10,
+          "CLE": 4,
+          "HOU": 4,
+          "BOS": 4,
+          "TEX": 14,
+          "NYY": 4,
+          "MIA": 11
+        }
+      }
+    },
+    {
+      "slate": "4-15-26",
+      "todfs": {
+        "payout": 217.11185949048019,
+        "t1": 1,
+        "t01": 0,
+        "mahal": 1.6909940359174178,
+        "metrics": {
+          "projRatioToOptimal": 0.8733414197423899,
+          "ceilingRatioToOptimal": 0.8772069853532898,
+          "avgPlayerOwnPctile": 0.9140117820324004,
+          "ownStdRatio": 9.470816792482193,
+          "ownDeltaFromAnchor": -10.001813333333324
+        },
+        "uniquePlayers": 148,
+        "teamStacks": {
+          "ATL": 6,
+          "NYY": 21,
+          "LAA": 9,
+          "TEX": 12,
+          "ATH": 10,
+          "COL": 22,
+          "SD": 18,
+          "TOR": 15,
+          "NYM": 3,
+          "LAD": 7,
+          "SEA": 16,
+          "HOU": 2,
+          "MIA": 7,
+          "CWS": 1,
+          "TB": 1
+        }
+      },
+      "hermes": {
+        "payout": 283.7319036987518,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 1.1950366556566125,
+        "metrics": {
+          "projRatioToOptimal": 0.874124646219604,
+          "ceilingRatioToOptimal": 0.8842757122163204,
+          "avgPlayerOwnPctile": 0.933379479626902,
+          "ownStdRatio": 7.644737573519437,
+          "ownDeltaFromAnchor": -9.289166666666654
+        },
+        "uniquePlayers": 144,
+        "teamStacks": {
+          "ATH": 15,
+          "CWS": 13,
+          "COL": 6,
+          "NYY": 24,
+          "MIA": 5,
+          "TOR": 7,
+          "TB": 7,
+          "ATL": 14,
+          "NYM": 1,
+          "SEA": 10,
+          "SD": 7,
+          "TEX": 14,
+          "HOU": 8,
+          "LAA": 17,
+          "LAD": 2
+        }
+      }
+    },
+    {
+      "slate": "4-17-26",
+      "todfs": {
+        "payout": 59.40417154139195,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 1.379452371046542,
+        "metrics": {
+          "projRatioToOptimal": 0.8633241012729054,
+          "ceilingRatioToOptimal": 0.9089321834346353,
+          "avgPlayerOwnPctile": 0.9173216237314601,
+          "ownStdRatio": 9.464915005973031,
+          "ownDeltaFromAnchor": -8.147170000000001
+        },
+        "uniquePlayers": 181,
+        "teamStacks": {
+          "TOR": 7,
+          "LAD": 11,
+          "CWS": 16,
+          "COL": 20,
+          "NYY": 8,
+          "LAA": 7,
+          "KC": 12,
+          "MIA": 1,
+          "MIN": 3,
+          "BOS": 9,
+          "CIN": 11,
+          "STL": 15,
+          "HOU": 1,
+          "ARI": 3,
+          "ATH": 6,
+          "SD": 10,
+          "MIL": 4,
+          "SEA": 6
+        }
+      },
+      "hermes": {
+        "payout": 174.04420560989684,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 2.712299660358107,
+        "metrics": {
+          "projRatioToOptimal": 0.8871316268009511,
+          "ceilingRatioToOptimal": 0.9295058847022696,
+          "avgPlayerOwnPctile": 0.95011631537861,
+          "ownStdRatio": 8.545039107231732,
+          "ownDeltaFromAnchor": -6.310683333333337
+        },
+        "uniquePlayers": 159,
+        "teamStacks": {
+          "COL": 3,
+          "LAA": 8,
+          "CWS": 35,
+          "ARI": 10,
+          "NYY": 17,
+          "TOR": 13,
+          "BOS": 2,
+          "ATH": 10,
+          "STL": 12,
+          "DET": 3,
+          "MIN": 3,
+          "MIA": 2,
+          "MIL": 16,
+          "CIN": 1,
+          "HOU": 1,
+          "LAD": 14
+        }
+      }
+    },
+    {
+      "slate": "4-18-26",
+      "todfs": {
+        "payout": 500.03806717658114,
+        "t1": 1,
+        "t01": 0,
+        "mahal": 4.382965401311378,
+        "metrics": {
+          "projRatioToOptimal": 0.8762406283470188,
+          "ceilingRatioToOptimal": 0.890476320030999,
+          "avgPlayerOwnPctile": 0.9096172125883106,
+          "ownStdRatio": 5.369649351564492,
+          "ownDeltaFromAnchor": -9.009409999999999
+        },
+        "uniquePlayers": 115,
+        "teamStacks": {
+          "LAD": 23,
+          "LAA": 33,
+          "SD": 11,
+          "TOR": 6,
+          "COL": 21,
+          "ARI": 13,
+          "TEX": 14,
+          "SEA": 5,
+          "HOU": 7,
+          "ATL": 8,
+          "STL": 7,
+          "PHI": 2
+        }
+      },
+      "hermes": {
+        "payout": 2323.3218784727087,
+        "t1": 3,
+        "t01": 0,
+        "mahal": 1.171524549306312,
+        "metrics": {
+          "projRatioToOptimal": 0.8972414613828396,
+          "ceilingRatioToOptimal": 0.9067634558862931,
+          "avgPlayerOwnPctile": 0.9258098908156711,
+          "ownStdRatio": 4.908645244759479,
+          "ownDeltaFromAnchor": -7.03718333333333
+        },
+        "uniquePlayers": 105,
+        "teamStacks": {
+          "LAA": 34,
+          "ARI": 17,
+          "SEA": 9,
+          "STL": 17,
+          "TOR": 18,
+          "TEX": 4,
+          "LAD": 13,
+          "HOU": 5,
+          "PHI": 1,
+          "COL": 7,
+          "ATL": 1,
+          "SD": 24
+        }
+      }
+    },
+    {
+      "slate": "4-19-26",
+      "todfs": {
+        "payout": 675.0134031429491,
+        "t1": 2,
+        "t01": 0,
+        "mahal": 1.8405173729176,
+        "metrics": {
+          "projRatioToOptimal": 0.8954568627450978,
+          "ceilingRatioToOptimal": 0.9185278665246717,
+          "avgPlayerOwnPctile": 0.9289234116623152,
+          "ownStdRatio": 6.073118548469857,
+          "ownDeltaFromAnchor": -5.670099999999996
+        },
+        "uniquePlayers": 149,
+        "teamStacks": {
+          "HOU": 5,
+          "SF": 16,
+          "TB": 15,
+          "MIL": 14,
+          "STL": 13,
+          "CIN": 18,
+          "KC": 15,
+          "NYY": 10,
+          "MIN": 7,
+          "WSH": 3,
+          "MIA": 17,
+          "NYM": 5,
+          "CLE": 4,
+          "BAL": 7,
+          "PIT": 1
+        }
+      },
+      "hermes": {
+        "payout": 527.697753161099,
+        "t1": 1,
+        "t01": 0,
+        "mahal": 0.6383529062688786,
+        "metrics": {
+          "projRatioToOptimal": 0.9010790849673201,
+          "ceilingRatioToOptimal": 0.9209676073837416,
+          "avgPlayerOwnPctile": 0.9374882506527414,
+          "ownStdRatio": 5.889860160644829,
+          "ownDeltaFromAnchor": -4.901139999999993
+        },
+        "uniquePlayers": 152,
+        "teamStacks": {
+          "MIN": 17,
+          "CLE": 13,
+          "NYY": 15,
+          "PIT": 7,
+          "WSH": 5,
+          "CHC": 6,
+          "CIN": 8,
+          "MIL": 11,
+          "MIA": 7,
+          "NYM": 5,
+          "BAL": 5,
+          "HOU": 12,
+          "KC": 9,
+          "TB": 10,
+          "STL": 11,
+          "SF": 9
+        }
+      }
+    },
+    {
+      "slate": "4-20-26",
+      "todfs": {
+        "payout": 55.90445620215085,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 0.6010678668708145,
+        "metrics": {
+          "projRatioToOptimal": 0.8538651931157545,
+          "ceilingRatioToOptimal": 0.8998367856251557,
+          "avgPlayerOwnPctile": 0.9230197780993731,
+          "ownStdRatio": 8.083220563192217,
+          "ownDeltaFromAnchor": -12.656416666666649
+        },
+        "uniquePlayers": 154,
+        "teamStacks": {
+          "LAD": 33,
+          "ATL": 8,
+          "COL": 27,
+          "SEA": 9,
+          "ATH": 15,
+          "KC": 3,
+          "BAL": 20,
+          "TB": 2,
+          "WSH": 8,
+          "CHC": 8,
+          "PHI": 6,
+          "CIN": 3,
+          "STL": 3,
+          "TOR": 1,
+          "LAA": 2,
+          "MIA": 2
+        }
+      },
+      "hermes": {
+        "payout": 44.0113722762655,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 1.2074297828795009,
+        "metrics": {
+          "projRatioToOptimal": 0.8585028492488349,
+          "ceilingRatioToOptimal": 0.9043719324515435,
+          "avgPlayerOwnPctile": 0.9397163531114326,
+          "ownStdRatio": 6.912854706136484,
+          "ownDeltaFromAnchor": -12.605889999999981
+        },
+        "uniquePlayers": 141,
+        "teamStacks": {
+          "SEA": 15,
+          "COL": 30,
+          "ATH": 3,
+          "KC": 4,
+          "ATL": 14,
+          "LAD": 16,
+          "TOR": 11,
+          "CIN": 20,
+          "STL": 8,
+          "BAL": 19,
+          "MIA": 5,
+          "LAA": 1,
+          "TB": 1,
+          "PHI": 3
+        }
+      }
+    },
+    {
+      "slate": "4-21-26",
+      "todfs": {
+        "payout": 331.16080188177017,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 1.9859988014136611,
+        "metrics": {
+          "projRatioToOptimal": 0.8746986242211118,
+          "ceilingRatioToOptimal": 0.9001011711139623,
+          "avgPlayerOwnPctile": 0.8990023419203746,
+          "ownStdRatio": 5.845196397292119,
+          "ownDeltaFromAnchor": -7.212593333333325
+        },
+        "uniquePlayers": 97,
+        "teamStacks": {
+          "BAL": 28,
+          "LAA": 20,
+          "KC": 10,
+          "CIN": 18,
+          "SEA": 15,
+          "ATH": 15,
+          "TOR": 15,
+          "TB": 9,
+          "CLE": 10,
+          "HOU": 10
+        }
+      },
+      "hermes": {
+        "payout": 27386.1115869106,
+        "t1": 3,
+        "t01": 2,
+        "mahal": 1.0380271346811354,
+        "metrics": {
+          "projRatioToOptimal": 0.8684021222777473,
+          "ceilingRatioToOptimal": 0.9119709359839991,
+          "avgPlayerOwnPctile": 0.919734582357533,
+          "ownStdRatio": 4.68496713529098,
+          "ownDeltaFromAnchor": -6.847586666666665
+        },
+        "uniquePlayers": 95,
+        "teamStacks": {
+          "CLE": 15,
+          "LAA": 30,
+          "CIN": 22,
+          "TB": 11,
+          "SEA": 23,
+          "KC": 24,
+          "ATH": 1,
+          "HOU": 6,
+          "TOR": 2,
+          "BAL": 16
+        }
+      }
+    },
+    {
+      "slate": "4-22-26",
+      "todfs": {
+        "payout": 70.72591034080713,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 2.0636838439847773,
+        "metrics": {
+          "projRatioToOptimal": 0.8610565056173554,
+          "ceilingRatioToOptimal": 0.8960478271425104,
+          "avgPlayerOwnPctile": 0.9409995742869306,
+          "ownStdRatio": 7.970719612577581,
+          "ownDeltaFromAnchor": -8.904856666666651
+        },
+        "uniquePlayers": 157,
+        "teamStacks": {
+          "SD": 48,
+          "ATL": 8,
+          "COL": 35,
+          "TEX": 6,
+          "PIT": 15,
+          "MIL": 16,
+          "NYM": 2,
+          "CWS": 9,
+          "BOS": 2,
+          "WSH": 1,
+          "PHI": 3,
+          "MIN": 4,
+          "CHC": 1
+        }
+      },
+      "hermes": {
+        "payout": 40710.54522507589,
+        "t1": 3,
+        "t01": 1,
+        "mahal": 0.30405084053880865,
+        "metrics": {
+          "projRatioToOptimal": 0.8475139742099724,
+          "ceilingRatioToOptimal": 0.8911708343449058,
+          "avgPlayerOwnPctile": 0.9459650915283104,
+          "ownStdRatio": 7.130234083724741,
+          "ownDeltaFromAnchor": -9.693609999999998
+        },
+        "uniquePlayers": 151,
+        "teamStacks": {
+          "DET": 6,
+          "ARI": 21,
+          "CWS": 21,
+          "BOS": 2,
+          "COL": 31,
+          "ATL": 26,
+          "LAD": 3,
+          "TEX": 3,
+          "MIL": 7,
+          "NYY": 2,
+          "SD": 11,
+          "NYM": 2,
+          "CHC": 3,
+          "MIN": 1,
+          "WSH": 1,
+          "PHI": 2,
+          "PIT": 8
+        }
+      }
+    },
+    {
+      "slate": "4-23-26",
+      "todfs": {
+        "payout": 155.4073944020497,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 1.3774383167768085,
+        "metrics": {
+          "projRatioToOptimal": 0.8764158718945015,
+          "ceilingRatioToOptimal": 0.9012070869386073,
+          "avgPlayerOwnPctile": 0.9008742964352721,
+          "ownStdRatio": 6.159430810175901,
+          "ownDeltaFromAnchor": -8.035220000000017
+        },
+        "uniquePlayers": 117,
+        "teamStacks": {
+          "SD": 31,
+          "ATL": 15,
+          "PHI": 13,
+          "COL": 12,
+          "CHC": 17,
+          "SF": 15,
+          "WSH": 11,
+          "CWS": 16,
+          "ARI": 11,
+          "LAD": 4,
+          "MIL": 4,
+          "DET": 1
+        }
+      },
+      "hermes": {
+        "payout": 1662.208464737564,
+        "t1": 3,
+        "t01": 0,
+        "mahal": 0.9529311907115092,
+        "metrics": {
+          "projRatioToOptimal": 0.88572942423172,
+          "ceilingRatioToOptimal": 0.9132049443757725,
+          "avgPlayerOwnPctile": 0.9248868042526575,
+          "ownStdRatio": 5.567255198344475,
+          "ownDeltaFromAnchor": -6.809600000000012
+        },
+        "uniquePlayers": 113,
+        "teamStacks": {
+          "DET": 15,
+          "WSH": 14,
+          "ARI": 11,
+          "CWS": 9,
+          "SF": 4,
+          "CHC": 12,
+          "COL": 19,
+          "PHI": 15,
+          "ATL": 19,
+          "MIL": 4,
+          "SD": 28
+        }
+      }
+    },
+    {
+      "slate": "4-24-26",
+      "todfs": {
+        "payout": 503.9772504237603,
+        "t1": 1,
+        "t01": 0,
+        "mahal": 0.9345171550879401,
+        "metrics": {
+          "projRatioToOptimal": 0.884575711608816,
+          "ceilingRatioToOptimal": 0.9095641358700717,
+          "avgPlayerOwnPctile": 0.9213404953745148,
+          "ownStdRatio": 9.723784891900102,
+          "ownDeltaFromAnchor": -5.885473333333334
+        },
+        "uniquePlayers": 225,
+        "teamStacks": {
+          "CWS": 7,
+          "WSH": 18,
+          "BOS": 6,
+          "NYY": 13,
+          "CLE": 9,
+          "SEA": 2,
+          "BAL": 7,
+          "CHC": 15,
+          "STL": 5,
+          "LAD": 1,
+          "SF": 7,
+          "ATH": 6,
+          "MIA": 14,
+          "PHI": 9,
+          "HOU": 3,
+          "LAA": 5,
+          "TEX": 6,
+          "PIT": 8,
+          "ATL": 1,
+          "NYM": 2,
+          "MIL": 2,
+          "MIN": 4
+        }
+      },
+      "hermes": {
+        "payout": 201.6559613419248,
+        "t1": 1,
+        "t01": 0,
+        "mahal": 0.7158973891176497,
+        "metrics": {
+          "projRatioToOptimal": 0.8887147913506439,
+          "ceilingRatioToOptimal": 0.9176724481912564,
+          "avgPlayerOwnPctile": 0.9407920023873466,
+          "ownStdRatio": 8.417734895600193,
+          "ownDeltaFromAnchor": -5.085066666666663
+        },
+        "uniquePlayers": 220,
+        "teamStacks": {
+          "TOR": 6,
+          "TEX": 11,
+          "PHI": 3,
+          "MIA": 3,
+          "CLE": 4,
+          "HOU": 4,
+          "PIT": 7,
+          "ATL": 3,
+          "MIL": 1,
+          "LAD": 6,
+          "KC": 3,
+          "CWS": 9,
+          "TB": 2,
+          "COL": 1,
+          "SF": 8,
+          "BOS": 8,
+          "WSH": 17,
+          "LAA": 3,
+          "BAL": 3,
+          "ATH": 4,
+          "CHC": 3,
+          "MIN": 3,
+          "STL": 3,
+          "NYY": 13,
+          "NYM": 6,
+          "SEA": 16
+        }
+      }
+    },
+    {
+      "slate": "4-25-26",
+      "todfs": {
+        "payout": 173.4476270072266,
+        "t1": 0,
+        "t01": 0,
+        "mahal": 3.4586258452127674,
+        "metrics": {
+          "projRatioToOptimal": 0.8816980357666367,
+          "ceilingRatioToOptimal": 0.9017385523144689,
+          "avgPlayerOwnPctile": 0.9147276760953965,
+          "ownStdRatio": 6.1062836155328934,
+          "ownDeltaFromAnchor": -8.277713333333338
+        },
+        "uniquePlayers": 137,
+        "teamStacks": {
+          "NYY": 20,
+          "DET": 10,
+          "CHC": 15,
+          "KC": 7,
+          "CIN": 8,
+          "PHI": 14,
+          "TEX": 9,
+          "MIL": 7,
+          "PIT": 22,
+          "LAA": 18,
+          "HOU": 5,
+          "LAD": 7,
+          "ATL": 7,
+          "ATH": 1
+        }
+      },
+      "hermes": {
+        "payout": 8719.773836223547,
+        "t1": 2,
+        "t01": 1,
+        "mahal": 1.4761832935609587,
+        "metrics": {
+          "projRatioToOptimal": 0.8925875109938437,
+          "ceilingRatioToOptimal": 0.9149090002493144,
+          "avgPlayerOwnPctile": 0.9375917914586798,
+          "ownStdRatio": 5.453715060371469,
+          "ownDeltaFromAnchor": -6.935786666666679
+        },
+        "uniquePlayers": 132,
+        "teamStacks": {
+          "LAD": 14,
+          "MIL": 13,
+          "CIN": 20,
+          "KC": 19,
+          "DET": 18,
+          "ATL": 4,
+          "TEX": 11,
+          "NYY": 24,
+          "PHI": 12,
+          "CHC": 7,
+          "HOU": 4,
+          "PIT": 1,
+          "ATH": 1,
+          "LAA": 2
+        }
+      }
+    },
+    {
+      "slate": "4-25-26-early",
+      "todfs": {
+        "payout": 14804.554217482275,
+        "t1": 4,
+        "t01": 2,
+        "mahal": 3.6153342013374625,
+        "metrics": {
+          "projRatioToOptimal": 0.9029048092868984,
+          "ceilingRatioToOptimal": 0.9094824038982136,
+          "avgPlayerOwnPctile": 0.9118049095607231,
+          "ownStdRatio": 5.81446631614789,
+          "ownDeltaFromAnchor": -8.195990000000007
+        },
+        "uniquePlayers": 100,
+        "teamStacks": {
+          "CWS": 18,
+          "MIN": 23,
+          "SEA": 12,
+          "MIA": 11,
+          "SF": 19,
+          "WSH": 10,
+          "TB": 7,
+          "STL": 7,
+          "CLE": 29,
+          "TOR": 14
+        }
+      },
+      "hermes": {
+        "payout": 29787.512315598597,
+        "t1": 2,
+        "t01": 1,
+        "mahal": 1.853526330397396,
+        "metrics": {
+          "projRatioToOptimal": 0.9023343283582086,
+          "ceilingRatioToOptimal": 0.9179399025446662,
+          "avgPlayerOwnPctile": 0.9292093023255817,
+          "ownStdRatio": 5.568934282459509,
+          "ownDeltaFromAnchor": -7.323356666666662
+        },
+        "uniquePlayers": 99,
+        "teamStacks": {
+          "SF": 18,
+          "CWS": 23,
+          "TOR": 18,
+          "TB": 19,
+          "STL": 10,
+          "MIN": 9,
+          "SEA": 19,
+          "MIA": 15,
+          "WSH": 7,
+          "CLE": 12
+        }
+      }
+    },
+    {
+      "slate": "4-26-26",
+      "todfs": {
+        "payout": 1265.0813680064625,
+        "t1": 2,
+        "t01": 0,
+        "mahal": 3.315982307072724,
+        "metrics": {
+          "projRatioToOptimal": 0.8926592282659228,
+          "ceilingRatioToOptimal": 0.884637583892618,
+          "avgPlayerOwnPctile": 0.8950885361552026,
+          "ownStdRatio": 11.075330738622238,
+          "ownDeltaFromAnchor": -7.042319999999998
+        },
+        "uniquePlayers": 198,
+        "teamStacks": {
+          "NYY": 21,
+          "SEA": 9,
+          "TB": 7,
+          "CIN": 5,
+          "CLE": 4,
+          "DET": 1,
+          "STL": 16,
+          "ATH": 15,
+          "PHI": 17,
+          "TEX": 9,
+          "TOR": 1,
+          "HOU": 6,
+          "WSH": 12,
+          "BOS": 9,
+          "ATL": 3,
+          "NYM": 2,
+          "MIN": 3,
+          "CWS": 2,
+          "MIL": 6,
+          "BAL": 2
+        }
+      },
+      "hermes": {
+        "payout": 2662.5838680852385,
+        "t1": 4,
+        "t01": 0,
+        "mahal": 1.6702970869040914,
+        "metrics": {
+          "projRatioToOptimal": 0.8939034170153414,
+          "ceilingRatioToOptimal": 0.9008873974645782,
+          "avgPlayerOwnPctile": 0.9285636684303347,
+          "ownStdRatio": 9.766884592508697,
+          "ownDeltaFromAnchor": -6.365260000000001
+        },
+        "uniquePlayers": 186,
+        "teamStacks": {
+          "TOR": 7,
+          "CIN": 18,
+          "TEX": 9,
+          "HOU": 8,
+          "ATL": 15,
+          "ATH": 11,
+          "STL": 4,
+          "CWS": 3,
+          "PIT": 1,
+          "DET": 13,
+          "TB": 9,
+          "NYM": 5,
+          "BOS": 1,
+          "WSH": 6,
+          "PHI": 4,
+          "MIN": 4,
+          "MIL": 2,
+          "SEA": 10,
+          "NYY": 17,
+          "CLE": 2,
+          "COL": 1
+        }
+      }
+    },
+    {
+      "slate": "4-27-26",
+      "todfs": {
+        "payout": 13171.565870275102,
+        "t1": 2,
+        "t01": 1,
+        "mahal": 1.5251245256121482,
+        "metrics": {
+          "projRatioToOptimal": 0.8790892959186738,
+          "ceilingRatioToOptimal": 0.8910851476793246,
+          "avgPlayerOwnPctile": 0.9042196339434267,
+          "ownStdRatio": 7.07300470345266,
+          "ownDeltaFromAnchor": -8.87613999999999
+        },
+        "uniquePlayers": 134,
+        "teamStacks": {
+          "SEA": 7,
+          "CWS": 17,
+          "NYY": 23,
+          "LAA": 14,
+          "LAD": 11,
+          "TEX": 1,
+          "CHC": 8,
+          "PIT": 17,
+          "BOS": 20,
+          "MIA": 9,
+          "TOR": 1,
+          "SD": 2,
+          "MIN": 14,
+          "STL": 6
+        }
+      },
+      "hermes": {
+        "payout": 3452.1821958395562,
+        "t1": 9,
+        "t01": 0,
+        "mahal": 0.8399319027806905,
+        "metrics": {
+          "projRatioToOptimal": 0.8885440163613949,
+          "ceilingRatioToOptimal": 0.901393417721519,
+          "avgPlayerOwnPctile": 0.9255818080976148,
+          "ownStdRatio": 6.119966389829795,
+          "ownDeltaFromAnchor": -7.943293333333331
+        },
+        "uniquePlayers": 132,
+        "teamStacks": {
+          "TEX": 3,
+          "SD": 8,
+          "TOR": 10,
+          "PIT": 11,
+          "NYY": 18,
+          "MIN": 18,
+          "CWS": 16,
+          "CHC": 6,
+          "STL": 6,
+          "MIA": 3,
+          "LAA": 20,
+          "BOS": 5,
+          "LAD": 11,
+          "SEA": 15
+        }
+      }
+    },
+    {
+      "slate": "4-28-26",
+      "todfs": {
+        "payout": 304.62490969594916,
+        "t1": 2,
+        "t01": 0,
+        "mahal": 1.9550810423567884,
+        "metrics": {
+          "projRatioToOptimal": 0.8906527588813304,
+          "ceilingRatioToOptimal": 0.9131851371225883,
+          "avgPlayerOwnPctile": 0.911204745503253,
+          "ownStdRatio": 6.949875239088309,
+          "ownDeltaFromAnchor": -6.771523333333333
+        },
+        "uniquePlayers": 184,
+        "teamStacks": {
+          "NYM": 11,
+          "KC": 21,
+          "DET": 7,
+          "TEX": 4,
+          "NYY": 17,
+          "SEA": 10,
+          "MIN": 11,
+          "CHC": 16,
+          "LAA": 11,
+          "MIL": 10,
+          "SD": 10,
+          "ATH": 2,
+          "WSH": 3,
+          "ARI": 5,
+          "BOS": 5,
+          "LAD": 1,
+          "MIA": 3,
+          "TOR": 2,
+          "CWS": 1
+        }
+      },
+      "hermes": {
+        "payout": 1947.1734724342969,
+        "t1": 4,
+        "t01": 0,
+        "mahal": 1.2894456591609484,
+        "metrics": {
+          "projRatioToOptimal": 0.9077925925925922,
+          "ceilingRatioToOptimal": 0.9272035643221731,
+          "avgPlayerOwnPctile": 0.9315308075009568,
+          "ownStdRatio": 6.30762668479214,
+          "ownDeltaFromAnchor": -5.670763333333339
+        },
+        "uniquePlayers": 160,
+        "teamStacks": {
+          "LAA": 17,
+          "SD": 12,
+          "SEA": 14,
+          "NYM": 20,
+          "CHC": 19,
+          "MIL": 11,
+          "LAD": 2,
+          "ATL": 6,
+          "NYY": 4,
+          "DET": 14,
+          "KC": 19,
+          "BOS": 4,
+          "ATH": 1,
+          "TEX": 1,
+          "MIN": 1,
+          "ARI": 4,
+          "MIA": 1
+        }
+      }
+    }
+  ]
+}

@@ -52,6 +52,10 @@ const SLATES = [
   { slate: '4-28-26', proj: '4-28-26projections.csv', actuals: '4-28-26actuals.csv', pool: '4-28-26sspool.csv' },
   { slate: '4-29-26', proj: '4-29-26projections.csv', actuals: '4-29-26actuals.csv', pool: '4-29-26sspool.csv' },
   { slate: '5-1-26',  proj: '5-1-26projections.csv',  actuals: '5-1-26actuals.csv',  pool: '5-1-26sspool.csv' },
+  { slate: '5-2-26',       proj: '5-2-26projections.csv',       actuals: '5-2-26actuals.csv',       pool: '5-2-26sspool.csv' },
+  { slate: '5-2-26-main',  proj: '5-2-26projectionsmain.csv',   actuals: '5-2-26actualsmain.csv',   pool: '5-2-26sspoolmain.csv' },
+  { slate: '5-2-26-night', proj: '5-2-26projectionsnight.csv',  actuals: '5-2-26actualsnight.csv',  pool: '5-2-26sspoolnight.csv' },
+  { slate: '5-3-26',       proj: '5-3-26projections.csv',       actuals: '5-3-26actuals.csv',       pool: '5-3-26sspool.csv' },
 ];
 
 // ============================================================
@@ -84,10 +88,10 @@ const TYPE_SCALES: Record<string, number> = {
 // THEORY-DFS PARAMS (V1 baseline + V2 new fields)
 // ============================================================
 const TODFS_PARAMS = {
-  STACK_BONUS_PER_HITTER: 0.10, BRINGBACK_1: 0.05, BRINGBACK_2: 0.08, PITCHER_VS_HITTER_PENALTY: -0.10,
+  STACK_BONUS_PER_HITTER: 0.01, BRINGBACK_1: 0, BRINGBACK_2: 0, PITCHER_VS_HITTER_PENALTY: -0.10,
   MIN_PRIMARY_STACK: 4, OWNERSHIP_EFFICIENCY_EXPONENT: 0.5,
   W_PROJ: 1.0, W_LEV: 0.30, W_RV: 0.20, W_CMB: 0.25, W_VAR: 0.15, W_CEIL_EFF: 0.10,
-  EXPLOITATIVE_EXPONENT: 1.5, EXPOSURE_CAP_HITTER: 0.50, EXPOSURE_CAP_PITCHER: 1.00,
+  EXPLOITATIVE_EXPONENT: 1.5, EXPOSURE_CAP_HITTER: 0.25, EXPOSURE_CAP_PITCHER: 0.45,
   BAND_HIGH_PCT: 0.20, BAND_MID_PCT: 0.60, BAND_LOW_PCT: 0.20,
   MAX_PAIRWISE_OVERLAP: 6, TRIPLE_FREQ_CAP: 5, PPD_LINEUP_PENALTY: 0.10, PPD_LINEUP_TOP_PCT: 0.10,
 };
@@ -328,6 +332,8 @@ interface ScoredLU {
   lu: Lineup;
   proj: number; floor: number; ceiling: number; range: number;
   primarySize: number;
+  secondarySize: number;  // V5: needed for 3-3 archetype
+  bringBack: number;      // V7: bring-back hitter count
   corrAdj: number;
   logOwn: number;
   uniqueness: number;  // raw uniqueness score (typed-or-untyped depending on V1 vs V2)
@@ -343,6 +349,10 @@ function scoreLineup(
   pairFreqs: Map<string, number>,
   tripleFreqs: Map<string, number>,
   applyTypeScaling: boolean,
+  stackBonus?: number,
+  bringback1?: number,
+  bringback2?: number,
+  secondary4StkBonus?: number,
 ): ScoredLU {
   let floor = 0, ceiling = 0;
   for (const p of lu.players) {
@@ -360,15 +370,24 @@ function scoreLineup(
   }
   let primaryTeam = '', primarySize = 0;
   for (const [t, c] of teamHitters) if (c > primarySize) { primarySize = c; primaryTeam = t; }
+  let secondarySize = 0;
+  for (const [t, c] of teamHitters) if (t !== primaryTeam && c > secondarySize) secondarySize = c;
   let primaryOpp = '';
   for (const p of lu.players) if ((p.team || '').toUpperCase() === primaryTeam) { primaryOpp = (p.opponent || '').toUpperCase(); if (primaryOpp) break; }
   const bringBack = primaryOpp ? (teamHitters.get(primaryOpp) || 0) : 0;
   let pOppHitters = 0;
   for (const p of pitchers) { const o = (p.opponent || '').toUpperCase(); if (o) pOppHitters += teamHitters.get(o) || 0; }
+  const sb = stackBonus !== undefined ? stackBonus : TODFS_PARAMS.STACK_BONUS_PER_HITTER;
+  const bb1 = bringback1 !== undefined ? bringback1 : TODFS_PARAMS.BRINGBACK_1;
+  const bb2 = bringback2 !== undefined ? bringback2 : TODFS_PARAMS.BRINGBACK_2;
   let corrAdj = 0;
-  if (primarySize >= 3) corrAdj += TODFS_PARAMS.STACK_BONUS_PER_HITTER * (primarySize - 2);
-  if (bringBack === 1) corrAdj += TODFS_PARAMS.BRINGBACK_1;
-  else if (bringBack >= 2) corrAdj += TODFS_PARAMS.BRINGBACK_2;
+  if (primarySize >= 3) corrAdj += sb * (primarySize - 2);
+  if (bringBack === 1) corrAdj += bb1;
+  else if (bringBack >= 2) corrAdj += bb2;
+  // Secondary stack bonus for 4-stacks (avoid naked 4s; promote 4-2 / 4-3 structure).
+  if (secondary4StkBonus && primarySize === 4 && secondarySize >= 2) {
+    corrAdj += secondary4StkBonus * (Math.min(secondarySize, 3) - 1);  // 2→1×, 3+→2×
+  }
   corrAdj += TODFS_PARAMS.PITCHER_VS_HITTER_PENALTY * pOppHitters;
 
   // Combinatorial uniqueness (1E) — TYPE-SCALED in V2.
@@ -430,12 +449,33 @@ function scoreLineup(
 
   return {
     lu, proj: lu.projection, floor, ceiling, range: ceiling - floor,
-    primarySize, corrAdj, logOwn, uniqueness, ppd, stackOwnAvg,
+    primarySize, secondarySize, bringBack, corrAdj, logOwn, uniqueness, ppd, stackOwnAvg,
     ev: 0, projPct: 0, ownPct: 0, rangePct: 0, ppdPct: 0, uniqPct: 0, stackOwnPct: 0,
   };
 }
 
-interface VariantOpts { applyTypeScaling: boolean; topNFilter: number; stackChalkBonus?: number; }
+interface VariantOpts {
+  applyTypeScaling: boolean;
+  topNFilter: number;
+  stackChalkBonus?: number;
+  wCmbOverride?: number;
+  wLevOverride?: number;  // V1.1 sweep: leverage weight (V1 default 0.30)
+  wProjOverride?: number;  // V1-ProjEmphasis: projection weight (V1 default 1.0)
+  excludeLPHO?: boolean;   // V1-NoLowProjHighOwn: hard 0% on LowProj/HighOwn band
+  // V1-NaturalCorr: relax correlation forcing to match pro patterns
+  // (V1 audit: pros 80% naked vs V1 4% naked; pros 22% 4-stacks vs V1 0%)
+  stackBonusOverride?: number;   // V1 default 0.10 (× (size-2))
+  bringback1Override?: number;   // V1 default 0.05
+  bringback2Override?: number;   // V1 default 0.08
+  secondary4StkBonus?: number;   // bonus when primarySize=4 AND secondarySize >= 2 (4-2 or 4-3)
+  // V5: stack-size mix mandate (fractions sum to 1.0). If set, forces portfolio composition.
+  stackMix?: { fivePlus: number; four: number; threeThree: number };
+  // V6: PPD-corner penalty overrides
+  ppdTopPctOverride?: number;
+  ppdPenaltyOverride?: number;
+  // V7: bring-back mandate (min lineups with BB>=1, BB>=2). If set, forces composition.
+  bringBackMin?: { gte1: number; gte2: number };
+}
 
 function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
   // Optionally apply top-N hard filter (topNFilter=0 means no filter).
@@ -459,7 +499,7 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
   }
 
   const { pair, triple } = buildPairTripleFreqs(candidatePool);
-  const scored = candidatePool.map(lu => scoreLineup(lu, pair, triple, opts.applyTypeScaling));
+  const scored = candidatePool.map(lu => scoreLineup(lu, pair, triple, opts.applyTypeScaling, opts.stackBonusOverride, opts.bringback1Override, opts.bringback2Override, opts.secondary4StkBonus));
   const projAdj = scored.map(s => s.proj * (1 + s.corrAdj));
   const projPct = rankPercentile(projAdj);
   const ownPct = rankPercentile(scored.map(s => s.logOwn));
@@ -474,18 +514,40 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
     scored[i].stackOwnPct = stackOwnPct[i];
   }
   const stackChalkBonus = opts.stackChalkBonus || 0;
+  const wCmb = opts.wCmbOverride !== undefined ? opts.wCmbOverride : TODFS_PARAMS.W_CMB;
+  const wLev = opts.wLevOverride !== undefined ? opts.wLevOverride : TODFS_PARAMS.W_LEV;
+  const wProj = opts.wProjOverride !== undefined ? opts.wProjOverride : TODFS_PARAMS.W_PROJ;
+  const ppdTop = opts.ppdTopPctOverride !== undefined ? opts.ppdTopPctOverride : TODFS_PARAMS.PPD_LINEUP_TOP_PCT;
+  const ppdPen = opts.ppdPenaltyOverride !== undefined ? opts.ppdPenaltyOverride : TODFS_PARAMS.PPD_LINEUP_PENALTY;
   for (const s of scored) {
-    let ev = TODFS_PARAMS.W_PROJ * s.projPct
-           + TODFS_PARAMS.W_LEV * (1 - s.ownPct)
+    let ev = wProj * s.projPct
+           + wLev * (1 - s.ownPct)
            + TODFS_PARAMS.W_VAR * s.rangePct * 0.85
-           + TODFS_PARAMS.W_CMB * s.uniqPct
+           + wCmb * s.uniqPct
            + stackChalkBonus * s.stackOwnPct;  // V3 term
-    if (s.ppdPct >= 1 - TODFS_PARAMS.PPD_LINEUP_TOP_PCT) ev *= (1 - TODFS_PARAMS.PPD_LINEUP_PENALTY);
+    if (s.ppdPct >= 1 - ppdTop) ev *= (1 - ppdPen);
     s.ev = ev;
   }
 
-  let pool = scored.filter(s => s.primarySize >= TODFS_PARAMS.MIN_PRIMARY_STACK);
+  // V5: if stackMix enabled, allow primarySize=3 (3-3 splits). Otherwise require >= MIN_PRIMARY_STACK.
+  const minStack = opts.stackMix ? 3 : TODFS_PARAMS.MIN_PRIMARY_STACK;
+  let pool = scored.filter(s => s.primarySize >= minStack);
   if (pool.length < N) pool = scored;
+
+  // V1-NoLowProjHighOwn: hard 0% on LowProj/HighOwn band.
+  // Per-slate medians from CANDIDATE POOL (not pool+pros, since pros aren't accessible here).
+  if (opts.excludeLPHO) {
+    const projsArr = pool.map(s => s.proj).slice().sort((a, b) => a - b);
+    const ownsArr = pool.map(s => s.lu.ownership || 0).slice().sort((a, b) => a - b);
+    const medProj = projsArr[Math.floor(projsArr.length / 2)];
+    const medOwn = ownsArr[Math.floor(ownsArr.length / 2)];
+    pool = pool.filter(s => {
+      const hp = s.proj >= medProj;
+      const ho = (s.lu.ownership || 0) >= medOwn;
+      return !(!hp && ho);  // exclude LowProj && HighOwn
+    });
+    if (pool.length < N) pool = scored;  // fallback if filter starves selection
+  }
 
   const sortedHigh = [...pool].sort((a, b) => (b.projPct + b.ownPct) - (a.projPct + a.ownPct));
   const sortedLow = [...pool].sort((a, b) => ((1 - b.projPct) + (1 - b.ownPct)) - ((1 - a.projPct) + (1 - a.ownPct)));
@@ -496,6 +558,16 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
   const selected: ScoredLU[] = [];
   const exposure = new Map<string, number>();
   const seen = new Set<string>();
+  // V5: stack-mix bucket counts.
+  const stackBucketCount = { fivePlus: 0, four: 0, threeThree: 0, threeOther: 0 };
+  function bucketOf(s: ScoredLU): 'fivePlus' | 'four' | 'threeThree' | 'threeOther' {
+    if (s.primarySize >= 5) return 'fivePlus';
+    if (s.primarySize === 4) return 'four';
+    if (s.primarySize === 3 && s.secondarySize >= 3) return 'threeThree';
+    return 'threeOther';
+  }
+  // V7: bring-back counts.
+  const bbCount = { gte1: 0, gte2: 0 };
   function passes(s: ScoredLU): boolean {
     if (seen.has(s.lu.hash)) return false;
     for (const p of s.lu.players) {
@@ -508,11 +580,36 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
       let ov = 0; for (const p of sel.lu.players) if (ids.has(p.id)) ov++;
       if (ov > TODFS_PARAMS.MAX_PAIRWISE_OVERLAP) return false;
     }
+    // V5: stack-mix bucket caps.
+    if (opts.stackMix) {
+      const b = bucketOf(s);
+      if (b === 'threeOther') return false;
+      const cap5 = Math.round(N * opts.stackMix.fivePlus);
+      const cap4 = Math.round(N * opts.stackMix.four);
+      const cap33 = Math.round(N * opts.stackMix.threeThree);
+      if (b === 'fivePlus' && stackBucketCount.fivePlus >= cap5) return false;
+      if (b === 'four' && stackBucketCount.four >= cap4) return false;
+      if (b === 'threeThree' && stackBucketCount.threeThree >= cap33) return false;
+    }
+    // V7: bring-back mandate via inverse cap on naked / BB<2 lineups.
+    if (opts.bringBackMin) {
+      const minGte1 = Math.round(N * opts.bringBackMin.gte1);
+      const minGte2 = Math.round(N * opts.bringBackMin.gte2);
+      const maxNaked = N - minGte1;
+      const maxLessThan2 = N - minGte2;
+      const nakedCount = selected.length - bbCount.gte1;
+      const lessThan2Count = selected.length - bbCount.gte2;
+      if (s.bringBack < 1 && nakedCount >= maxNaked) return false;
+      if (s.bringBack < 2 && lessThan2Count >= maxLessThan2) return false;
+    }
     return true;
   }
   function add(s: ScoredLU) {
     selected.push(s); seen.add(s.lu.hash);
     for (const p of s.lu.players) exposure.set(p.id, (exposure.get(p.id) || 0) + 1);
+    if (opts.stackMix) stackBucketCount[bucketOf(s)]++;
+    if (s.bringBack >= 1) bbCount.gte1++;
+    if (s.bringBack >= 2) bbCount.gte2++;
   }
   function fillBand(bandPool: ScoredLU[], target: number) {
     const sorted = [...bandPool].sort((a, b) => b.ev - a.ev);
@@ -564,6 +661,7 @@ interface Result {
   mahal: number | null;
   finishPctiles: number[];
   poolFiltered: number; poolOriginal: number;
+  avgProj: number; avgOwn: number;
 }
 
 function evaluatePortfolio(portfolio: Lineup[], sd: SlateData, system: string, originalPoolSize: number, filteredPoolSize: number): Result {
@@ -632,7 +730,7 @@ function evaluatePortfolio(portfolio: Lineup[], sd: SlateData, system: string, o
     }
     if (n > 0) mahal = Math.sqrt(sum / n);
   }
-  return { system, slate: sd.slate, totalPayout, t1, t01, metrics, mahal, finishPctiles, poolFiltered: filteredPoolSize, poolOriginal: originalPoolSize };
+  return { system, slate: sd.slate, totalPayout, t1, t01, metrics, mahal, finishPctiles, poolFiltered: filteredPoolSize, poolOriginal: originalPoolSize, avgProj: mean(luProjs), avgOwn: mean(luOwns) };
 }
 
 // ============================================================
@@ -643,20 +741,77 @@ async function main() {
   console.log('THEORY-DFS V2 VALIDATION — empirically-calibrated combinatorial uniqueness');
   console.log('================================================================\n');
 
-  const consensusRaw = JSON.parse(fs.readFileSync(path.join(MLB_DIR, 'pro_consensus_slate_relative.json'), 'utf-8'));
+  // Consensus is now computed PER SLATE from the slate's pro lineups (was: static external file).
+  // This fixes Mahal=0.00 on slates not in pro_consensus_slate_relative.json (4-29-26+).
   const cons: Record<string, Record<string, { mean: number; std: number }>> = {};
-  for (const k of UNIVERSAL_METRICS) {
-    for (const e of (consensusRaw.metrics[k] || [])) {
-      if (!cons[e.slate]) cons[e.slate] = {};
-      cons[e.slate][k] = { mean: e.mean, std: e.std };
-    }
-  }
   loadTop5();  // pre-load
 
   const allResults: Result[] = [];
+  // Per-slate lineup-level dump (V1 + pros) for descriptive analysis.
+  const dumpAll: any[] = [];
+  const PROS = new Set(['zroth', 'zroth2', 'nerdytenor', 'shipmymoney', 'shaidyadvice', 'needlunchmoney', 'bgreseth', 'youdacao', 'b_heals152']);
   for (const s of SLATES) {
     const sd = await loadSlate(s, cons);
     if (!sd) continue;
+
+    // === DYNAMIC CONSENSUS: compute pro portfolio metrics inline per slate ===
+    const playerByName = new Map<string, Player>();
+    for (const p of sd.players) playerByName.set(norm(p.name), p);
+    const proPortfolios = new Map<string, Player[][]>();  // user -> list of lineups (arrays of Player)
+    for (const e of sd.actuals.entries) {
+      const user = (e.entryName || '').toLowerCase().replace(/\s*\([^)]*\)\s*$/, '').trim();
+      if (!PROS.has(user)) continue;
+      const players: Player[] = [];
+      let miss = false;
+      for (const nm of e.playerNames) {
+        const p = playerByName.get(norm(nm));
+        if (!p) { miss = true; break; }
+        players.push(p);
+      }
+      if (miss || players.length !== 10) continue;
+      if (!proPortfolios.has(user)) proPortfolios.set(user, []);
+      proPortfolios.get(user)!.push(players);
+    }
+    // Compute optimal ceiling (max ceiling lineup in pool, for ratio metric).
+    let optCeil = 0;
+    for (const lu of sd.candidates) {
+      const c = lu.players.reduce((s2, p) => s2 + ((p as any).ceiling || (p.projection || 0) * 1.4), 0);
+      if (c > optCeil) optCeil = c;
+    }
+    const slateAvgOwn = mean(sd.players.map(p => p.ownership || 0));
+    // Per-pro metrics array
+    const metricArrays: Record<string, number[]> = {
+      projRatioToOptimal: [], ceilingRatioToOptimal: [], avgPlayerOwnPctile: [],
+      ownStdRatio: [], ownDeltaFromAnchor: [],
+    };
+    for (const [, lineups] of proPortfolios) {
+      if (lineups.length === 0) continue;
+      const luProjs: number[] = [], luCeils: number[] = [], luOwns: number[] = [], luOwnStds: number[] = [], pctileSums: number[] = [];
+      for (const players of lineups) {
+        const owns = players.map(p => p.ownership || 0);
+        luOwns.push(mean(owns));
+        luProjs.push(players.reduce((s2, p) => s2 + (p.projection || 0), 0));
+        luCeils.push(players.reduce((s2, p) => s2 + ((p as any).ceiling || (p.projection || 0) * 1.4), 0));
+        luOwnStds.push(stddev(owns));
+        let pSum = 0;
+        for (const p of players) pSum += sd.slatePlayerOwnPctile.get(p.id) || 0;
+        pctileSums.push(pSum / players.length);
+      }
+      metricArrays.projRatioToOptimal.push(sd.optimalProj > 0 ? mean(luProjs) / sd.optimalProj : 0);
+      metricArrays.ceilingRatioToOptimal.push(optCeil > 0 ? mean(luCeils) / optCeil : 0);
+      metricArrays.avgPlayerOwnPctile.push(mean(pctileSums));
+      metricArrays.ownStdRatio.push(slateAvgOwn > 0 ? mean(luOwnStds) / slateAvgOwn : 0);
+      metricArrays.ownDeltaFromAnchor.push(mean(luOwns) - sd.chalkAnchorOwn);
+    }
+    const slateCons: Record<string, { mean: number; std: number }> = {};
+    for (const k of UNIVERSAL_METRICS) {
+      const vals = metricArrays[k];
+      if (vals.length === 0) continue;
+      const m = mean(vals);
+      const sdv = vals.length > 1 ? Math.sqrt(vals.reduce((s2, v) => s2 + (v - m) ** 2, 0) / vals.length) : 0.01;
+      slateCons[k] = { mean: m, std: sdv > 1e-9 ? sdv : 0.01 };
+    }
+    sd.consensusStats = Object.keys(slateCons).length > 0 ? slateCons : null;
     const top5 = loadTop5().get(sd.slate);
     let filteredPoolSize = sd.candidates.length;
     if (top5) {
@@ -672,6 +827,182 @@ async function main() {
     // V1 baseline.
     const v1Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0 });
     const v1Result = evaluatePortfolio(v1Portfolio, sd, 'theory-dfs-v1', sd.candidates.length, sd.candidates.length);
+    // V1.1 W_LEV sweep portfolios (built early so dump can reference them).
+    const vLev20Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wLevOverride: 0.20 });
+    const vLev15Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wLevOverride: 0.15 });
+    const vLev10Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wLevOverride: 0.10 });
+    const vLev05Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wLevOverride: 0.05 });
+    // V1-ProjEmphasis portfolio (built early so dump can reference it).
+    const vProjEmphaPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wProjOverride: 1.25 });
+    // V1-NoLowProjHighOwn portfolio (hard 0% LP/HO; descriptive run).
+    const vNoLPHOPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, excludeLPHO: true });
+    // V1-NaturalCorr: halve STACK_BONUS, zero bring-back bonuses (let pros' patterns emerge naturally).
+    const vNatCorrPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0,
+      stackBonusOverride: 0.05, bringback1Override: 0, bringback2Override: 0 });
+    // V1-NoCorr: ZERO all correlation bonuses. Tests whether corrAdj is the binding constraint on 4-stack rate.
+    const vNoCorrPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0,
+      stackBonusOverride: 0, bringback1Override: 0, bringback2Override: 0 });
+    // V1-NoCorr-Sec4: V1-NoCorr but with secondary stack bonus for 4-stacks (4-2/4-3 structure, not naked).
+    const vNoCorrSec4Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0,
+      stackBonusOverride: 0, bringback1Override: 0, bringback2Override: 0, secondary4StkBonus: 0.05 });
+
+    // === Lineup-level dump for descriptive analysis ===
+    function structuralFeatures(players: Player[]) {
+      const teamHitterCounts = new Map<string, number>();
+      const gameCounts = new Map<string, number>();
+      const pitchers: Player[] = [];
+      let salaryTotal = 0;
+      const salaries: number[] = [];
+      const owns: number[] = [];
+      for (const p of players) {
+        salaryTotal += p.salary || 0;
+        salaries.push(p.salary || 0);
+        owns.push(p.ownership || 0);
+        const t = (p.team || '').toUpperCase(), o = (p.opponent || '').toUpperCase();
+        if (isPitcher(p)) pitchers.push(p);
+        else if (t) teamHitterCounts.set(t, (teamHitterCounts.get(t) || 0) + 1);
+        if (t && o) {
+          const g = [t, o].sort().join('@');
+          gameCounts.set(g, (gameCounts.get(g) || 0) + 1);
+        }
+      }
+      let primaryTeam = '', primarySize = 0;
+      for (const [t, c] of teamHitterCounts) if (c > primarySize) { primarySize = c; primaryTeam = t; }
+      let secondarySize = 0;
+      for (const [t, c] of teamHitterCounts) if (t !== primaryTeam && c > secondarySize) secondarySize = c;
+      let primaryOpp = '';
+      for (const p of players) if ((p.team || '').toUpperCase() === primaryTeam) { primaryOpp = (p.opponent || '').toUpperCase(); if (primaryOpp) break; }
+      const bringBack = primaryOpp ? (teamHitterCounts.get(primaryOpp) || 0) : 0;
+      let maxGameStack = 0;
+      for (const [, c] of gameCounts) if (c > maxGameStack) maxGameStack = c;
+      const numGames = gameCounts.size;
+      const numTeamsUsed = teamHitterCounts.size + (pitchers.length > 0 ? new Set(pitchers.map(p => (p.team || '').toUpperCase())).size : 0);
+      // Salary distribution shape
+      salaries.sort((a, b) => b - a);
+      const salaryStd = Math.sqrt(salaries.reduce((s, v) => s + (v - salaryTotal / salaries.length) ** 2, 0) / Math.max(1, salaries.length));
+      const salaryTopThree = salaries.slice(0, 3).reduce((s, v) => s + v, 0);
+      const salaryBotThree = salaries.slice(-3).reduce((s, v) => s + v, 0);
+      // GeoMean ownership (hitters only — pitcher leverage carve-out)
+      let logOwnHit = 0, hitN = 0;
+      for (const p of players) {
+        if (isPitcher(p)) continue;
+        logOwnHit += Math.log(Math.max(0.1, p.ownership || 0.5));
+        hitN++;
+      }
+      const geoMeanOwnHit = hitN > 0 ? Math.exp(logOwnHit / hitN) : 0;
+      const ownAvg = owns.reduce((s, v) => s + v, 0) / Math.max(1, owns.length);
+      return {
+        primaryTeam, primarySize, secondarySize, bringBack,
+        maxGameStack, numGames, numTeamsUsed,
+        salaryTotal, salaryStd, salaryTopThree, salaryBotThree,
+        geoMeanOwnHit, ownAvg,
+        pitcherIds: pitchers.map(p => p.id),
+        pitcherNames: pitchers.map(p => p.name),
+        pitcherTeams: pitchers.map(p => (p.team || '').toUpperCase()),
+        pitcherOpps: pitchers.map(p => (p.opponent || '').toUpperCase()),
+      };
+    }
+    function rankIn(actual: number, sortedDesc: number[]): number {
+      let lo = 0, hi = sortedDesc.length;
+      while (lo < hi) { const mid = (lo + hi) >>> 1; if (sortedDesc[mid] >= actual) lo = mid + 1; else hi = mid; }
+      return Math.max(1, lo);
+    }
+    const sortedActuals = sd.actuals.entries.map(e => e.actualPoints).sort((a, b) => b - a);
+    const F = sd.actuals.entries.length;
+    // V1 lineups detail
+    const v1Detail: any[] = [];
+    for (const lu of v1Portfolio) {
+      let actual = 0, miss = false;
+      for (const p of lu.players) {
+        const r = sd.actuals.playerActualsByName.get(norm(p.name));
+        if (!r) { miss = true; break; }
+        actual += r.fpts;
+      }
+      const rank = miss ? -1 : rankIn(actual, sortedActuals);
+      const feat = structuralFeatures(lu.players);
+      v1Detail.push({
+        pids: lu.players.map(p => p.id),
+        names: lu.players.map(p => p.name),
+        teams: lu.players.map(p => p.team),
+        positions: lu.players.map(p => p.position),
+        salaries: lu.players.map(p => p.salary),
+        owns: lu.players.map(p => p.ownership),
+        projection: lu.projection,
+        actual: miss ? null : actual,
+        rank,
+        finishPct: rank > 0 && F > 1 ? 1 - (rank - 1) / (F - 1) : null,
+        ...feat,
+      });
+    }
+    // Pro lineups detail (reuses playerByName from consensus block above)
+    const proDetail: any[] = [];
+    for (const e of sd.actuals.entries) {
+      const user = (e.entryName || '').toLowerCase().replace(/\s*\([^)]*\)\s*$/, '').trim();
+      if (!PROS.has(user)) continue;
+      const players: Player[] = [];
+      let miss = false;
+      for (const nm of e.playerNames) {
+        const p = playerByName.get(norm(nm));
+        if (!p) { miss = true; break; }
+        players.push(p);
+      }
+      if (miss || players.length !== 10) continue;
+      const feat = structuralFeatures(players);
+      const rank = e.rank;
+      proDetail.push({
+        user,
+        pids: players.map(p => p.id),
+        names: players.map(p => p.name),
+        teams: players.map(p => p.team),
+        positions: players.map(p => p.position),
+        salaries: players.map(p => p.salary),
+        owns: players.map(p => p.ownership),
+        projection: players.reduce((s, p) => s + (p.projection || 0), 0),
+        actual: e.actualPoints,
+        rank,
+        finishPct: F > 1 ? 1 - (rank - 1) / (F - 1) : null,
+        ...feat,
+      });
+    }
+    // V_LEV portfolio detail (each as same shape as v1Detail, minimal fields needed for band analysis).
+    function buildLineupDetail(portfolio: Lineup[]): any[] {
+      const out: any[] = [];
+      const sdLocal = sd!;
+      for (const lu of portfolio) {
+        const feat = structuralFeatures(lu.players);
+        let actual = 0, miss = false;
+        for (const p of lu.players) {
+          const r = sdLocal.actuals.playerActualsByName.get(norm(p.name));
+          if (!r) { miss = true; break; }
+          actual += r.fpts;
+        }
+        const rank = miss ? -1 : rankIn(actual, sortedActuals);
+        out.push({
+          projection: lu.projection,
+          actual: miss ? null : actual,
+          rank,
+          finishPct: rank > 0 && F > 1 ? 1 - (rank - 1) / (F - 1) : null,
+          ...feat,
+        });
+      }
+      return out;
+    }
+    dumpAll.push({
+      slate: sd.slate,
+      numTeams: sd.numTeams,
+      totalEntries: F,
+      v1: v1Detail,
+      pros: proDetail,
+      vLev20: buildLineupDetail(vLev20Portfolio),
+      vLev15: buildLineupDetail(vLev15Portfolio),
+      vLev10: buildLineupDetail(vLev10Portfolio),
+      vLev05: buildLineupDetail(vLev05Portfolio),
+      vProjEmpha: buildLineupDetail(vProjEmphaPortfolio),
+      vNoLPHO: buildLineupDetail(vNoLPHOPortfolio),
+      vNatCorr: buildLineupDetail(vNatCorrPortfolio),
+      vNoCorr: buildLineupDetail(vNoCorrPortfolio),
+      vNoCorrSec4: buildLineupDetail(vNoCorrSec4Portfolio),
+    });
     // V3: V1 + stack chalk-lean bonus (W_STACK_CHALK = 0.05).
     const v3Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, stackChalkBonus: 0.05 });
     const v3Result = evaluatePortfolio(v3Portfolio, sd, 'theory-dfs-v3', sd.candidates.length, sd.candidates.length);
@@ -705,8 +1036,54 @@ async function main() {
       }
     }
     const v2cResult = evaluatePortfolio(v2cPortfolio, sd, 'theory-dfs-v2c-top1-plus-scaling', sd.candidates.length, v2cPoolFiltered);
-    allResults.push(v1Result, v3Result, v3bResult, v3cResult, v2aResult, v2bResult, v2cResult);
-    process.stderr.write(`v1 m=${v1Result.mahal?.toFixed(2)} | v2a m=${v2aResult.mahal?.toFixed(2)} | v2b m=${v2bResult.mahal?.toFixed(2)} pool=${filteredPoolSize} | v2c m=${v2cResult.mahal?.toFixed(2)} pool=${v2cPoolFiltered} [${((Date.now() - t0) / 1000).toFixed(1)}s]\n`);
+    // V4 variants: increased combo penalty (W_CMB > 0.25 baseline).
+    const v4aPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wCmbOverride: 0.40 });
+    const v4aResult = evaluatePortfolio(v4aPortfolio, sd, 'theory-dfs-v4a', sd.candidates.length, sd.candidates.length);
+    const v4bPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wCmbOverride: 0.55 });
+    const v4bResult = evaluatePortfolio(v4bPortfolio, sd, 'theory-dfs-v4b', sd.candidates.length, sd.candidates.length);
+    const v4cPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wCmbOverride: 0.70 });
+    const v4cResult = evaluatePortfolio(v4cPortfolio, sd, 'theory-dfs-v4c', sd.candidates.length, sd.candidates.length);
+    // V5: stack-size mix mandate (matches pros' empirical 68/24/8 distribution from A3 finding).
+    const v5Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, stackMix: { fivePlus: 0.68, four: 0.24, threeThree: 0.08 } });
+    const v5Result = evaluatePortfolio(v5Portfolio, sd, 'theory-dfs-v5-stackmix', sd.candidates.length, sd.candidates.length);
+    // V6 series: PPD-corner penalty sweep.
+    const v6aPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, ppdTopPctOverride: 0.10, ppdPenaltyOverride: 0.20 });
+    const v6aResult = evaluatePortfolio(v6aPortfolio, sd, 'theory-dfs-v6a', sd.candidates.length, sd.candidates.length);
+    const v6bPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, ppdTopPctOverride: 0.15, ppdPenaltyOverride: 0.20 });
+    const v6bResult = evaluatePortfolio(v6bPortfolio, sd, 'theory-dfs-v6b', sd.candidates.length, sd.candidates.length);
+    const v6cPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, ppdTopPctOverride: 0.10, ppdPenaltyOverride: 0.30 });
+    const v6cResult = evaluatePortfolio(v6cPortfolio, sd, 'theory-dfs-v6c', sd.candidates.length, sd.candidates.length);
+    const v6dPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, ppdTopPctOverride: 0.05, ppdPenaltyOverride: 0.20 });
+    const v6dResult = evaluatePortfolio(v6dPortfolio, sd, 'theory-dfs-v6d', sd.candidates.length, sd.candidates.length);
+    // V7: bring-back mandate (60% lineups have BB>=1, 30% have BB>=2).
+    const v7Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, bringBackMin: { gte1: 0.60, gte2: 0.30 } });
+    const v7Result = evaluatePortfolio(v7Portfolio, sd, 'theory-dfs-v7-bringback', sd.candidates.length, sd.candidates.length);
+    // V8: COMPOUND — V4a (W_CMB=0.40) + V6d (PPD 5%/20%).
+    const v8Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wCmbOverride: 0.40, ppdTopPctOverride: 0.05, ppdPenaltyOverride: 0.20 });
+    const v8Result = evaluatePortfolio(v8Portfolio, sd, 'theory-dfs-v8-compound', sd.candidates.length, sd.candidates.length);
+    // V1-ProjEmphasis evaluated (built earlier with W_PROJ × 1.25; descriptive run).
+    const vProjEmphaResult = evaluatePortfolio(vProjEmphaPortfolio, sd, 'theory-dfs-vprojempha', sd.candidates.length, sd.candidates.length);
+    allResults.push(vProjEmphaResult);
+    // V1-NoLowProjHighOwn evaluated.
+    const vNoLPHOResult = evaluatePortfolio(vNoLPHOPortfolio, sd, 'theory-dfs-vnolpho', sd.candidates.length, sd.candidates.length);
+    allResults.push(vNoLPHOResult);
+    // V1-NaturalCorr evaluated.
+    const vNatCorrResult = evaluatePortfolio(vNatCorrPortfolio, sd, 'theory-dfs-vnatcorr', sd.candidates.length, sd.candidates.length);
+    allResults.push(vNatCorrResult);
+    // V1-NoCorr evaluated (diagnostic).
+    const vNoCorrResult = evaluatePortfolio(vNoCorrPortfolio, sd, 'theory-dfs-vnocorr', sd.candidates.length, sd.candidates.length);
+    allResults.push(vNoCorrResult);
+    // V1-NoCorr-Sec4 evaluated.
+    const vNoCorrSec4Result = evaluatePortfolio(vNoCorrSec4Portfolio, sd, 'theory-dfs-vnocorrsec4', sd.candidates.length, sd.candidates.length);
+    allResults.push(vNoCorrSec4Result);
+    // V1.1 W_LEV sweep portfolios already built above; just evaluate now.
+    const vLev20Result = evaluatePortfolio(vLev20Portfolio, sd, 'theory-dfs-vlev20', sd.candidates.length, sd.candidates.length);
+    const vLev15Result = evaluatePortfolio(vLev15Portfolio, sd, 'theory-dfs-vlev15', sd.candidates.length, sd.candidates.length);
+    const vLev10Result = evaluatePortfolio(vLev10Portfolio, sd, 'theory-dfs-vlev10', sd.candidates.length, sd.candidates.length);
+    const vLev05Result = evaluatePortfolio(vLev05Portfolio, sd, 'theory-dfs-vlev05', sd.candidates.length, sd.candidates.length);
+    allResults.push(v1Result, v3Result, v3bResult, v3cResult, v2aResult, v2bResult, v2cResult, v4aResult, v4bResult, v4cResult, v5Result, v6aResult, v6bResult, v6cResult, v6dResult, v7Result, v8Result,
+                    vLev20Result, vLev15Result, vLev10Result, vLev05Result);
+    process.stderr.write(`v1 m=${v1Result.mahal?.toFixed(2)} | v5 m=${v5Result.mahal?.toFixed(2)} | v6a m=${v6aResult.mahal?.toFixed(2)} | v7 m=${v7Result.mahal?.toFixed(2)} [${((Date.now() - t0) / 1000).toFixed(1)}s]\n`);
   }
 
   // Aggregate.
@@ -720,6 +1097,20 @@ async function main() {
   const v2 = allResults.filter(r => r.system === 'theory-dfs-v2a-scaling-only');
   const v2b = allResults.filter(r => r.system === 'theory-dfs-v2b-top5-only');
   const v2c = allResults.filter(r => r.system === 'theory-dfs-v2c-top1-plus-scaling');
+  const v4a = allResults.filter(r => r.system === 'theory-dfs-v4a');
+  const v4b = allResults.filter(r => r.system === 'theory-dfs-v4b');
+  const v4c = allResults.filter(r => r.system === 'theory-dfs-v4c');
+  const v5 = allResults.filter(r => r.system === 'theory-dfs-v5-stackmix');
+  const v6a = allResults.filter(r => r.system === 'theory-dfs-v6a');
+  const v6b = allResults.filter(r => r.system === 'theory-dfs-v6b');
+  const v6c = allResults.filter(r => r.system === 'theory-dfs-v6c');
+  const v6d = allResults.filter(r => r.system === 'theory-dfs-v6d');
+  const v7 = allResults.filter(r => r.system === 'theory-dfs-v7-bringback');
+  const v8 = allResults.filter(r => r.system === 'theory-dfs-v8-compound');
+  const vLev20 = allResults.filter(r => r.system === 'theory-dfs-vlev20');
+  const vLev15 = allResults.filter(r => r.system === 'theory-dfs-vlev15');
+  const vLev10 = allResults.filter(r => r.system === 'theory-dfs-vlev10');
+  const vLev05 = allResults.filter(r => r.system === 'theory-dfs-vlev05');
   const fees = N * FEE * v1.length;
   const expT1 = 0.01 * N * v1.length;
   const expT01 = 0.001 * N * v1.length;
@@ -730,7 +1121,9 @@ async function main() {
     const totalT01 = rs.reduce((s, r) => s + r.t01, 0);
     const mahals = rs.map(r => r.mahal).filter((x): x is number => x !== null);
     const meanMahal = mean(mahals);
-    return { label, totalPay, roi: totalPay / fees - 1, totalT1, totalT01, meanMahal, t1Edge: totalT1 / expT1, t01Edge: totalT01 / expT01 };
+    const meanProj = mean(rs.map(r => r.avgProj));
+    const meanOwn = mean(rs.map(r => r.avgOwn));
+    return { label, totalPay, roi: totalPay / fees - 1, totalT1, totalT01, meanMahal, meanProj, meanOwn, t1Edge: totalT1 / expT1, t01Edge: totalT01 / expT01 };
   }
   const sV1 = summary(v1, 'V1');
   const sV3 = summary(v3, 'V3');
@@ -739,6 +1132,20 @@ async function main() {
   const sV2a = summary(v2, 'V2a');
   const sV2b = summary(v2b, 'V2b');
   const sV2c = summary(v2c, 'V2c');
+  const sV4a = summary(v4a, 'V4a');
+  const sV4b = summary(v4b, 'V4b');
+  const sV4c = summary(v4c, 'V4c');
+  const sV5 = summary(v5, 'V5');
+  const sV6a = summary(v6a, 'V6a');
+  const sV6b = summary(v6b, 'V6b');
+  const sV6c = summary(v6c, 'V6c');
+  const sV6d = summary(v6d, 'V6d');
+  const sV7 = summary(v7, 'V7');
+  const sV8 = summary(v8, 'V8');
+  const sVLev20 = summary(vLev20, 'VLev20');
+  const sVLev15 = summary(vLev15, 'VLev15');
+  const sVLev10 = summary(vLev10, 'VLev10');
+  const sVLev05 = summary(vLev05, 'VLev05');
 
   function passOrFail(variant: ReturnType<typeof summary>, baseline: ReturnType<typeof summary>): { mahal: string; t1: string; t01: string; verdict: string } {
     const mahalImproved = variant.meanMahal < baseline.meanMahal - 0.05;
@@ -777,6 +1184,378 @@ async function main() {
   console.log(`V2a (scaling only) | ${verdictA.mahal.padEnd(15)} | ${verdictA.t1.padEnd(7)} | ${verdictA.t01.padEnd(8)} | ${verdictA.verdict}`);
   console.log(`V2b (top-5 only)   | ${verdictB.mahal.padEnd(15)} | ${verdictB.t1.padEnd(7)} | ${verdictB.t01.padEnd(8)} | ${verdictB.verdict}`);
   console.log(`V2c (top-1+scale)  | ${verdictC.mahal.padEnd(15)} | ${verdictC.t1.padEnd(7)} | ${verdictC.t01.padEnd(8)} | ${verdictC.verdict}`);
+  const verdictV4a = passOrFail(sV4a, sV1);
+  const verdictV4b = passOrFail(sV4b, sV1);
+  const verdictV4c = passOrFail(sV4c, sV1);
+  console.log('');
+  console.log('V4 SWEEP — INCREASED COMBO PENALTY (V1 baseline W_CMB=0.25):');
+  console.log('Variant            |  W_CMB  |  Mahal  |  AvgProj |  AvgOwn |  t1x  |  t01x | ROI    | Verdict');
+  console.log('-'.repeat(100));
+  console.log(`V1 baseline        |  0.25   | ${sV1.meanMahal.toFixed(2).padStart(6)} | ${sV1.meanProj.toFixed(2).padStart(8)} | ${(sV1.meanOwn*100).toFixed(2).padStart(6)}% | ${sV1.t1Edge.toFixed(2).padStart(4)}x | ${sV1.t01Edge.toFixed(2).padStart(4)}x | ${(sV1.roi*100).toFixed(1).padStart(5)}% | (baseline)`);
+  console.log(`V4a                |  0.40   | ${sV4a.meanMahal.toFixed(2).padStart(6)} | ${sV4a.meanProj.toFixed(2).padStart(8)} | ${(sV4a.meanOwn*100).toFixed(2).padStart(6)}% | ${sV4a.t1Edge.toFixed(2).padStart(4)}x | ${sV4a.t01Edge.toFixed(2).padStart(4)}x | ${(sV4a.roi*100).toFixed(1).padStart(5)}% | ${verdictV4a.verdict}`);
+  console.log(`V4b                |  0.55   | ${sV4b.meanMahal.toFixed(2).padStart(6)} | ${sV4b.meanProj.toFixed(2).padStart(8)} | ${(sV4b.meanOwn*100).toFixed(2).padStart(6)}% | ${sV4b.t1Edge.toFixed(2).padStart(4)}x | ${sV4b.t01Edge.toFixed(2).padStart(4)}x | ${(sV4b.roi*100).toFixed(1).padStart(5)}% | ${verdictV4b.verdict}`);
+  console.log(`V4c                |  0.70   | ${sV4c.meanMahal.toFixed(2).padStart(6)} | ${sV4c.meanProj.toFixed(2).padStart(8)} | ${(sV4c.meanOwn*100).toFixed(2).padStart(6)}% | ${sV4c.t1Edge.toFixed(2).padStart(4)}x | ${sV4c.t01Edge.toFixed(2).padStart(4)}x | ${(sV4c.roi*100).toFixed(1).padStart(5)}% | ${verdictV4c.verdict}`);
+  const verdictV5 = passOrFail(sV5, sV1);
+  const verdictV6a = passOrFail(sV6a, sV1);
+  const verdictV6b = passOrFail(sV6b, sV1);
+  const verdictV6c = passOrFail(sV6c, sV1);
+  const verdictV6d = passOrFail(sV6d, sV1);
+  const verdictV7 = passOrFail(sV7, sV1);
+  console.log('');
+  console.log('STRUCTURAL CANDIDATES — V5 (stack-mix), V6 (PPD sweep), V7 (bring-back mandate):');
+  console.log('Variant            |  Detail                  |  Mahal  |  AvgProj |  AvgOwn  |  t1x  |  t01x | ROI    | Verdict');
+  console.log('-'.repeat(115));
+  console.log(`V1 baseline        |  -                       | ${sV1.meanMahal.toFixed(2).padStart(6)} | ${sV1.meanProj.toFixed(2).padStart(8)} | ${(sV1.meanOwn*100).toFixed(2).padStart(7)}% | ${sV1.t1Edge.toFixed(2).padStart(4)}x | ${sV1.t01Edge.toFixed(2).padStart(4)}x | ${(sV1.roi*100).toFixed(1).padStart(5)}% | (baseline)`);
+  console.log(`V5 stack-mix       |  68/24/8 5/4/3-3 mandate | ${sV5.meanMahal.toFixed(2).padStart(6)} | ${sV5.meanProj.toFixed(2).padStart(8)} | ${(sV5.meanOwn*100).toFixed(2).padStart(7)}% | ${sV5.t1Edge.toFixed(2).padStart(4)}x | ${sV5.t01Edge.toFixed(2).padStart(4)}x | ${(sV5.roi*100).toFixed(1).padStart(5)}% | ${verdictV5.verdict}`);
+  console.log(`V6a PPD            |  thresh=10% pen=20%      | ${sV6a.meanMahal.toFixed(2).padStart(6)} | ${sV6a.meanProj.toFixed(2).padStart(8)} | ${(sV6a.meanOwn*100).toFixed(2).padStart(7)}% | ${sV6a.t1Edge.toFixed(2).padStart(4)}x | ${sV6a.t01Edge.toFixed(2).padStart(4)}x | ${(sV6a.roi*100).toFixed(1).padStart(5)}% | ${verdictV6a.verdict}`);
+  console.log(`V6b PPD            |  thresh=15% pen=20%      | ${sV6b.meanMahal.toFixed(2).padStart(6)} | ${sV6b.meanProj.toFixed(2).padStart(8)} | ${(sV6b.meanOwn*100).toFixed(2).padStart(7)}% | ${sV6b.t1Edge.toFixed(2).padStart(4)}x | ${sV6b.t01Edge.toFixed(2).padStart(4)}x | ${(sV6b.roi*100).toFixed(1).padStart(5)}% | ${verdictV6b.verdict}`);
+  console.log(`V6c PPD            |  thresh=10% pen=30%      | ${sV6c.meanMahal.toFixed(2).padStart(6)} | ${sV6c.meanProj.toFixed(2).padStart(8)} | ${(sV6c.meanOwn*100).toFixed(2).padStart(7)}% | ${sV6c.t1Edge.toFixed(2).padStart(4)}x | ${sV6c.t01Edge.toFixed(2).padStart(4)}x | ${(sV6c.roi*100).toFixed(1).padStart(5)}% | ${verdictV6c.verdict}`);
+  console.log(`V6d PPD            |  thresh=5%  pen=20%      | ${sV6d.meanMahal.toFixed(2).padStart(6)} | ${sV6d.meanProj.toFixed(2).padStart(8)} | ${(sV6d.meanOwn*100).toFixed(2).padStart(7)}% | ${sV6d.t1Edge.toFixed(2).padStart(4)}x | ${sV6d.t01Edge.toFixed(2).padStart(4)}x | ${(sV6d.roi*100).toFixed(1).padStart(5)}% | ${verdictV6d.verdict}`);
+  console.log(`V7 bring-back      |  60% BB>=1 / 30% BB>=2   | ${sV7.meanMahal.toFixed(2).padStart(6)} | ${sV7.meanProj.toFixed(2).padStart(8)} | ${(sV7.meanOwn*100).toFixed(2).padStart(7)}% | ${sV7.t1Edge.toFixed(2).padStart(4)}x | ${sV7.t01Edge.toFixed(2).padStart(4)}x | ${(sV7.roi*100).toFixed(1).padStart(5)}% | ${verdictV7.verdict}`);
+  const verdictV8 = passOrFail(sV8, sV1);
+  console.log(`V8 V4a+V6d combo   |  W_CMB=0.40 + PPD 5/20   | ${sV8.meanMahal.toFixed(2).padStart(6)} | ${sV8.meanProj.toFixed(2).padStart(8)} | ${(sV8.meanOwn*100).toFixed(2).padStart(7)}% | ${sV8.t1Edge.toFixed(2).padStart(4)}x | ${sV8.t01Edge.toFixed(2).padStart(4)}x | ${(sV8.roi*100).toFixed(1).padStart(5)}% | ${verdictV8.verdict}`);
+
+  // === V1.1 W_LEV SWEEP ===
+  // Methodology: single-parameter optimization. Target metric is BAND DISTRIBUTION match to pros (38/13/16/33), not ROI.
+  // Compute band distribution per variant using same logic as T8 analyzer (in-line).
+  // Pro band targets from T8 analysis:
+  //   HighProj/HighOwn 38.3%, HighProj/LowOwn 12.9%, LowProj/HighOwn 15.9%, LowProj/LowOwn 32.9%
+  function computeBandDist(slatesData: any[], variantKey: string): { hpHo: number; hpLo: number; lpHo: number; lpLo: number } {
+    let hpHo = 0, hpLo = 0, lpHo = 0, lpLo = 0, total = 0;
+    for (const s of slatesData) {
+      const variantLus = s[variantKey];
+      const pros = s.pros;
+      if (!variantLus || !pros || variantLus.length === 0 || pros.length === 0) continue;
+      const allLus = [...variantLus, ...pros];
+      const projs = allLus.map((lu: any) => lu.projection).sort((a: number, b: number) => a - b);
+      const owns = allLus.map((lu: any) => lu.geoMeanOwnHit || 0).sort((a: number, b: number) => a - b);
+      const medProj = projs[Math.floor(projs.length / 2)];
+      const medOwn = owns[Math.floor(owns.length / 2)];
+      for (const lu of variantLus) {
+        const hp = lu.projection >= medProj;
+        const ho = (lu.geoMeanOwnHit || 0) >= medOwn;
+        if (hp && ho) hpHo++;
+        else if (hp && !ho) hpLo++;
+        else if (!hp && ho) lpHo++;
+        else lpLo++;
+        total++;
+      }
+    }
+    return total === 0 ? { hpHo: 0, hpLo: 0, lpHo: 0, lpLo: 0 } :
+           { hpHo: hpHo / total * 100, hpLo: hpLo / total * 100, lpHo: lpHo / total * 100, lpLo: lpLo / total * 100 };
+  }
+  function bandDistForResult(rs: Result[]): { hpHo: number; hpLo: number; lpHo: number; lpLo: number } {
+    // For variants we didn't dump, return placeholder (computed via dumpAll for V1 + V_LEV).
+    return { hpHo: 0, hpLo: 0, lpHo: 0, lpLo: 0 };
+  }
+  // Compute pro band dist (target).
+  let pHpHo = 0, pHpLo = 0, pLpHo = 0, pLpLo = 0, pT = 0;
+  for (const sl of dumpAll) {
+    const all = [...sl.v1, ...sl.pros];
+    if (all.length === 0) continue;
+    const projs = all.map((lu: any) => lu.projection).sort((a: number, b: number) => a - b);
+    const owns = all.map((lu: any) => lu.geoMeanOwnHit || 0).sort((a: number, b: number) => a - b);
+    const mp = projs[Math.floor(projs.length / 2)]; const mo = owns[Math.floor(owns.length / 2)];
+    for (const lu of sl.pros) {
+      const hp = lu.projection >= mp; const ho = (lu.geoMeanOwnHit || 0) >= mo;
+      if (hp && ho) pHpHo++; else if (hp && !ho) pHpLo++; else if (!hp && ho) pLpHo++; else pLpLo++;
+      pT++;
+    }
+  }
+  const proBand = pT === 0 ? { hpHo: 0, hpLo: 0, lpHo: 0, lpLo: 0 } :
+    { hpHo: pHpHo / pT * 100, hpLo: pHpLo / pT * 100, lpHo: pLpHo / pT * 100, lpLo: pLpLo / pT * 100 };
+  const v1Band = computeBandDist(dumpAll, 'v1');
+  const vLev20Band = computeBandDist(dumpAll, 'vLev20');
+  const vLev15Band = computeBandDist(dumpAll, 'vLev15');
+  const vLev10Band = computeBandDist(dumpAll, 'vLev10');
+  const vLev05Band = computeBandDist(dumpAll, 'vLev05');
+  // Distance from pro band targets (sum of absolute differences across 4 buckets — lower = closer to pros).
+  function bandDist(b: { hpHo: number; hpLo: number; lpHo: number; lpLo: number }): number {
+    return Math.abs(b.hpHo - proBand.hpHo) + Math.abs(b.hpLo - proBand.hpLo) +
+           Math.abs(b.lpHo - proBand.lpHo) + Math.abs(b.lpLo - proBand.lpLo);
+  }
+
+  console.log('');
+  console.log('=== V1.1 W_LEV SINGLE-PARAMETER SWEEP (PARK CANDIDATE — DO NOT DEPLOY) ===');
+  console.log('Target: band distribution match to pros (' + proBand.hpHo.toFixed(1) + '/' + proBand.hpLo.toFixed(1) + '/' + proBand.lpHo.toFixed(1) + '/' + proBand.lpLo.toFixed(1) + '). NOT optimizing for ROI.');
+  console.log('');
+  console.log('Variant | W_LEV | HP/HO  | HP/LO  | LP/HO  | LP/LO  | Δ-band | Mahal  | t1x   | t01x  | ROI');
+  console.log('-'.repeat(110));
+  function lvlRow(label: string, wl: string, b: { hpHo: number; hpLo: number; lpHo: number; lpLo: number }, s: ReturnType<typeof summary>): string {
+    return `${label.padEnd(8)} | ${wl.padStart(5)} | ${b.hpHo.toFixed(1).padStart(5)}% | ${b.hpLo.toFixed(1).padStart(5)}% | ${b.lpHo.toFixed(1).padStart(5)}% | ${b.lpLo.toFixed(1).padStart(5)}% | ${bandDist(b).toFixed(1).padStart(5)} | ${s.meanMahal.toFixed(2).padStart(5)} | ${s.t1Edge.toFixed(2).padStart(4)}x | ${s.t01Edge.toFixed(2).padStart(4)}x | ${(s.roi*100).toFixed(1).padStart(5)}%`;
+  }
+  console.log(`Pros     |   --  | ${proBand.hpHo.toFixed(1).padStart(5)}% | ${proBand.hpLo.toFixed(1).padStart(5)}% | ${proBand.lpHo.toFixed(1).padStart(5)}% | ${proBand.lpLo.toFixed(1).padStart(5)}% |   0.0 |   --  |   --  |   --  |    --`);
+  console.log(lvlRow('V1', '0.30', v1Band, sV1));
+  console.log(lvlRow('VLev20', '0.20', vLev20Band, sVLev20));
+  console.log(lvlRow('VLev15', '0.15', vLev15Band, sVLev15));
+  console.log(lvlRow('VLev10', '0.10', vLev10Band, sVLev10));
+  console.log(lvlRow('VLev05', '0.05', vLev05Band, sVLev05));
+  console.log('');
+  console.log('Lower Δ-band = closer to pro distribution. Optimal Δ-band identifies V1.1 candidate.');
+
+  // === V1-ProjEmphasis descriptive run (16 dev slates only) ===
+  // The 16 dev slates are everything EXCEPT the 8 holdout slates from slate_derived_research.
+  // Holdout: 4-6-26, 4-14-26, 4-15-26, 4-19-26, 4-20-26, 5-1-26, 5-2-26, 5-2-26-night
+  const HOLDOUT = new Set(['4-6-26', '4-14-26', '4-15-26', '4-19-26', '4-20-26', '5-1-26', '5-2-26', '5-2-26-night']);
+  const devDump = dumpAll.filter(s => !HOLDOUT.has(s.slate));
+  console.log('');
+  console.log('=== V1-ProjEmphasis (W_PROJ × 1.25) — DESCRIPTIVE on 16 dev slates ===');
+  console.log('NOT a deploy candidate. NOT a selection. Park alongside V1.1.');
+  console.log(`Dev slates analyzed: ${devDump.length} (holdout sealed)`);
+
+  // Compute band distribution for V1 vs V1-ProjEmpha vs pros on dev only.
+  function bandDistDev(variantKey: string): { hpHo: number; hpLo: number; lpHo: number; lpLo: number } {
+    let hpHo = 0, hpLo = 0, lpHo = 0, lpLo = 0, total = 0;
+    for (const s of devDump) {
+      const variantLus = s[variantKey];
+      const pros = s.pros;
+      if (!variantLus || !pros || variantLus.length === 0 || pros.length === 0) continue;
+      const allLus = [...variantLus, ...pros];
+      const projs = allLus.map((lu: any) => lu.projection).sort((a: number, b: number) => a - b);
+      const owns = allLus.map((lu: any) => lu.geoMeanOwnHit || 0).sort((a: number, b: number) => a - b);
+      const medProj = projs[Math.floor(projs.length / 2)];
+      const medOwn = owns[Math.floor(owns.length / 2)];
+      for (const lu of variantLus) {
+        const hp = lu.projection >= medProj;
+        const ho = (lu.geoMeanOwnHit || 0) >= medOwn;
+        if (hp && ho) hpHo++;
+        else if (hp && !ho) hpLo++;
+        else if (!hp && ho) lpHo++;
+        else lpLo++;
+        total++;
+      }
+    }
+    return total === 0 ? { hpHo: 0, hpLo: 0, lpHo: 0, lpLo: 0 } :
+           { hpHo: hpHo / total * 100, hpLo: hpLo / total * 100, lpHo: lpHo / total * 100, lpLo: lpLo / total * 100 };
+  }
+  let pHpHo2 = 0, pHpLo2 = 0, pLpHo2 = 0, pLpLo2 = 0, pT2 = 0;
+  for (const sl of devDump) {
+    const all = [...sl.v1, ...sl.pros];
+    if (all.length === 0) continue;
+    const projs = all.map((lu: any) => lu.projection).sort((a: number, b: number) => a - b);
+    const owns = all.map((lu: any) => lu.geoMeanOwnHit || 0).sort((a: number, b: number) => a - b);
+    const mp = projs[Math.floor(projs.length / 2)]; const mo = owns[Math.floor(owns.length / 2)];
+    for (const lu of sl.pros) {
+      const hp = lu.projection >= mp; const ho = (lu.geoMeanOwnHit || 0) >= mo;
+      if (hp && ho) pHpHo2++; else if (hp && !ho) pHpLo2++; else if (!hp && ho) pLpHo2++; else pLpLo2++;
+      pT2++;
+    }
+  }
+  const proBandDev = pT2 === 0 ? { hpHo: 0, hpLo: 0, lpHo: 0, lpLo: 0 } :
+    { hpHo: pHpHo2 / pT2 * 100, hpLo: pHpLo2 / pT2 * 100, lpHo: pLpHo2 / pT2 * 100, lpLo: pLpLo2 / pT2 * 100 };
+  const v1BandDev = bandDistDev('v1');
+  const projEmphaBandDev = bandDistDev('vProjEmpha');
+
+  console.log('');
+  console.log('Band distribution (HP/HO, HP/LO, LP/HO, LP/LO):');
+  console.log(`  Pros (target):  ${proBandDev.hpHo.toFixed(1)}%  /  ${proBandDev.hpLo.toFixed(1)}%  /  ${proBandDev.lpHo.toFixed(1)}%  /  ${proBandDev.lpLo.toFixed(1)}%`);
+  console.log(`  V1 baseline:    ${v1BandDev.hpHo.toFixed(1)}%  /  ${v1BandDev.hpLo.toFixed(1)}%  /  ${v1BandDev.lpHo.toFixed(1)}%  /  ${v1BandDev.lpLo.toFixed(1)}%`);
+  console.log(`  V1-ProjEmpha:   ${projEmphaBandDev.hpHo.toFixed(1)}%  /  ${projEmphaBandDev.hpLo.toFixed(1)}%  /  ${projEmphaBandDev.lpHo.toFixed(1)}%  /  ${projEmphaBandDev.lpLo.toFixed(1)}%`);
+
+  // Tournament metrics on dev set.
+  const v1Dev = v1.filter(r => !HOLDOUT.has(r.slate));
+  const projEmphaDev = allResults.filter(r => r.system === 'theory-dfs-vprojempha' && !HOLDOUT.has(r.slate));
+  function devSummary(rs: Result[]) {
+    const totalT1 = rs.reduce((s, r) => s + r.t1, 0);
+    const totalT01 = rs.reduce((s, r) => s + r.t01, 0);
+    const totalPay = rs.reduce((s, r) => s + r.totalPayout, 0);
+    const expT1 = 0.01 * N * rs.length;
+    const expT01 = 0.001 * N * rs.length;
+    const fees = N * FEE * rs.length;
+    const mahals = rs.map(r => r.mahal).filter((x): x is number => x !== null);
+    return {
+      t1Edge: expT1 > 0 ? totalT1 / expT1 : 0,
+      t01Edge: expT01 > 0 ? totalT01 / expT01 : 0,
+      roi: fees > 0 ? totalPay / fees - 1 : 0,
+      meanMahal: mean(mahals),
+      meanProj: mean(rs.map(r => r.avgProj)),
+      meanOwn: mean(rs.map(r => r.avgOwn)),
+    };
+  }
+  const v1DevSum = devSummary(v1Dev);
+  const projEmphaDevSum = devSummary(projEmphaDev);
+  console.log('');
+  console.log('Tournament + structural metrics (16 dev slates):');
+  console.log(`  Metric         | V1 baseline | V1-ProjEmpha | Δ`);
+  console.log(`  Mahal          | ${v1DevSum.meanMahal.toFixed(2).padStart(11)} | ${projEmphaDevSum.meanMahal.toFixed(2).padStart(12)} | ${(projEmphaDevSum.meanMahal - v1DevSum.meanMahal).toFixed(2)}`);
+  console.log(`  AvgProj        | ${v1DevSum.meanProj.toFixed(2).padStart(11)} | ${projEmphaDevSum.meanProj.toFixed(2).padStart(12)} | ${(projEmphaDevSum.meanProj - v1DevSum.meanProj).toFixed(2)}`);
+  console.log(`  AvgOwn         | ${(v1DevSum.meanOwn*100).toFixed(2).padStart(10)}% | ${(projEmphaDevSum.meanOwn*100).toFixed(2).padStart(11)}% | ${((projEmphaDevSum.meanOwn - v1DevSum.meanOwn)*100).toFixed(2)}pp`);
+  console.log(`  t1×            | ${v1DevSum.t1Edge.toFixed(2).padStart(10)}× | ${projEmphaDevSum.t1Edge.toFixed(2).padStart(11)}× | ${(projEmphaDevSum.t1Edge - v1DevSum.t1Edge).toFixed(2)}`);
+  console.log(`  t01×           | ${v1DevSum.t01Edge.toFixed(2).padStart(10)}× | ${projEmphaDevSum.t01Edge.toFixed(2).padStart(11)}× | ${(projEmphaDevSum.t01Edge - v1DevSum.t01Edge).toFixed(2)}`);
+  console.log(`  ROI            | ${(v1DevSum.roi*100).toFixed(1).padStart(10)}% | ${(projEmphaDevSum.roi*100).toFixed(1).padStart(11)}% | ${((projEmphaDevSum.roi - v1DevSum.roi)*100).toFixed(1)}pp`);
+  console.log('');
+  console.log('Descriptive output. No deploy decision. Park alongside V1.1 (W_LEV=0.15) candidate.');
+
+  // === V1-NoLowProjHighOwn descriptive run (16 dev slates only) ===
+  const noLPHOBandDev = bandDistDev('vNoLPHO');
+  console.log('');
+  console.log('=== V1-NoLowProjHighOwn (hard 0% LP/HO band) — DESCRIPTIVE on 16 dev slates ===');
+  console.log('NOT a deploy candidate. NOT a selection. Park alongside V1.1 + V1-ProjEmpha.');
+  console.log('');
+  console.log('Band distribution (HP/HO, HP/LO, LP/HO, LP/LO):');
+  console.log(`  Pros (target):      ${proBandDev.hpHo.toFixed(1)}%  /  ${proBandDev.hpLo.toFixed(1)}%  /  ${proBandDev.lpHo.toFixed(1)}%  /  ${proBandDev.lpLo.toFixed(1)}%`);
+  console.log(`  V1 baseline:        ${v1BandDev.hpHo.toFixed(1)}%  /  ${v1BandDev.hpLo.toFixed(1)}%  /  ${v1BandDev.lpHo.toFixed(1)}%  /  ${v1BandDev.lpLo.toFixed(1)}%`);
+  console.log(`  V1-NoLPHO:          ${noLPHOBandDev.hpHo.toFixed(1)}%  /  ${noLPHOBandDev.hpLo.toFixed(1)}%  /  ${noLPHOBandDev.lpHo.toFixed(1)}%  /  ${noLPHOBandDev.lpLo.toFixed(1)}%`);
+  // Predicted redistribution: 26 / 20.8 / 0 / 52.1 (approximately)
+  console.log(`  Predicted (proportional):  26.0%  /  20.8%  /   0.0%  /  52.1%`);
+
+  const noLPHODev = allResults.filter(r => r.system === 'theory-dfs-vnolpho' && !HOLDOUT.has(r.slate));
+  const noLPHODevSum = devSummary(noLPHODev);
+  console.log('');
+  console.log('Tournament + structural metrics (16 dev slates):');
+  console.log(`  Metric         | V1 baseline | V1-NoLPHO    | Δ`);
+  console.log(`  Mahal          | ${v1DevSum.meanMahal.toFixed(2).padStart(11)} | ${noLPHODevSum.meanMahal.toFixed(2).padStart(12)} | ${(noLPHODevSum.meanMahal - v1DevSum.meanMahal).toFixed(2)}`);
+  console.log(`  AvgProj        | ${v1DevSum.meanProj.toFixed(2).padStart(11)} | ${noLPHODevSum.meanProj.toFixed(2).padStart(12)} | ${(noLPHODevSum.meanProj - v1DevSum.meanProj).toFixed(2)}`);
+  console.log(`  AvgOwn (sum)   | ${(v1DevSum.meanOwn).toFixed(2).padStart(11)} | ${(noLPHODevSum.meanOwn).toFixed(2).padStart(12)} | ${(noLPHODevSum.meanOwn - v1DevSum.meanOwn).toFixed(2)}`);
+  console.log(`  t1×            | ${v1DevSum.t1Edge.toFixed(2).padStart(10)}× | ${noLPHODevSum.t1Edge.toFixed(2).padStart(11)}× | ${(noLPHODevSum.t1Edge - v1DevSum.t1Edge).toFixed(2)}`);
+  console.log(`  t01×           | ${v1DevSum.t01Edge.toFixed(2).padStart(10)}× | ${noLPHODevSum.t01Edge.toFixed(2).padStart(11)}× | ${(noLPHODevSum.t01Edge - v1DevSum.t01Edge).toFixed(2)}`);
+  console.log(`  ROI            | ${(v1DevSum.roi*100).toFixed(1).padStart(10)}% | ${(noLPHODevSum.roi*100).toFixed(1).padStart(11)}% | ${((noLPHODevSum.roi - v1DevSum.roi)*100).toFixed(1)}pp`);
+
+  // Inverse-bell shape on dev only.
+  function devShape(sys: string): { top: number; mid: number; bot: number; ratio: number } {
+    const rs = allResults.filter(r => r.system === sys && !HOLDOUT.has(r.slate));
+    const all: number[] = [];
+    for (const r of rs) all.push(...r.finishPctiles);
+    if (all.length === 0) return { top: 0, mid: 0, bot: 0, ratio: 0 };
+    const buckets = new Array(5).fill(0);
+    for (const v of all) buckets[Math.min(4, Math.floor((1 - v) * 5))]++;
+    const pcts = buckets.map(c => c / all.length * 100);
+    return { top: pcts[0], mid: pcts[2], bot: pcts[4], ratio: (pcts[0] + pcts[4]) / 2 / Math.max(0.01, pcts[2]) };
+  }
+  const v1Shape = devShape('theory-dfs-v1');
+  const noLPHOShape = devShape('theory-dfs-vnolpho');
+  console.log('');
+  console.log('Finishing distribution (quintile shape, dev only):');
+  console.log(`  V1 baseline:  top=${v1Shape.top.toFixed(1)}% mid=${v1Shape.mid.toFixed(1)}% bot=${v1Shape.bot.toFixed(1)}% inv-bell ratio=${v1Shape.ratio.toFixed(2)}`);
+  console.log(`  V1-NoLPHO:    top=${noLPHOShape.top.toFixed(1)}% mid=${noLPHOShape.mid.toFixed(1)}% bot=${noLPHOShape.bot.toFixed(1)}% inv-bell ratio=${noLPHOShape.ratio.toFixed(2)}`);
+
+  // Second-order: stack distribution, bring-back rate, salary on dev.
+  function secondOrder(variantKey: string): { stack5: number; stack4: number; stack3: number; bbAvg: number; salaryAvg: number } {
+    let s5 = 0, s4 = 0, s3 = 0, bb = 0, sal = 0, n = 0;
+    for (const sl of devDump) {
+      const lus = sl[variantKey];
+      if (!lus) continue;
+      for (const lu of lus) {
+        const ps = lu.primarySize || 0;
+        if (ps >= 5) s5++; else if (ps === 4) s4++; else if (ps === 3) s3++;
+        bb += lu.bringBack || 0;
+        sal += lu.salaryTotal || 0;
+        n++;
+      }
+    }
+    return n === 0 ? { stack5: 0, stack4: 0, stack3: 0, bbAvg: 0, salaryAvg: 0 } :
+           { stack5: s5 / n * 100, stack4: s4 / n * 100, stack3: s3 / n * 100, bbAvg: bb / n, salaryAvg: sal / n };
+  }
+  const v1SO = secondOrder('v1');
+  const noLPHOSO = secondOrder('vNoLPHO');
+  console.log('');
+  console.log('Second-order effects (dev only):');
+  console.log(`  Metric          | V1            | V1-NoLPHO     | Δ`);
+  console.log(`  5+ stack %      | ${v1SO.stack5.toFixed(1).padStart(13)}% | ${noLPHOSO.stack5.toFixed(1).padStart(13)}% | ${(noLPHOSO.stack5 - v1SO.stack5).toFixed(1)}pp`);
+  console.log(`  4 stack %       | ${v1SO.stack4.toFixed(1).padStart(13)}% | ${noLPHOSO.stack4.toFixed(1).padStart(13)}% | ${(noLPHOSO.stack4 - v1SO.stack4).toFixed(1)}pp`);
+  console.log(`  3 stack %       | ${v1SO.stack3.toFixed(1).padStart(13)}% | ${noLPHOSO.stack3.toFixed(1).padStart(13)}% | ${(noLPHOSO.stack3 - v1SO.stack3).toFixed(1)}pp`);
+  console.log(`  Avg bring-back  | ${v1SO.bbAvg.toFixed(2).padStart(13)}  | ${noLPHOSO.bbAvg.toFixed(2).padStart(13)}  | ${(noLPHOSO.bbAvg - v1SO.bbAvg).toFixed(2)}`);
+  console.log(`  Avg salary $    | ${v1SO.salaryAvg.toFixed(0).padStart(13)}  | ${noLPHOSO.salaryAvg.toFixed(0).padStart(13)}  | ${(noLPHOSO.salaryAvg - v1SO.salaryAvg).toFixed(0)}`);
+  console.log('');
+  console.log('Descriptive output. No deploy decision. Park.');
+
+  // === V1-NaturalCorr (halved stack bonus + zeroed bring-backs) — DESCRIPTIVE on 16 dev slates ===
+  const natCorrBandDev = bandDistDev('vNatCorr');
+  const natCorrDev = allResults.filter(r => r.system === 'theory-dfs-vnatcorr' && !HOLDOUT.has(r.slate));
+  const natCorrDevSum = devSummary(natCorrDev);
+  const natCorrShape = devShape('theory-dfs-vnatcorr');
+  const natCorrSO = secondOrder('vNatCorr');
+  const proSO = secondOrder('pros');
+  console.log('');
+  console.log('=== V1-NaturalCorr (STACK_BONUS=0.05, BB1=0, BB2=0) — DESCRIPTIVE on 16 dev slates ===');
+  console.log('Hypothesis: V1 over-forces correlation. Pros use 80% naked, 22% 4-stacks; V1 uses 4% naked, 0% 4-stacks.');
+  console.log('Halving STACK_BONUS and zeroing BB lets stack-mix and BB-rate emerge from EV ranking alone.');
+  console.log('');
+  console.log('Band distribution (HP/HO, HP/LO, LP/HO, LP/LO):');
+  console.log(`  Pros (target):       ${proBandDev.hpHo.toFixed(1)}%  /  ${proBandDev.hpLo.toFixed(1)}%  /  ${proBandDev.lpHo.toFixed(1)}%  /  ${proBandDev.lpLo.toFixed(1)}%`);
+  console.log(`  V1 baseline:         ${v1BandDev.hpHo.toFixed(1)}%  /  ${v1BandDev.hpLo.toFixed(1)}%  /  ${v1BandDev.lpHo.toFixed(1)}%  /  ${v1BandDev.lpLo.toFixed(1)}%`);
+  console.log(`  V1-NaturalCorr:      ${natCorrBandDev.hpHo.toFixed(1)}%  /  ${natCorrBandDev.hpLo.toFixed(1)}%  /  ${natCorrBandDev.lpHo.toFixed(1)}%  /  ${natCorrBandDev.lpLo.toFixed(1)}%`);
+  console.log('');
+  console.log('Stack + bring-back composition (target = pros):');
+  console.log(`  Metric          | Pros          | V1            | V1-NatCorr    | Δ (NatCorr−V1)`);
+  console.log(`  5+ stack %      | ${proSO.stack5.toFixed(1).padStart(13)}% | ${v1SO.stack5.toFixed(1).padStart(13)}% | ${natCorrSO.stack5.toFixed(1).padStart(13)}% | ${(natCorrSO.stack5 - v1SO.stack5).toFixed(1)}pp`);
+  console.log(`  4 stack %       | ${proSO.stack4.toFixed(1).padStart(13)}% | ${v1SO.stack4.toFixed(1).padStart(13)}% | ${natCorrSO.stack4.toFixed(1).padStart(13)}% | ${(natCorrSO.stack4 - v1SO.stack4).toFixed(1)}pp`);
+  console.log(`  Avg bring-back  | ${proSO.bbAvg.toFixed(2).padStart(13)}  | ${v1SO.bbAvg.toFixed(2).padStart(13)}  | ${natCorrSO.bbAvg.toFixed(2).padStart(13)}  | ${(natCorrSO.bbAvg - v1SO.bbAvg).toFixed(2)}`);
+  console.log('');
+  console.log('Tournament + structural metrics:');
+  console.log(`  Metric         | V1 baseline | V1-NatCorr   | Δ`);
+  console.log(`  Mahal          | ${v1DevSum.meanMahal.toFixed(2).padStart(11)} | ${natCorrDevSum.meanMahal.toFixed(2).padStart(12)} | ${(natCorrDevSum.meanMahal - v1DevSum.meanMahal).toFixed(2)}`);
+  console.log(`  AvgProj        | ${v1DevSum.meanProj.toFixed(2).padStart(11)} | ${natCorrDevSum.meanProj.toFixed(2).padStart(12)} | ${(natCorrDevSum.meanProj - v1DevSum.meanProj).toFixed(2)}`);
+  console.log(`  AvgOwn (sum)   | ${(v1DevSum.meanOwn).toFixed(2).padStart(11)} | ${(natCorrDevSum.meanOwn).toFixed(2).padStart(12)} | ${(natCorrDevSum.meanOwn - v1DevSum.meanOwn).toFixed(2)}`);
+  console.log(`  t1×            | ${v1DevSum.t1Edge.toFixed(2).padStart(10)}× | ${natCorrDevSum.t1Edge.toFixed(2).padStart(11)}× | ${(natCorrDevSum.t1Edge - v1DevSum.t1Edge).toFixed(2)}`);
+  console.log(`  t01×           | ${v1DevSum.t01Edge.toFixed(2).padStart(10)}× | ${natCorrDevSum.t01Edge.toFixed(2).padStart(11)}× | ${(natCorrDevSum.t01Edge - v1DevSum.t01Edge).toFixed(2)}`);
+  console.log(`  ROI            | ${(v1DevSum.roi*100).toFixed(1).padStart(10)}% | ${(natCorrDevSum.roi*100).toFixed(1).padStart(11)}% | ${((natCorrDevSum.roi - v1DevSum.roi)*100).toFixed(1)}pp`);
+  console.log(`  Inv-bell ratio | ${v1Shape.ratio.toFixed(2).padStart(11)} | ${natCorrShape.ratio.toFixed(2).padStart(12)} | ${(natCorrShape.ratio - v1Shape.ratio).toFixed(2)}`);
+  console.log('');
+  console.log('Descriptive output. Park alongside V1.1, V1-ProjEmpha.');
+
+  // === V1-NoCorr diagnostic — what's holding V1 at 95% 5-stacks? ===
+  const noCorrSO = secondOrder('vNoCorr');
+  const noCorrDev = allResults.filter(r => r.system === 'theory-dfs-vnocorr' && !HOLDOUT.has(r.slate));
+  const noCorrDevSum = devSummary(noCorrDev);
+  console.log('');
+  console.log('=== V1-NoCorr (STACK_BONUS=0, BB1=0, BB2=0) — DIAGNOSTIC ===');
+  console.log('Tests whether corrAdj is the binding constraint on 4-stack rate.');
+  console.log('');
+  console.log(`  Source            | 5+ stk%  | 4 stk%   | 3 stk%   | BB avg`);
+  console.log(`  SaberSim pool     |   68.0%  |   23.1%  |    8.1%  |   ?`);
+  console.log(`  Pros              |   66.9%  |   24.8%  |    7.5%  |   0.38`);
+  console.log(`  V1 (full corrAdj) |   ${v1SO.stack5.toFixed(1).padStart(5)}%  |   ${v1SO.stack4.toFixed(1).padStart(5)}%  |   ${v1SO.stack3.toFixed(1).padStart(5)}%  |   ${v1SO.bbAvg.toFixed(2)}`);
+  console.log(`  V1-NatCorr (½)    |   ${natCorrSO.stack5.toFixed(1).padStart(5)}%  |   ${natCorrSO.stack4.toFixed(1).padStart(5)}%  |   ${natCorrSO.stack3.toFixed(1).padStart(5)}%  |   ${natCorrSO.bbAvg.toFixed(2)}`);
+  console.log(`  V1-NoCorr (zero)  |   ${noCorrSO.stack5.toFixed(1).padStart(5)}%  |   ${noCorrSO.stack4.toFixed(1).padStart(5)}%  |   ${noCorrSO.stack3.toFixed(1).padStart(5)}%  |   ${noCorrSO.bbAvg.toFixed(2)}`);
+  console.log('');
+  console.log(`  V1-NoCorr tournament metrics: t1×=${noCorrDevSum.t1Edge.toFixed(2)} t01×=${noCorrDevSum.t01Edge.toFixed(2)} ROI=${(noCorrDevSum.roi*100).toFixed(1)}%`);
+  console.log('');
+
+  // === V1-NoCorr-Sec4: avoid naked 4-stacks via secondary stack bonus ===
+  const sec4SO = secondOrder('vNoCorrSec4');
+  const sec4Dev = allResults.filter(r => r.system === 'theory-dfs-vnocorrsec4' && !HOLDOUT.has(r.slate));
+  const sec4DevSum = devSummary(sec4Dev);
+  const sec4BandDev = bandDistDev('vNoCorrSec4');
+
+  // Compute 4-stack secondary-stack composition for both V1-NoCorr and V1-NoCorr-Sec4.
+  function fourStackComp(variantKey: string): { pct4_naked: number; pct4_2sec: number; pct4_3sec: number; n4: number } {
+    let n4 = 0, naked = 0, sec2 = 0, sec3 = 0;
+    for (const sl of devDump) {
+      const lus = sl[variantKey];
+      if (!lus) continue;
+      for (const lu of lus) {
+        if ((lu.primarySize || 0) !== 4) continue;
+        n4++;
+        const ss = lu.secondarySize || 0;
+        if (ss <= 1) naked++;
+        else if (ss === 2) sec2++;
+        else sec3++;
+      }
+    }
+    return n4 === 0 ? { pct4_naked: 0, pct4_2sec: 0, pct4_3sec: 0, n4: 0 } :
+      { pct4_naked: naked / n4 * 100, pct4_2sec: sec2 / n4 * 100, pct4_3sec: sec3 / n4 * 100, n4 };
+  }
+  const noCorrFour = fourStackComp('vNoCorr');
+  const sec4Four = fourStackComp('vNoCorrSec4');
+  const proFour = fourStackComp('pros');
+
+  console.log('=== V1-NoCorr-Sec4 (NoCorr + 4-stack secondary bonus 0.05 × (sec-1)) ===');
+  console.log('Tests whether secondary-stack incentive on 4-stacks promotes 4-2/4-3 structure (vs naked).');
+  console.log('');
+  console.log(`  Source             | 5+ stk%  | 4 stk%   | BB avg  | 4-stk naked  | 4-stk w/ 2sec | 4-stk w/ 3+sec`);
+  console.log(`  Pros               |   66.9%  |   24.8%  |   0.38  | ${proFour.pct4_naked.toFixed(1).padStart(11)}%  | ${proFour.pct4_2sec.toFixed(1).padStart(12)}%  | ${proFour.pct4_3sec.toFixed(1).padStart(13)}%`);
+  console.log(`  V1-NoCorr          |   ${noCorrSO.stack5.toFixed(1).padStart(5)}%  |   ${noCorrSO.stack4.toFixed(1).padStart(5)}%  |   ${noCorrSO.bbAvg.toFixed(2)}  | ${noCorrFour.pct4_naked.toFixed(1).padStart(11)}%  | ${noCorrFour.pct4_2sec.toFixed(1).padStart(12)}%  | ${noCorrFour.pct4_3sec.toFixed(1).padStart(13)}%`);
+  console.log(`  V1-NoCorr-Sec4     |   ${sec4SO.stack5.toFixed(1).padStart(5)}%  |   ${sec4SO.stack4.toFixed(1).padStart(5)}%  |   ${sec4SO.bbAvg.toFixed(2)}  | ${sec4Four.pct4_naked.toFixed(1).padStart(11)}%  | ${sec4Four.pct4_2sec.toFixed(1).padStart(12)}%  | ${sec4Four.pct4_3sec.toFixed(1).padStart(13)}%`);
+  console.log('');
+  console.log(`Band: HP/HO  HP/LO  LP/HO  LP/LO`);
+  console.log(`  Pros:           ${proBandDev.hpHo.toFixed(1)}%  ${proBandDev.hpLo.toFixed(1)}%  ${proBandDev.lpHo.toFixed(1)}%  ${proBandDev.lpLo.toFixed(1)}%`);
+  console.log(`  V1-NoCorr-Sec4: ${sec4BandDev.hpHo.toFixed(1)}%  ${sec4BandDev.hpLo.toFixed(1)}%  ${sec4BandDev.lpHo.toFixed(1)}%  ${sec4BandDev.lpLo.toFixed(1)}%`);
+  console.log('');
+  console.log(`Tournament metrics (dev): V1-NoCorr-Sec4 t1×=${sec4DevSum.t1Edge.toFixed(2)} t01×=${sec4DevSum.t01Edge.toFixed(2)} ROI=${(sec4DevSum.roi*100).toFixed(1)}%`);
+  console.log(`                          V1-NoCorr      t1×=${noCorrDevSum.t1Edge.toFixed(2)} t01×=${noCorrDevSum.t01Edge.toFixed(2)} ROI=${(noCorrDevSum.roi*100).toFixed(1)}%`);
+  console.log(`                          V1 baseline    t1×=${v1DevSum.t1Edge.toFixed(2)} t01×=${v1DevSum.t01Edge.toFixed(2)} ROI=${(v1DevSum.roi*100).toFixed(1)}%`);
+  console.log('');
   const sV2 = sV2a;  // alias for downstream code that references sV2
 
   // Finishing distribution decile shape (V1 vs V2).
@@ -789,15 +1568,37 @@ async function main() {
   }
   const dV1 = decileShape(v1);
   const dV2 = decileShape(v2);
+  const dV4a = decileShape(v4a);
+  const dV5 = decileShape(v5);
+  const dV6d = decileShape(v6d);
+  const dV7 = decileShape(v7);
+  const dV8 = decileShape(v8);
   console.log('\nFinishing distribution (deciles, lower idx = better finish):');
-  console.log('V1   : ' + dV1.map(p => p.toFixed(1).padStart(5) + '%').join(' '));
-  console.log('V2   : ' + dV2.map(p => p.toFixed(1).padStart(5) + '%').join(' '));
-  const v1Top = dV1[0], v1Mid = dV1[4] + dV1[5], v1Bot = dV1[9];
-  const v2Top = dV2[0], v2Mid = dV2[4] + dV2[5], v2Bot = dV2[9];
-  const v1Shape = (v1Top + v1Bot > v1Mid) ? 'inverse-bell' : 'bell';
-  const v2Shape = (v2Top + v2Bot > v2Mid) ? 'inverse-bell' : 'bell';
-  console.log('V1 shape: top=' + v1Top.toFixed(1) + '% mid=' + v1Mid.toFixed(1) + '% bot=' + v1Bot.toFixed(1) + '% -> ' + v1Shape);
-  console.log('V2 shape: top=' + v2Top.toFixed(1) + '% mid=' + v2Mid.toFixed(1) + '% bot=' + v2Bot.toFixed(1) + '% -> ' + v2Shape);
+  console.log('Decile  :  TOP1   TOP2   TOP3   TOP4   TOP5   TOP6   TOP7   TOP8   TOP9   BOT1');
+  console.log('V1      : ' + dV1.map(p => p.toFixed(1).padStart(5) + '%').join(' '));
+  console.log('V4a     : ' + dV4a.map(p => p.toFixed(1).padStart(5) + '%').join(' '));
+  console.log('V5      : ' + dV5.map(p => p.toFixed(1).padStart(5) + '%').join(' '));
+  console.log('V6d     : ' + dV6d.map(p => p.toFixed(1).padStart(5) + '%').join(' '));
+  console.log('V7      : ' + dV7.map(p => p.toFixed(1).padStart(5) + '%').join(' '));
+  console.log('V8      : ' + dV8.map(p => p.toFixed(1).padStart(5) + '%').join(' '));
+  function shape(d: number[]): { top: number; mid: number; bot: number; label: string; topHeavy: number } {
+    const top = d[0]; const mid = d[4] + d[5]; const bot = d[9];
+    const label = (top + bot > mid) ? 'inverse-bell' : 'bell';
+    return { top, mid, bot, label, topHeavy: top - bot };
+  }
+  console.log('\nShape summary (top = TOP-decile %, mid = D5+D6, bot = BOT-decile %):');
+  console.log('System | top   | mid   | bot   | top-bot | shape         | t1x   | t01x  | ROI');
+  console.log('-'.repeat(95));
+  function shapeRow(label: string, d: number[], s: ReturnType<typeof summary>) {
+    const sh = shape(d);
+    return `${label.padEnd(6)} | ${sh.top.toFixed(1).padStart(4)}% | ${sh.mid.toFixed(1).padStart(4)}% | ${sh.bot.toFixed(1).padStart(4)}% | ${(sh.topHeavy >= 0 ? '+' : '') + sh.topHeavy.toFixed(1).padStart(5)} | ${sh.label.padEnd(13)} | ${s.t1Edge.toFixed(2).padStart(4)}x | ${s.t01Edge.toFixed(2).padStart(4)}x | ${(s.roi*100).toFixed(1).padStart(5)}%`;
+  }
+  console.log(shapeRow('V1', dV1, sV1));
+  console.log(shapeRow('V4a', dV4a, sV4a));
+  console.log(shapeRow('V5', dV5, sV5));
+  console.log(shapeRow('V6d', dV6d, sV6d));
+  console.log(shapeRow('V7', dV7, sV7));
+  console.log(shapeRow('V8', dV8, sV8));
 
   // Per-slate breakdown.
   console.log('\nPer-slate Mahalanobis comparison:');
@@ -816,6 +1617,11 @@ async function main() {
   const outPath = path.join(OUT_DIR, 'v2_validation_results.json');
   fs.writeFileSync(outPath, JSON.stringify({ summaryV1: sV1, summaryV2: sV2, decileV1: dV1, decileV2: dV2, perSlate: allResults }, null, 0));
   console.log('\nSaved to ' + outPath);
+
+  // Per-slate lineup-level dump for descriptive analysis.
+  const dumpPath = path.join(OUT_DIR, 'v1_pros_lineup_dump.json');
+  fs.writeFileSync(dumpPath, JSON.stringify(dumpAll, null, 0));
+  console.log('Lineup dump saved to ' + dumpPath);
 }
 
 main().catch(err => { console.error('FAILED:', err); process.exit(1); });

@@ -1,0 +1,3280 @@
+{
+  "examples": [
+    {
+      "slate": "4-6-26",
+      "team": "HOU",
+      "n_pro": 109,
+      "n_v1": 42,
+      "pro_top2": [
+        "Jeremy Pena",
+        "Yainer Diaz"
+      ],
+      "pro_top2_own": 21.466789475,
+      "v1_top2": [
+        "Yainer Diaz",
+        "Jeremy Pena"
+      ],
+      "v1_top2_own": 21.466789475,
+      "chalk_top2": [
+        "Yordan Alvarez",
+        "Jeremy Pena"
+      ],
+      "chalk_top2_own": 29.056927005,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-6-26",
+      "team": "LAD",
+      "n_pro": 72,
+      "n_v1": 23,
+      "pro_top2": [
+        "Freddie Freeman",
+        "Max Muncy"
+      ],
+      "pro_top2_own": 13.745432205,
+      "v1_top2": [
+        "Dalton Rushing",
+        "Shohei Ohtani"
+      ],
+      "v1_top2_own": 18.631078508999998,
+      "chalk_top2": [
+        "Shohei Ohtani",
+        "Kyle Tucker"
+      ],
+      "chalk_top2_own": 22.96709765,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-6-26",
+      "team": "COL",
+      "n_pro": 126,
+      "n_v1": 12,
+      "pro_top2": [
+        "Hunter Goodman",
+        "Willi Castro"
+      ],
+      "pro_top2_own": 14.728603185,
+      "v1_top2": [
+        "Hunter Goodman",
+        "Willi Castro"
+      ],
+      "v1_top2_own": 14.728603185,
+      "chalk_top2": [
+        "Mickey Moniak",
+        "Hunter Goodman"
+      ],
+      "chalk_top2_own": 19.634076845000003,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-6-26",
+      "team": "LAA",
+      "n_pro": 40,
+      "n_v1": 8,
+      "pro_top2": [
+        "Zach Neto",
+        "Logan O'Hoppe"
+      ],
+      "pro_top2_own": 2.890298549,
+      "v1_top2": [
+        "Zach Neto",
+        "Jorge Soler"
+      ],
+      "v1_top2_own": 2.3117707035,
+      "chalk_top2": [
+        "Zach Neto",
+        "Logan O'Hoppe"
+      ],
+      "chalk_top2_own": 2.890298549,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-6-26",
+      "team": "DET",
+      "n_pro": 33,
+      "n_v1": 12,
+      "pro_top2": [
+        "Gleyber Torres",
+        "Riley Greene"
+      ],
+      "pro_top2_own": 3.0014004759999997,
+      "v1_top2": [
+        "Gleyber Torres",
+        "Kevin McGonigle"
+      ],
+      "v1_top2_own": 4.347295770000001,
+      "chalk_top2": [
+        "Kevin McGonigle",
+        "Gleyber Torres"
+      ],
+      "chalk_top2_own": 4.347295770000001,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-6-26",
+      "team": "PHI",
+      "n_pro": 54,
+      "n_v1": 9,
+      "pro_top2": [
+        "Bryson Stott",
+        "J.T. Realmuto"
+      ],
+      "pro_top2_own": 7.576468317,
+      "v1_top2": [
+        "Trea Turner",
+        "J.T. Realmuto"
+      ],
+      "v1_top2_own": 10.672843536,
+      "chalk_top2": [
+        "Trea Turner",
+        "Bryce Harper"
+      ],
+      "chalk_top2_own": 12.632192695,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-6-26",
+      "team": "SF",
+      "n_pro": 29,
+      "n_v1": 6,
+      "pro_top2": [
+        "Willy Adames",
+        "Luis Arraez"
+      ],
+      "pro_top2_own": 4.829304607499999,
+      "v1_top2": [
+        "Matt Chapman",
+        "Willy Adames"
+      ],
+      "v1_top2_own": 5.057758256,
+      "chalk_top2": [
+        "Willy Adames",
+        "Matt Chapman"
+      ],
+      "chalk_top2_own": 5.057758256,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-6-26",
+      "team": "CWS",
+      "n_pro": 60,
+      "n_v1": 7,
+      "pro_top2": [
+        "Miguel Vargas",
+        "Munetaka Murakami"
+      ],
+      "pro_top2_own": 10.456845289,
+      "v1_top2": [
+        "Chase Meidroth",
+        "Miguel Vargas"
+      ],
+      "v1_top2_own": 11.860247095,
+      "chalk_top2": [
+        "Miguel Vargas",
+        "Colson Montgomery"
+      ],
+      "chalk_top2_own": 12.080771445,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-6-26",
+      "team": "ATL",
+      "n_pro": 58,
+      "n_v1": 5,
+      "pro_top2": [
+        "Ozzie Albies",
+        "Drake Baldwin"
+      ],
+      "pro_top2_own": 10.5722739535,
+      "v1_top2": [
+        "Ozzie Albies",
+        "Mike Yastrzemski"
+      ],
+      "v1_top2_own": 9.160296863500001,
+      "chalk_top2": [
+        "Ronald Acuna Jr.",
+        "Drake Baldwin"
+      ],
+      "chalk_top2_own": 13.057841685,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-6-26",
+      "team": "BAL",
+      "n_pro": 58,
+      "n_v1": 8,
+      "pro_top2": [
+        "Gunnar Henderson",
+        "Coby Mayo"
+      ],
+      "pro_top2_own": 12.42599395,
+      "v1_top2": [
+        "Tyler O'Neill",
+        "Jeremiah Jackson"
+      ],
+      "v1_top2_own": 12.121319075,
+      "chalk_top2": [
+        "Gunnar Henderson",
+        "Tyler O'Neill"
+      ],
+      "chalk_top2_own": 15.056131070000001,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-6-26",
+      "team": "SEA",
+      "n_pro": 34,
+      "n_v1": 11,
+      "pro_top2": [
+        "Cal Raleigh",
+        "Josh Naylor"
+      ],
+      "pro_top2_own": 4.174944631,
+      "v1_top2": [
+        "Cal Raleigh",
+        "Julio Rodriguez"
+      ],
+      "v1_top2_own": 3.581389018,
+      "chalk_top2": [
+        "Cal Raleigh",
+        "Brendan Donovan"
+      ],
+      "chalk_top2_own": 4.5773293895,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-8-26",
+      "team": "MIN",
+      "n_pro": 49,
+      "n_v1": 16,
+      "pro_top2": [
+        "Luke Keaschall",
+        "Byron Buxton"
+      ],
+      "pro_top2_own": 3.8532239419999996,
+      "v1_top2": [
+        "Byron Buxton",
+        "Luke Keaschall"
+      ],
+      "v1_top2_own": 3.8532239419999996,
+      "chalk_top2": [
+        "Byron Buxton",
+        "Luke Keaschall"
+      ],
+      "chalk_top2_own": 3.8532239419999996,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-8-26",
+      "team": "DET",
+      "n_pro": 68,
+      "n_v1": 19,
+      "pro_top2": [
+        "Kevin McGonigle",
+        "Riley Greene"
+      ],
+      "pro_top2_own": 30.31218493,
+      "v1_top2": [
+        "Riley Greene",
+        "Kerry Carpenter"
+      ],
+      "v1_top2_own": 23.18222597,
+      "chalk_top2": [
+        "Kevin McGonigle",
+        "Riley Greene"
+      ],
+      "chalk_top2_own": 30.31218493,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-8-26",
+      "team": "CIN",
+      "n_pro": 34,
+      "n_v1": 18,
+      "pro_top2": [
+        "Elly De La Cruz",
+        "Matt McLain"
+      ],
+      "pro_top2_own": 12.5588819655,
+      "v1_top2": [
+        "Elly De La Cruz",
+        "Sal Stewart"
+      ],
+      "v1_top2_own": 12.546471999,
+      "chalk_top2": [
+        "Elly De La Cruz",
+        "TJ Friedl"
+      ],
+      "chalk_top2_own": 14.573751045,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-8-26",
+      "team": "CHC",
+      "n_pro": 74,
+      "n_v1": 24,
+      "pro_top2": [
+        "Nico Hoerner",
+        "Pete Crow-Armstrong"
+      ],
+      "pro_top2_own": 23.821237785,
+      "v1_top2": [
+        "Pete Crow-Armstrong",
+        "Nico Hoerner"
+      ],
+      "v1_top2_own": 23.821237785,
+      "chalk_top2": [
+        "Pete Crow-Armstrong",
+        "Michael Busch"
+      ],
+      "chalk_top2_own": 25.304247574999998,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-8-26",
+      "team": "TB",
+      "n_pro": 52,
+      "n_v1": 6,
+      "pro_top2": [
+        "Chandler Simpson",
+        "Junior Caminero"
+      ],
+      "pro_top2_own": 16.418137979999997,
+      "v1_top2": [
+        "Junior Caminero",
+        "Taylor Walls"
+      ],
+      "v1_top2_own": 12.627820654499999,
+      "chalk_top2": [
+        "Yandy Diaz",
+        "Junior Caminero"
+      ],
+      "chalk_top2_own": 18.5361925,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-8-26",
+      "team": "MIA",
+      "n_pro": 59,
+      "n_v1": 13,
+      "pro_top2": [
+        "Jakob Marsee",
+        "Xavier Edwards"
+      ],
+      "pro_top2_own": 12.540840639999999,
+      "v1_top2": [
+        "Owen Caissie",
+        "Jakob Marsee"
+      ],
+      "v1_top2_own": 7.917822457,
+      "chalk_top2": [
+        "Xavier Edwards",
+        "Liam Hicks"
+      ],
+      "chalk_top2_own": 13.976545184999999,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-8-26",
+      "team": "NYY",
+      "n_pro": 124,
+      "n_v1": 31,
+      "pro_top2": [
+        "Trent Grisham",
+        "Cody Bellinger"
+      ],
+      "pro_top2_own": 31.89666649,
+      "v1_top2": [
+        "Jazz Chisholm Jr.",
+        "Ben Rice"
+      ],
+      "v1_top2_own": 32.78722992,
+      "chalk_top2": [
+        "Aaron Judge",
+        "Ben Rice"
+      ],
+      "chalk_top2_own": 41.354617245,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-12-26",
+      "team": "PIT",
+      "n_pro": 203,
+      "n_v1": 26,
+      "pro_top2": [
+        "Oneil Cruz",
+        "Brandon Lowe"
+      ],
+      "pro_top2_own": 47.551554554999996,
+      "v1_top2": [
+        "Oneil Cruz",
+        "Brandon Lowe"
+      ],
+      "v1_top2_own": 47.551554554999996,
+      "chalk_top2": [
+        "Oneil Cruz",
+        "Brandon Lowe"
+      ],
+      "chalk_top2_own": 47.551554554999996,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-12-26",
+      "team": "BOS",
+      "n_pro": 49,
+      "n_v1": 9,
+      "pro_top2": [
+        "Caleb Durbin",
+        "Trevor Story"
+      ],
+      "pro_top2_own": 7.8256224465,
+      "v1_top2": [
+        "Caleb Durbin",
+        "Wilyer Abreu"
+      ],
+      "v1_top2_own": 7.0844222875,
+      "chalk_top2": [
+        "Caleb Durbin",
+        "Willson Contreras"
+      ],
+      "chalk_top2_own": 9.335483487,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-12-26",
+      "team": "CHC",
+      "n_pro": 93,
+      "n_v1": 10,
+      "pro_top2": [
+        "Ian Happ",
+        "Alex Bregman"
+      ],
+      "pro_top2_own": 31.37702146,
+      "v1_top2": [
+        "Alex Bregman",
+        "Dansby Swanson"
+      ],
+      "v1_top2_own": 26.84568153,
+      "chalk_top2": [
+        "Alex Bregman",
+        "Ian Happ"
+      ],
+      "chalk_top2_own": 31.37702146,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-12-26",
+      "team": "LAA",
+      "n_pro": 59,
+      "n_v1": 24,
+      "pro_top2": [
+        "Zach Neto",
+        "Jo Adell"
+      ],
+      "pro_top2_own": 9.959957732,
+      "v1_top2": [
+        "Jorge Soler",
+        "Mike Trout"
+      ],
+      "v1_top2_own": 6.274774769,
+      "chalk_top2": [
+        "Zach Neto",
+        "Jo Adell"
+      ],
+      "chalk_top2_own": 9.959957732,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-12-26",
+      "team": "SF",
+      "n_pro": 24,
+      "n_v1": 12,
+      "pro_top2": [
+        "Matt Chapman",
+        "Willy Adames"
+      ],
+      "pro_top2_own": 5.1502356215,
+      "v1_top2": [
+        "Matt Chapman",
+        "Heliot Ramos"
+      ],
+      "v1_top2_own": 3.4662024005,
+      "chalk_top2": [
+        "Matt Chapman",
+        "Willy Adames"
+      ],
+      "chalk_top2_own": 5.1502356215,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-12-26",
+      "team": "NYY",
+      "n_pro": 43,
+      "n_v1": 9,
+      "pro_top2": [
+        "Jazz Chisholm Jr.",
+        "Aaron Judge"
+      ],
+      "pro_top2_own": 6.243397814,
+      "v1_top2": [
+        "Jazz Chisholm Jr.",
+        "Trent Grisham"
+      ],
+      "v1_top2_own": 4.333803712,
+      "chalk_top2": [
+        "Aaron Judge",
+        "Jazz Chisholm Jr."
+      ],
+      "chalk_top2_own": 6.243397814,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-14-26",
+      "team": "MIA",
+      "n_pro": 60,
+      "n_v1": 29,
+      "pro_top2": [
+        "Jakob Marsee",
+        "Agustin Ramirez"
+      ],
+      "pro_top2_own": 8.0856804935,
+      "v1_top2": [
+        "Jakob Marsee",
+        "Otto Lopez"
+      ],
+      "v1_top2_own": 7.055651344,
+      "chalk_top2": [
+        "Agustin Ramirez",
+        "Xavier Edwards"
+      ],
+      "chalk_top2_own": 8.638797093,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-14-26",
+      "team": "COL",
+      "n_pro": 66,
+      "n_v1": 14,
+      "pro_top2": [
+        "Hunter Goodman",
+        "Tyler Freeman"
+      ],
+      "pro_top2_own": 6.7912366125000005,
+      "v1_top2": [
+        "Hunter Goodman",
+        "Ezequiel Tovar"
+      ],
+      "v1_top2_own": 5.0674090155,
+      "chalk_top2": [
+        "Hunter Goodman",
+        "Tyler Freeman"
+      ],
+      "chalk_top2_own": 6.7912366125000005,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-14-26",
+      "team": "TB",
+      "n_pro": 28,
+      "n_v1": 8,
+      "pro_top2": [
+        "Junior Caminero",
+        "Taylor Walls"
+      ],
+      "pro_top2_own": 8.482173198,
+      "v1_top2": [
+        "Ben Williamson",
+        "Chandler Simpson"
+      ],
+      "v1_top2_own": 9.5131060485,
+      "chalk_top2": [
+        "Yandy Diaz",
+        "Junior Caminero"
+      ],
+      "chalk_top2_own": 12.699588434999999,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-14-26",
+      "team": "BOS",
+      "n_pro": 95,
+      "n_v1": 10,
+      "pro_top2": [
+        "Caleb Durbin",
+        "Trevor Story"
+      ],
+      "pro_top2_own": 9.2093203215,
+      "v1_top2": [
+        "Trevor Story",
+        "Willson Contreras"
+      ],
+      "v1_top2_own": 9.1970580385,
+      "chalk_top2": [
+        "Roman Anthony",
+        "Willson Contreras"
+      ],
+      "chalk_top2_own": 9.0763052205,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-14-26",
+      "team": "SEA",
+      "n_pro": 29,
+      "n_v1": 31,
+      "pro_top2": [
+        "Cal Raleigh",
+        "Brendan Donovan"
+      ],
+      "pro_top2_own": 6.116563131,
+      "v1_top2": [
+        "Cal Raleigh",
+        "Brendan Donovan"
+      ],
+      "v1_top2_own": 6.116563131,
+      "chalk_top2": [
+        "Cal Raleigh",
+        "Josh Naylor"
+      ],
+      "chalk_top2_own": 6.4469659425,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-15-26",
+      "team": "NYY",
+      "n_pro": 151,
+      "n_v1": 6,
+      "pro_top2": [
+        "Trent Grisham",
+        "Jazz Chisholm Jr."
+      ],
+      "pro_top2_own": 36.751962965000004,
+      "v1_top2": [
+        "Ben Rice",
+        "Cody Bellinger"
+      ],
+      "v1_top2_own": 26.768165535,
+      "chalk_top2": [
+        "Aaron Judge",
+        "Jazz Chisholm Jr."
+      ],
+      "chalk_top2_own": 34.69520994,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-15-26",
+      "team": "SEA",
+      "n_pro": 32,
+      "n_v1": 18,
+      "pro_top2": [
+        "Cal Raleigh",
+        "Josh Naylor"
+      ],
+      "pro_top2_own": 7.155231139,
+      "v1_top2": [
+        "Cal Raleigh",
+        "Josh Naylor"
+      ],
+      "v1_top2_own": 7.155231139,
+      "chalk_top2": [
+        "Cal Raleigh",
+        "Josh Naylor"
+      ],
+      "chalk_top2_own": 7.155231139,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-15-26",
+      "team": "ATL",
+      "n_pro": 84,
+      "n_v1": 6,
+      "pro_top2": [
+        "Matt Olson",
+        "Austin Riley"
+      ],
+      "pro_top2_own": 17.723008945,
+      "v1_top2": [
+        "Ronald Acuna Jr.",
+        "Drake Baldwin"
+      ],
+      "v1_top2_own": 18.93339568,
+      "chalk_top2": [
+        "Ronald Acuna Jr.",
+        "Drake Baldwin"
+      ],
+      "chalk_top2_own": 18.93339568,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-15-26",
+      "team": "ATH",
+      "n_pro": 52,
+      "n_v1": 7,
+      "pro_top2": [
+        "Nick Kurtz",
+        "Shea Langeliers"
+      ],
+      "pro_top2_own": 11.162722392500001,
+      "v1_top2": [
+        "Shea Langeliers",
+        "Lawrence Butler"
+      ],
+      "v1_top2_own": 6.81610101,
+      "chalk_top2": [
+        "Nick Kurtz",
+        "Shea Langeliers"
+      ],
+      "chalk_top2_own": 11.162722392500001,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-15-26",
+      "team": "SD",
+      "n_pro": 21,
+      "n_v1": 8,
+      "pro_top2": [
+        "Jackson Merrill",
+        "Manny Machado"
+      ],
+      "pro_top2_own": 3.027469979,
+      "v1_top2": [
+        "Jake Cronenworth",
+        "Ramon Laureano"
+      ],
+      "v1_top2_own": 2.4306427075,
+      "chalk_top2": [
+        "Jackson Merrill",
+        "Ramon Laureano"
+      ],
+      "chalk_top2_own": 3.247473561,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-15-26",
+      "team": "TB",
+      "n_pro": 39,
+      "n_v1": 8,
+      "pro_top2": [
+        "Chandler Simpson",
+        "Junior Caminero"
+      ],
+      "pro_top2_own": 9.3143586005,
+      "v1_top2": [
+        "Chandler Simpson",
+        "Taylor Walls"
+      ],
+      "v1_top2_own": 6.2145322494999995,
+      "chalk_top2": [
+        "Junior Caminero",
+        "Chandler Simpson"
+      ],
+      "chalk_top2_own": 9.3143586005,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-15-26",
+      "team": "LAA",
+      "n_pro": 88,
+      "n_v1": 22,
+      "pro_top2": [
+        "Zach Neto",
+        "Jo Adell"
+      ],
+      "pro_top2_own": 15.192638575,
+      "v1_top2": [
+        "Zach Neto",
+        "Jo Adell"
+      ],
+      "v1_top2_own": 15.192638575,
+      "chalk_top2": [
+        "Zach Neto",
+        "Mike Trout"
+      ],
+      "chalk_top2_own": 14.916246285,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-15-26",
+      "team": "MIA",
+      "n_pro": 52,
+      "n_v1": 22,
+      "pro_top2": [
+        "Jakob Marsee",
+        "Xavier Edwards"
+      ],
+      "pro_top2_own": 4.015797547,
+      "v1_top2": [
+        "Xavier Edwards",
+        "Otto Lopez"
+      ],
+      "v1_top2_own": 4.2443256685,
+      "chalk_top2": [
+        "Otto Lopez",
+        "Jakob Marsee"
+      ],
+      "chalk_top2_own": 3.9686850954999997,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-15-26",
+      "team": "TEX",
+      "n_pro": 58,
+      "n_v1": 14,
+      "pro_top2": [
+        "Corey Seager",
+        "Josh Smith"
+      ],
+      "pro_top2_own": 17.7975543585,
+      "v1_top2": [
+        "Corey Seager",
+        "Wyatt Langford"
+      ],
+      "v1_top2_own": 19.265111575,
+      "chalk_top2": [
+        "Corey Seager",
+        "Brandon Nimmo"
+      ],
+      "chalk_top2_own": 19.362689500000002,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-15-26",
+      "team": "TOR",
+      "n_pro": 43,
+      "n_v1": 13,
+      "pro_top2": [
+        "Daulton Varsho",
+        "Ernie Clement"
+      ],
+      "pro_top2_own": 2.321130139,
+      "v1_top2": [
+        "Kazuma Okamoto",
+        "Andres Gimenez"
+      ],
+      "v1_top2_own": 0.998226802,
+      "chalk_top2": [
+        "Daulton Varsho",
+        "Vladimir Guerrero Jr."
+      ],
+      "chalk_top2_own": 2.245391425,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-15-26",
+      "team": "COL",
+      "n_pro": 39,
+      "n_v1": 16,
+      "pro_top2": [
+        "Mickey Moniak",
+        "Hunter Goodman"
+      ],
+      "pro_top2_own": 2.9657042465,
+      "v1_top2": [
+        "Willi Castro",
+        "Mickey Moniak"
+      ],
+      "v1_top2_own": 1.739950607,
+      "chalk_top2": [
+        "Mickey Moniak",
+        "Hunter Goodman"
+      ],
+      "chalk_top2_own": 2.9657042465,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-17-26",
+      "team": "CWS",
+      "n_pro": 104,
+      "n_v1": 23,
+      "pro_top2": [
+        "Miguel Vargas",
+        "Munetaka Murakami"
+      ],
+      "pro_top2_own": 13.1836138055,
+      "v1_top2": [
+        "Miguel Vargas",
+        "Munetaka Murakami"
+      ],
+      "v1_top2_own": 13.1836138055,
+      "chalk_top2": [
+        "Miguel Vargas",
+        "Everson Pereira"
+      ],
+      "chalk_top2_own": 16.052348025,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-17-26",
+      "team": "STL",
+      "n_pro": 61,
+      "n_v1": 22,
+      "pro_top2": [
+        "Alec Burleson",
+        "JJ Wetherholt"
+      ],
+      "pro_top2_own": 5.101019376,
+      "v1_top2": [
+        "Alec Burleson",
+        "Masyn Winn"
+      ],
+      "v1_top2_own": 4.8339967559999995,
+      "chalk_top2": [
+        "Ivan Herrera",
+        "Alec Burleson"
+      ],
+      "chalk_top2_own": 6.449000795,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-17-26",
+      "team": "LAD",
+      "n_pro": 33,
+      "n_v1": 9,
+      "pro_top2": [
+        "Hyeseong Kim",
+        "Will Smith"
+      ],
+      "pro_top2_own": 25.487450869999996,
+      "v1_top2": [
+        "Hyeseong Kim",
+        "Shohei Ohtani"
+      ],
+      "v1_top2_own": 26.744656835,
+      "chalk_top2": [
+        "Shohei Ohtani",
+        "Will Smith"
+      ],
+      "chalk_top2_own": 33.584777375,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-17-26",
+      "team": "MIL",
+      "n_pro": 77,
+      "n_v1": 11,
+      "pro_top2": [
+        "Luis Rengifo",
+        "Gary Sanchez"
+      ],
+      "pro_top2_own": 11.489039415,
+      "v1_top2": [
+        "William Contreras",
+        "Luis Rengifo"
+      ],
+      "v1_top2_own": 7.2371813545,
+      "chalk_top2": [
+        "Gary Sanchez",
+        "Sal Frelick"
+      ],
+      "chalk_top2_own": 11.590324169999999,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-17-26",
+      "team": "KC",
+      "n_pro": 40,
+      "n_v1": 12,
+      "pro_top2": [
+        "Maikel Garcia",
+        "Bobby Witt Jr."
+      ],
+      "pro_top2_own": 1.8226492945,
+      "v1_top2": [
+        "Maikel Garcia",
+        "Bobby Witt Jr."
+      ],
+      "v1_top2_own": 1.8226492945,
+      "chalk_top2": [
+        "Bobby Witt Jr.",
+        "Maikel Garcia"
+      ],
+      "chalk_top2_own": 1.8226492945,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-17-26",
+      "team": "ATH",
+      "n_pro": 33,
+      "n_v1": 8,
+      "pro_top2": [
+        "Jeff McNeil",
+        "Denzel Clarke"
+      ],
+      "pro_top2_own": 7.4208453384999995,
+      "v1_top2": [
+        "Max Muncy",
+        "Jeff McNeil"
+      ],
+      "v1_top2_own": 7.335560295,
+      "chalk_top2": [
+        "Shea Langeliers",
+        "Jeff McNeil"
+      ],
+      "chalk_top2_own": 11.016170785,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-17-26",
+      "team": "TOR",
+      "n_pro": 42,
+      "n_v1": 8,
+      "pro_top2": [
+        "Andres Gimenez",
+        "Daulton Varsho"
+      ],
+      "pro_top2_own": 13.337663915,
+      "v1_top2": [
+        "Andres Gimenez",
+        "Davis Schneider"
+      ],
+      "v1_top2_own": 11.275822365,
+      "chalk_top2": [
+        "Daulton Varsho",
+        "Jesus Sanchez"
+      ],
+      "chalk_top2_own": 14.795525795,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-17-26",
+      "team": "CIN",
+      "n_pro": 37,
+      "n_v1": 6,
+      "pro_top2": [
+        "Elly De La Cruz",
+        "Matt McLain"
+      ],
+      "pro_top2_own": 0.8283229665,
+      "v1_top2": [
+        "Elly De La Cruz",
+        "Spencer Steer"
+      ],
+      "v1_top2_own": 0.6570167405,
+      "chalk_top2": [
+        "Elly De La Cruz",
+        "TJ Friedl"
+      ],
+      "chalk_top2_own": 0.9172874160000001,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-17-26",
+      "team": "NYY",
+      "n_pro": 25,
+      "n_v1": 6,
+      "pro_top2": [
+        "Jose Caballero",
+        "Trent Grisham"
+      ],
+      "pro_top2_own": 4.3973619385,
+      "v1_top2": [
+        "Trent Grisham",
+        "Jazz Chisholm Jr."
+      ],
+      "v1_top2_own": 4.0627644335,
+      "chalk_top2": [
+        "Aaron Judge",
+        "Trent Grisham"
+      ],
+      "chalk_top2_own": 7.400098601,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-17-26",
+      "team": "SD",
+      "n_pro": 32,
+      "n_v1": 7,
+      "pro_top2": [
+        "Jake Cronenworth",
+        "Jackson Merrill"
+      ],
+      "pro_top2_own": 1.478416444,
+      "v1_top2": [
+        "Nick Castellanos",
+        "Manny Machado"
+      ],
+      "v1_top2_own": 2.063401754,
+      "chalk_top2": [
+        "Fernando Tatis Jr.",
+        "Manny Machado"
+      ],
+      "chalk_top2_own": 3.3062817615,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-18-26",
+      "team": "STL",
+      "n_pro": 57,
+      "n_v1": 19,
+      "pro_top2": [
+        "Ivan Herrera",
+        "Alec Burleson"
+      ],
+      "pro_top2_own": 12.334569367,
+      "v1_top2": [
+        "Ivan Herrera",
+        "Alec Burleson"
+      ],
+      "v1_top2_own": 12.334569367,
+      "chalk_top2": [
+        "Ivan Herrera",
+        "JJ Wetherholt"
+      ],
+      "chalk_top2_own": 12.709721303,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-18-26",
+      "team": "LAD",
+      "n_pro": 90,
+      "n_v1": 26,
+      "pro_top2": [
+        "Dalton Rushing",
+        "Miguel Rojas"
+      ],
+      "pro_top2_own": 17.384693475,
+      "v1_top2": [
+        "Miguel Rojas",
+        "Dalton Rushing"
+      ],
+      "v1_top2_own": 17.384693475,
+      "chalk_top2": [
+        "Shohei Ohtani",
+        "Andy Pages"
+      ],
+      "chalk_top2_own": 35.29176365,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-18-26",
+      "team": "SD",
+      "n_pro": 98,
+      "n_v1": 32,
+      "pro_top2": [
+        "Ramon Laureano",
+        "Fernando Tatis Jr."
+      ],
+      "pro_top2_own": 22.758938975,
+      "v1_top2": [
+        "Fernando Tatis Jr.",
+        "Ty France"
+      ],
+      "v1_top2_own": 19.57915318,
+      "chalk_top2": [
+        "Fernando Tatis Jr.",
+        "Ramon Laureano"
+      ],
+      "chalk_top2_own": 22.758938975,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-18-26",
+      "team": "COL",
+      "n_pro": 32,
+      "n_v1": 11,
+      "pro_top2": [
+        "Mickey Moniak",
+        "Brenton Doyle"
+      ],
+      "pro_top2_own": 1.7854785364999999,
+      "v1_top2": [
+        "TJ Rumfield",
+        "Edouard Julien"
+      ],
+      "v1_top2_own": 1.1884962154999998,
+      "chalk_top2": [
+        "Mickey Moniak",
+        "Edouard Julien"
+      ],
+      "chalk_top2_own": 2.189237077,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-18-26",
+      "team": "ATL",
+      "n_pro": 26,
+      "n_v1": 11,
+      "pro_top2": [
+        "Ozzie Albies",
+        "Austin Riley"
+      ],
+      "pro_top2_own": 2.233476107,
+      "v1_top2": [
+        "Ronald Acuna Jr.",
+        "Ozzie Albies"
+      ],
+      "v1_top2_own": 1.729415398,
+      "chalk_top2": [
+        "Ozzie Albies",
+        "Jonah Heim"
+      ],
+      "chalk_top2_own": 2.8931376130000004,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-18-26",
+      "team": "TOR",
+      "n_pro": 75,
+      "n_v1": 10,
+      "pro_top2": [
+        "Ernie Clement",
+        "Vladimir Guerrero Jr."
+      ],
+      "pro_top2_own": 13.007471377,
+      "v1_top2": [
+        "Ernie Clement",
+        "Vladimir Guerrero Jr."
+      ],
+      "v1_top2_own": 13.007471377,
+      "chalk_top2": [
+        "Eloy Jimenez",
+        "Ernie Clement"
+      ],
+      "chalk_top2_own": 20.769674565,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-18-26",
+      "team": "LAA",
+      "n_pro": 72,
+      "n_v1": 23,
+      "pro_top2": [
+        "Zach Neto",
+        "Oswald Peraza"
+      ],
+      "pro_top2_own": 17.552695715,
+      "v1_top2": [
+        "Zach Neto",
+        "Mike Trout"
+      ],
+      "v1_top2_own": 16.276765864999998,
+      "chalk_top2": [
+        "Zach Neto",
+        "Jo Adell"
+      ],
+      "chalk_top2_own": 18.112141254999997,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-19-26",
+      "team": "WSH",
+      "n_pro": 26,
+      "n_v1": 12,
+      "pro_top2": [
+        "James Wood",
+        "Nasim Nunez"
+      ],
+      "pro_top2_own": 1.973061932,
+      "v1_top2": [
+        "Nasim Nunez",
+        "CJ Abrams"
+      ],
+      "v1_top2_own": 1.843007015,
+      "chalk_top2": [
+        "Curtis Mead",
+        "Jacob Young"
+      ],
+      "chalk_top2_own": 4.6208740585,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-19-26",
+      "team": "BAL",
+      "n_pro": 22,
+      "n_v1": 11,
+      "pro_top2": [
+        "Taylor Ward",
+        "Gunnar Henderson"
+      ],
+      "pro_top2_own": 2.42469059,
+      "v1_top2": [
+        "Taylor Ward",
+        "Gunnar Henderson"
+      ],
+      "v1_top2_own": 2.42469059,
+      "chalk_top2": [
+        "Taylor Ward",
+        "Gunnar Henderson"
+      ],
+      "chalk_top2_own": 2.42469059,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-19-26",
+      "team": "STL",
+      "n_pro": 88,
+      "n_v1": 16,
+      "pro_top2": [
+        "Alec Burleson",
+        "Ivan Herrera"
+      ],
+      "pro_top2_own": 15.855179695,
+      "v1_top2": [
+        "Alec Burleson",
+        "Nolan Gorman"
+      ],
+      "v1_top2_own": 8.569068367,
+      "chalk_top2": [
+        "Ivan Herrera",
+        "JJ Wetherholt"
+      ],
+      "chalk_top2_own": 17.914041855,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-19-26",
+      "team": "NYM",
+      "n_pro": 81,
+      "n_v1": 12,
+      "pro_top2": [
+        "Luis Robert Jr.",
+        "Francisco Lindor"
+      ],
+      "pro_top2_own": 11.815736605,
+      "v1_top2": [
+        "Bo Bichette",
+        "Luis Robert Jr."
+      ],
+      "v1_top2_own": 8.3897662335,
+      "chalk_top2": [
+        "Francisco Lindor",
+        "Luis Robert Jr."
+      ],
+      "chalk_top2_own": 11.815736605,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-19-26",
+      "team": "CIN",
+      "n_pro": 64,
+      "n_v1": 28,
+      "pro_top2": [
+        "Elly De La Cruz",
+        "Matt McLain"
+      ],
+      "pro_top2_own": 11.3783975685,
+      "v1_top2": [
+        "Elly De La Cruz",
+        "Sal Stewart"
+      ],
+      "v1_top2_own": 10.4219484515,
+      "chalk_top2": [
+        "Elly De La Cruz",
+        "Matt McLain"
+      ],
+      "chalk_top2_own": 11.3783975685,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-19-26",
+      "team": "MIL",
+      "n_pro": 95,
+      "n_v1": 7,
+      "pro_top2": [
+        "Brice Turang",
+        "Gary Sanchez"
+      ],
+      "pro_top2_own": 17.722665825,
+      "v1_top2": [
+        "Gary Sanchez",
+        "Brice Turang"
+      ],
+      "v1_top2_own": 17.722665825,
+      "chalk_top2": [
+        "Brice Turang",
+        "Gary Sanchez"
+      ],
+      "chalk_top2_own": 17.722665825,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-19-26",
+      "team": "TB",
+      "n_pro": 49,
+      "n_v1": 19,
+      "pro_top2": [
+        "Chandler Simpson",
+        "Cedric Mullins"
+      ],
+      "pro_top2_own": 21.848087884999998,
+      "v1_top2": [
+        "Richie Palacios",
+        "Chandler Simpson"
+      ],
+      "v1_top2_own": 15.521992172,
+      "chalk_top2": [
+        "Chandler Simpson",
+        "Cedric Mullins"
+      ],
+      "chalk_top2_own": 21.848087884999998,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-19-26",
+      "team": "SF",
+      "n_pro": 86,
+      "n_v1": 18,
+      "pro_top2": [
+        "Willy Adames",
+        "Matt Chapman"
+      ],
+      "pro_top2_own": 17.317467360000002,
+      "v1_top2": [
+        "Luis Arraez",
+        "Willy Adames"
+      ],
+      "v1_top2_own": 15.92587966,
+      "chalk_top2": [
+        "Willy Adames",
+        "Matt Chapman"
+      ],
+      "chalk_top2_own": 17.317467360000002,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-19-26",
+      "team": "KC",
+      "n_pro": 48,
+      "n_v1": 14,
+      "pro_top2": [
+        "Bobby Witt Jr.",
+        "Salvador Perez"
+      ],
+      "pro_top2_own": 13.743084945,
+      "v1_top2": [
+        "Bobby Witt Jr.",
+        "Maikel Garcia"
+      ],
+      "v1_top2_own": 12.412936472,
+      "chalk_top2": [
+        "Bobby Witt Jr.",
+        "Salvador Perez"
+      ],
+      "chalk_top2_own": 13.743084945,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-20-26",
+      "team": "LAD",
+      "n_pro": 98,
+      "n_v1": 47,
+      "pro_top2": [
+        "Shohei Ohtani",
+        "Alex Call"
+      ],
+      "pro_top2_own": 51.4945155,
+      "v1_top2": [
+        "Shohei Ohtani",
+        "Miguel Rojas"
+      ],
+      "v1_top2_own": 48.166905535,
+      "chalk_top2": [
+        "Shohei Ohtani",
+        "Will Smith"
+      ],
+      "chalk_top2_own": 49.007114415000004,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-20-26",
+      "team": "BAL",
+      "n_pro": 96,
+      "n_v1": 18,
+      "pro_top2": [
+        "Gunnar Henderson",
+        "Pete Alonso"
+      ],
+      "pro_top2_own": 9.0146613375,
+      "v1_top2": [
+        "Gunnar Henderson",
+        "Taylor Ward"
+      ],
+      "v1_top2_own": 8.598286839,
+      "chalk_top2": [
+        "Gunnar Henderson",
+        "Pete Alonso"
+      ],
+      "chalk_top2_own": 9.0146613375,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-20-26",
+      "team": "ATH",
+      "n_pro": 31,
+      "n_v1": 17,
+      "pro_top2": [
+        "Lawrence Butler",
+        "Shea Langeliers"
+      ],
+      "pro_top2_own": 0.5606858455,
+      "v1_top2": [
+        "Tyler Soderstrom",
+        "Shea Langeliers"
+      ],
+      "v1_top2_own": 0.6978058295,
+      "chalk_top2": [
+        "Nick Kurtz",
+        "Shea Langeliers"
+      ],
+      "chalk_top2_own": 1.3715715715,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-20-26",
+      "team": "COL",
+      "n_pro": 85,
+      "n_v1": 39,
+      "pro_top2": [
+        "Brenton Doyle",
+        "Hunter Goodman"
+      ],
+      "pro_top2_own": 8.846466431,
+      "v1_top2": [
+        "Ezequiel Tovar",
+        "Willi Castro"
+      ],
+      "v1_top2_own": 6.915971711499999,
+      "chalk_top2": [
+        "Jordan Beck",
+        "Hunter Goodman"
+      ],
+      "chalk_top2_own": 11.912544667,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-21-26",
+      "team": "KC",
+      "n_pro": 130,
+      "n_v1": 17,
+      "pro_top2": [
+        "Bobby Witt Jr.",
+        "Maikel Garcia"
+      ],
+      "pro_top2_own": 26.120817605,
+      "v1_top2": [
+        "Bobby Witt Jr.",
+        "Maikel Garcia"
+      ],
+      "v1_top2_own": 26.120817605,
+      "chalk_top2": [
+        "Bobby Witt Jr.",
+        "Vinnie Pasquantino"
+      ],
+      "chalk_top2_own": 26.293799195,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-21-26",
+      "team": "BAL",
+      "n_pro": 94,
+      "n_v1": 44,
+      "pro_top2": [
+        "Pete Alonso",
+        "Gunnar Henderson"
+      ],
+      "pro_top2_own": 20.773293369999998,
+      "v1_top2": [
+        "Gunnar Henderson",
+        "Pete Alonso"
+      ],
+      "v1_top2_own": 20.773293369999998,
+      "chalk_top2": [
+        "Gunnar Henderson",
+        "Taylor Ward"
+      ],
+      "chalk_top2_own": 21.54434579,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-21-26",
+      "team": "LAA",
+      "n_pro": 34,
+      "n_v1": 13,
+      "pro_top2": [
+        "Jo Adell",
+        "Zach Neto"
+      ],
+      "pro_top2_own": 22.67691692,
+      "v1_top2": [
+        "Jo Adell",
+        "Zach Neto"
+      ],
+      "v1_top2_own": 22.67691692,
+      "chalk_top2": [
+        "Jo Adell",
+        "Zach Neto"
+      ],
+      "chalk_top2_own": 22.67691692,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-21-26",
+      "team": "SEA",
+      "n_pro": 74,
+      "n_v1": 13,
+      "pro_top2": [
+        "Julio Rodriguez",
+        "Cal Raleigh"
+      ],
+      "pro_top2_own": 19.21391681,
+      "v1_top2": [
+        "Julio Rodriguez",
+        "J.P. Crawford"
+      ],
+      "v1_top2_own": 11.082395521,
+      "chalk_top2": [
+        "Cal Raleigh",
+        "Randy Arozarena"
+      ],
+      "chalk_top2_own": 20.403948964999998,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-21-26",
+      "team": "TB",
+      "n_pro": 37,
+      "n_v1": 6,
+      "pro_top2": [
+        "Junior Caminero",
+        "Ryan Vilade"
+      ],
+      "pro_top2_own": 13.485496117,
+      "v1_top2": [
+        "Yandy Diaz",
+        "Jonny DeLuca"
+      ],
+      "v1_top2_own": 16.060218305,
+      "chalk_top2": [
+        "Yandy Diaz",
+        "Junior Caminero"
+      ],
+      "chalk_top2_own": 19.638271165,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-21-26",
+      "team": "ATH",
+      "n_pro": 20,
+      "n_v1": 20,
+      "pro_top2": [
+        "Nick Kurtz",
+        "Lawrence Butler"
+      ],
+      "pro_top2_own": 1.2796476829999999,
+      "v1_top2": [
+        "Nick Kurtz",
+        "Shea Langeliers"
+      ],
+      "v1_top2_own": 2.2535714870000003,
+      "chalk_top2": [
+        "Shea Langeliers",
+        "Nick Kurtz"
+      ],
+      "chalk_top2_own": 2.2535714870000003,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-21-26",
+      "team": "TOR",
+      "n_pro": 46,
+      "n_v1": 14,
+      "pro_top2": [
+        "Jesus Sanchez",
+        "Vladimir Guerrero Jr."
+      ],
+      "pro_top2_own": 3.467137786,
+      "v1_top2": [
+        "Jesus Sanchez",
+        "Vladimir Guerrero Jr."
+      ],
+      "v1_top2_own": 3.467137786,
+      "chalk_top2": [
+        "Ernie Clement",
+        "Jesus Sanchez"
+      ],
+      "chalk_top2_own": 4.093560527999999,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-21-26",
+      "team": "CIN",
+      "n_pro": 64,
+      "n_v1": 19,
+      "pro_top2": [
+        "Elly De La Cruz",
+        "TJ Friedl"
+      ],
+      "pro_top2_own": 16.233060855,
+      "v1_top2": [
+        "Elly De La Cruz",
+        "Sal Stewart"
+      ],
+      "v1_top2_own": 19.706029960000002,
+      "chalk_top2": [
+        "Sal Stewart",
+        "Elly De La Cruz"
+      ],
+      "chalk_top2_own": 19.706029960000002,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-22-26",
+      "team": "SD",
+      "n_pro": 262,
+      "n_v1": 84,
+      "pro_top2": [
+        "Jackson Merrill",
+        "Xander Bogaerts"
+      ],
+      "pro_top2_own": 32.090261595,
+      "v1_top2": [
+        "Manny Machado",
+        "Xander Bogaerts"
+      ],
+      "v1_top2_own": 37.499669159999996,
+      "chalk_top2": [
+        "Fernando Tatis Jr.",
+        "Ramon Laureano"
+      ],
+      "chalk_top2_own": 42.90032015,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-22-26",
+      "team": "COL",
+      "n_pro": 141,
+      "n_v1": 32,
+      "pro_top2": [
+        "Hunter Goodman",
+        "Mickey Moniak"
+      ],
+      "pro_top2_own": 24.636506145,
+      "v1_top2": [
+        "Hunter Goodman",
+        "Tyler Freeman"
+      ],
+      "v1_top2_own": 16.90044968,
+      "chalk_top2": [
+        "Mickey Moniak",
+        "Hunter Goodman"
+      ],
+      "chalk_top2_own": 24.636506145,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-22-26",
+      "team": "MIL",
+      "n_pro": 28,
+      "n_v1": 5,
+      "pro_top2": [
+        "Jake Bauers",
+        "David Hamilton"
+      ],
+      "pro_top2_own": 1.2101144485000002,
+      "v1_top2": [
+        "Brice Turang",
+        "Gary Sanchez"
+      ],
+      "v1_top2_own": 1.6539447085,
+      "chalk_top2": [
+        "William Contreras",
+        "Gary Sanchez"
+      ],
+      "chalk_top2_own": 2.583282402,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-23-26",
+      "team": "CHC",
+      "n_pro": 33,
+      "n_v1": 15,
+      "pro_top2": [
+        "Seiya Suzuki",
+        "Alex Bregman"
+      ],
+      "pro_top2_own": 7.631768115,
+      "v1_top2": [
+        "Nico Hoerner",
+        "Ian Happ"
+      ],
+      "v1_top2_own": 4.827589184500001,
+      "chalk_top2": [
+        "Seiya Suzuki",
+        "Alex Bregman"
+      ],
+      "chalk_top2_own": 7.631768115,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-23-26",
+      "team": "ATL",
+      "n_pro": 64,
+      "n_v1": 12,
+      "pro_top2": [
+        "Ronald Acuna Jr.",
+        "Michael Harris II"
+      ],
+      "pro_top2_own": 18.81504654,
+      "v1_top2": [
+        "Austin Riley",
+        "Ronald Acuna Jr."
+      ],
+      "v1_top2_own": 19.95235104,
+      "chalk_top2": [
+        "Ronald Acuna Jr.",
+        "Drake Baldwin"
+      ],
+      "chalk_top2_own": 24.80617634,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-23-26",
+      "team": "SD",
+      "n_pro": 28,
+      "n_v1": 33,
+      "pro_top2": [
+        "Ramon Laureano",
+        "Freddy Fermin"
+      ],
+      "pro_top2_own": 28.509206829999997,
+      "v1_top2": [
+        "Ty France",
+        "Fernando Tatis Jr."
+      ],
+      "v1_top2_own": 26.5376434,
+      "chalk_top2": [
+        "Fernando Tatis Jr.",
+        "Ramon Laureano"
+      ],
+      "chalk_top2_own": 34.850602245,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-23-26",
+      "team": "PHI",
+      "n_pro": 68,
+      "n_v1": 33,
+      "pro_top2": [
+        "Trea Turner",
+        "Bryce Harper"
+      ],
+      "pro_top2_own": 21.760507695,
+      "v1_top2": [
+        "Trea Turner",
+        "Kyle Schwarber"
+      ],
+      "v1_top2_own": 18.08451331,
+      "chalk_top2": [
+        "Bryce Harper",
+        "Trea Turner"
+      ],
+      "chalk_top2_own": 21.760507695,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-23-26",
+      "team": "COL",
+      "n_pro": 46,
+      "n_v1": 6,
+      "pro_top2": [
+        "Brett Sullivan",
+        "Mickey Moniak"
+      ],
+      "pro_top2_own": 17.478015420000002,
+      "v1_top2": [
+        "Kyle Karros",
+        "Brett Sullivan"
+      ],
+      "v1_top2_own": 9.2455864615,
+      "chalk_top2": [
+        "Mickey Moniak",
+        "Willi Castro"
+      ],
+      "chalk_top2_own": 18.29817661,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-23-26",
+      "team": "CWS",
+      "n_pro": 40,
+      "n_v1": 15,
+      "pro_top2": [
+        "Colson Montgomery",
+        "Munetaka Murakami"
+      ],
+      "pro_top2_own": 3.346034416,
+      "v1_top2": [
+        "Munetaka Murakami",
+        "Miguel Vargas"
+      ],
+      "v1_top2_own": 3.670720353,
+      "chalk_top2": [
+        "Andrew Benintendi",
+        "Munetaka Murakami"
+      ],
+      "chalk_top2_own": 4.2422756865,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-23-26",
+      "team": "WSH",
+      "n_pro": 32,
+      "n_v1": 5,
+      "pro_top2": [
+        "Luis Garcia Jr.",
+        "Jacob Young"
+      ],
+      "pro_top2_own": 11.954255419999999,
+      "v1_top2": [
+        "Nasim Nunez",
+        "Daylen Lile"
+      ],
+      "v1_top2_own": 4.2205929405,
+      "chalk_top2": [
+        "Luis Garcia Jr.",
+        "James Wood"
+      ],
+      "chalk_top2_own": 11.085496421999999,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-24-26",
+      "team": "NYY",
+      "n_pro": 83,
+      "n_v1": 10,
+      "pro_top2": [
+        "Jazz Chisholm Jr.",
+        "Aaron Judge"
+      ],
+      "pro_top2_own": 12.6007174285,
+      "v1_top2": [
+        "Jazz Chisholm Jr.",
+        "Aaron Judge"
+      ],
+      "v1_top2_own": 12.6007174285,
+      "chalk_top2": [
+        "Aaron Judge",
+        "Trent Grisham"
+      ],
+      "chalk_top2_own": 15.58929963,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-24-26",
+      "team": "CWS",
+      "n_pro": 31,
+      "n_v1": 6,
+      "pro_top2": [
+        "Munetaka Murakami",
+        "Miguel Vargas"
+      ],
+      "pro_top2_own": 10.05903421,
+      "v1_top2": [
+        "Chase Meidroth",
+        "Miguel Vargas"
+      ],
+      "v1_top2_own": 11.286896554999998,
+      "chalk_top2": [
+        "Miguel Vargas",
+        "Everson Pereira"
+      ],
+      "chalk_top2_own": 10.883294358499999,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-24-26",
+      "team": "MIA",
+      "n_pro": 20,
+      "n_v1": 14,
+      "pro_top2": [
+        "Jakob Marsee",
+        "Otto Lopez"
+      ],
+      "pro_top2_own": 4.80535491,
+      "v1_top2": [
+        "Otto Lopez",
+        "Jakob Marsee"
+      ],
+      "v1_top2_own": 4.80535491,
+      "chalk_top2": [
+        "Xavier Edwards",
+        "Otto Lopez"
+      ],
+      "chalk_top2_own": 5.8290801525,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-24-26",
+      "team": "PHI",
+      "n_pro": 27,
+      "n_v1": 27,
+      "pro_top2": [
+        "Bryson Stott",
+        "Adolis Garcia"
+      ],
+      "pro_top2_own": 2.774799184,
+      "v1_top2": [
+        "Trea Turner",
+        "Bryce Harper"
+      ],
+      "v1_top2_own": 5.335195688500001,
+      "chalk_top2": [
+        "Bryce Harper",
+        "Trea Turner"
+      ],
+      "chalk_top2_own": 5.335195688500001,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-24-26",
+      "team": "WSH",
+      "n_pro": 37,
+      "n_v1": 34,
+      "pro_top2": [
+        "James Wood",
+        "Luis Garcia Jr."
+      ],
+      "pro_top2_own": 11.0019204015,
+      "v1_top2": [
+        "CJ Abrams",
+        "Nasim Nunez"
+      ],
+      "v1_top2_own": 12.63885234,
+      "chalk_top2": [
+        "James Wood",
+        "CJ Abrams"
+      ],
+      "chalk_top2_own": 15.84998681,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-24-26",
+      "team": "CLE",
+      "n_pro": 23,
+      "n_v1": 5,
+      "pro_top2": [
+        "Daniel Schneemann",
+        "Chase DeLauter"
+      ],
+      "pro_top2_own": 8.723279355999999,
+      "v1_top2": [
+        "Chase DeLauter",
+        "Jose Ramirez"
+      ],
+      "v1_top2_own": 9.7786065375,
+      "chalk_top2": [
+        "Jose Ramirez",
+        "Daniel Schneemann"
+      ],
+      "chalk_top2_own": 10.2074892085,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26",
+      "team": "CIN",
+      "n_pro": 92,
+      "n_v1": 11,
+      "pro_top2": [
+        "Elly De La Cruz",
+        "Matt McLain"
+      ],
+      "pro_top2_own": 14.44646853,
+      "v1_top2": [
+        "Matt McLain",
+        "Elly De La Cruz"
+      ],
+      "v1_top2_own": 14.44646853,
+      "chalk_top2": [
+        "Elly De La Cruz",
+        "Matt McLain"
+      ],
+      "chalk_top2_own": 14.44646853,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-25-26",
+      "team": "KC",
+      "n_pro": 67,
+      "n_v1": 11,
+      "pro_top2": [
+        "Bobby Witt Jr.",
+        "Vinnie Pasquantino"
+      ],
+      "pro_top2_own": 13.6649987105,
+      "v1_top2": [
+        "Bobby Witt Jr.",
+        "Isaac Collins"
+      ],
+      "v1_top2_own": 12.716107193500001,
+      "chalk_top2": [
+        "Bobby Witt Jr.",
+        "Carter Jensen"
+      ],
+      "chalk_top2_own": 16.062138205,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26",
+      "team": "NYY",
+      "n_pro": 109,
+      "n_v1": 23,
+      "pro_top2": [
+        "Trent Grisham",
+        "Jazz Chisholm Jr."
+      ],
+      "pro_top2_own": 27.733487205000003,
+      "v1_top2": [
+        "Jose Caballero",
+        "Trent Grisham"
+      ],
+      "v1_top2_own": 21.079407705,
+      "chalk_top2": [
+        "Aaron Judge",
+        "Trent Grisham"
+      ],
+      "chalk_top2_own": 29.769344375000003,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26",
+      "team": "PHI",
+      "n_pro": 62,
+      "n_v1": 31,
+      "pro_top2": [
+        "Trea Turner",
+        "Adolis Garcia"
+      ],
+      "pro_top2_own": 6.6731595944999995,
+      "v1_top2": [
+        "Kyle Schwarber",
+        "Trea Turner"
+      ],
+      "v1_top2_own": 8.2603043605,
+      "chalk_top2": [
+        "Kyle Schwarber",
+        "Trea Turner"
+      ],
+      "chalk_top2_own": 8.2603043605,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-25-26",
+      "team": "DET",
+      "n_pro": 133,
+      "n_v1": 8,
+      "pro_top2": [
+        "Kevin McGonigle",
+        "Riley Greene"
+      ],
+      "pro_top2_own": 20.76378521,
+      "v1_top2": [
+        "Kevin McGonigle",
+        "Spencer Torkelson"
+      ],
+      "v1_top2_own": 14.887783577499999,
+      "chalk_top2": [
+        "Kevin McGonigle",
+        "Riley Greene"
+      ],
+      "chalk_top2_own": 20.76378521,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26",
+      "team": "CHC",
+      "n_pro": 62,
+      "n_v1": 12,
+      "pro_top2": [
+        "Seiya Suzuki",
+        "Alex Bregman"
+      ],
+      "pro_top2_own": 11.522774085,
+      "v1_top2": [
+        "Dansby Swanson",
+        "Ian Happ"
+      ],
+      "v1_top2_own": 7.2741826414999995,
+      "chalk_top2": [
+        "Alex Bregman",
+        "Nico Hoerner"
+      ],
+      "chalk_top2_own": 12.042628145,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-25-26",
+      "team": "LAA",
+      "n_pro": 40,
+      "n_v1": 10,
+      "pro_top2": [
+        "Zach Neto",
+        "Jo Adell"
+      ],
+      "pro_top2_own": 6.6539530045,
+      "v1_top2": [
+        "Jo Adell",
+        "Vaughn Grissom"
+      ],
+      "v1_top2_own": 5.0251857975,
+      "chalk_top2": [
+        "Zach Neto",
+        "Jo Adell"
+      ],
+      "chalk_top2_own": 6.6539530045,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26-early",
+      "team": "TOR",
+      "n_pro": 52,
+      "n_v1": 8,
+      "pro_top2": [
+        "Ernie Clement",
+        "Vladimir Guerrero Jr."
+      ],
+      "pro_top2_own": 14.706733705,
+      "v1_top2": [
+        "Ernie Clement",
+        "Vladimir Guerrero Jr."
+      ],
+      "v1_top2_own": 14.706733705,
+      "chalk_top2": [
+        "Vladimir Guerrero Jr.",
+        "Ernie Clement"
+      ],
+      "chalk_top2_own": 14.706733705,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-25-26-early",
+      "team": "SF",
+      "n_pro": 33,
+      "n_v1": 13,
+      "pro_top2": [
+        "Willy Adames",
+        "Luis Arraez"
+      ],
+      "pro_top2_own": 8.828870787,
+      "v1_top2": [
+        "Willy Adames",
+        "Heliot Ramos"
+      ],
+      "v1_top2_own": 5.680086381,
+      "chalk_top2": [
+        "Willy Adames",
+        "Luis Arraez"
+      ],
+      "chalk_top2_own": 8.828870787,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26-early",
+      "team": "SEA",
+      "n_pro": 67,
+      "n_v1": 7,
+      "pro_top2": [
+        "Julio Rodriguez",
+        "Randy Arozarena"
+      ],
+      "pro_top2_own": 27.77158528,
+      "v1_top2": [
+        "Julio Rodriguez",
+        "Randy Arozarena"
+      ],
+      "v1_top2_own": 27.77158528,
+      "chalk_top2": [
+        "Cal Raleigh",
+        "Julio Rodriguez"
+      ],
+      "chalk_top2_own": 33.13922439,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26-early",
+      "team": "CWS",
+      "n_pro": 54,
+      "n_v1": 22,
+      "pro_top2": [
+        "Munetaka Murakami",
+        "Colson Montgomery"
+      ],
+      "pro_top2_own": 29.6635663,
+      "v1_top2": [
+        "Colson Montgomery",
+        "Andrew Benintendi"
+      ],
+      "v1_top2_own": 27.27767989,
+      "chalk_top2": [
+        "Munetaka Murakami",
+        "Colson Montgomery"
+      ],
+      "chalk_top2_own": 29.6635663,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26-early",
+      "team": "WSH",
+      "n_pro": 40,
+      "n_v1": 10,
+      "pro_top2": [
+        "James Wood",
+        "Nasim Nunez"
+      ],
+      "pro_top2_own": 14.3761384925,
+      "v1_top2": [
+        "Nasim Nunez",
+        "James Wood"
+      ],
+      "v1_top2_own": 14.3761384925,
+      "chalk_top2": [
+        "James Wood",
+        "Curtis Mead"
+      ],
+      "chalk_top2_own": 14.9001038305,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26-early",
+      "team": "MIA",
+      "n_pro": 119,
+      "n_v1": 8,
+      "pro_top2": [
+        "Agustin Ramirez",
+        "Otto Lopez"
+      ],
+      "pro_top2_own": 18.413265765,
+      "v1_top2": [
+        "Agustin Ramirez",
+        "Otto Lopez"
+      ],
+      "v1_top2_own": 18.413265765,
+      "chalk_top2": [
+        "Otto Lopez",
+        "Agustin Ramirez"
+      ],
+      "chalk_top2_own": 18.413265765,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-25-26-early",
+      "team": "MIN",
+      "n_pro": 73,
+      "n_v1": 26,
+      "pro_top2": [
+        "Byron Buxton",
+        "Luke Keaschall"
+      ],
+      "pro_top2_own": 23.60625322,
+      "v1_top2": [
+        "Byron Buxton",
+        "Luke Keaschall"
+      ],
+      "v1_top2_own": 23.60625322,
+      "chalk_top2": [
+        "Byron Buxton",
+        "Ryan Jeffers"
+      ],
+      "chalk_top2_own": 23.767392115,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-25-26-early",
+      "team": "CLE",
+      "n_pro": 39,
+      "n_v1": 40,
+      "pro_top2": [
+        "Jose Ramirez",
+        "Chase DeLauter"
+      ],
+      "pro_top2_own": 6.8198631894999995,
+      "v1_top2": [
+        "Jose Ramirez",
+        "Steven Kwan"
+      ],
+      "v1_top2_own": 4.093201819,
+      "chalk_top2": [
+        "Jose Ramirez",
+        "Chase DeLauter"
+      ],
+      "chalk_top2_own": 6.8198631894999995,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-26-26",
+      "team": "DET",
+      "n_pro": 105,
+      "n_v1": 11,
+      "pro_top2": [
+        "Kevin McGonigle",
+        "Riley Greene"
+      ],
+      "pro_top2_own": 15.832870525,
+      "v1_top2": [
+        "Riley Greene",
+        "Gleyber Torres"
+      ],
+      "v1_top2_own": 8.0218455405,
+      "chalk_top2": [
+        "Kevin McGonigle",
+        "Riley Greene"
+      ],
+      "chalk_top2_own": 15.832870525,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-26-26",
+      "team": "HOU",
+      "n_pro": 33,
+      "n_v1": 9,
+      "pro_top2": [
+        "Yordan Alvarez",
+        "Carlos Correa"
+      ],
+      "pro_top2_own": 10.8453408085,
+      "v1_top2": [
+        "Yordan Alvarez",
+        "Dustin Harris"
+      ],
+      "v1_top2_own": 8.8207044215,
+      "chalk_top2": [
+        "Yordan Alvarez",
+        "Carlos Correa"
+      ],
+      "chalk_top2_own": 10.8453408085,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-26-26",
+      "team": "NYY",
+      "n_pro": 198,
+      "n_v1": 25,
+      "pro_top2": [
+        "Trent Grisham",
+        "Jose Caballero"
+      ],
+      "pro_top2_own": 12.747845168000001,
+      "v1_top2": [
+        "Trent Grisham",
+        "Jazz Chisholm Jr."
+      ],
+      "v1_top2_own": 20.335238125,
+      "chalk_top2": [
+        "Aaron Judge",
+        "Jazz Chisholm Jr."
+      ],
+      "chalk_top2_own": 29.34965305,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-26-26",
+      "team": "TB",
+      "n_pro": 38,
+      "n_v1": 5,
+      "pro_top2": [
+        "Chandler Simpson",
+        "Junior Caminero"
+      ],
+      "pro_top2_own": 18.721949485,
+      "v1_top2": [
+        "Cedric Mullins",
+        "Chandler Simpson"
+      ],
+      "v1_top2_own": 10.7181159755,
+      "chalk_top2": [
+        "Junior Caminero",
+        "Chandler Simpson"
+      ],
+      "chalk_top2_own": 18.721949485,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-26-26",
+      "team": "CIN",
+      "n_pro": 36,
+      "n_v1": 6,
+      "pro_top2": [
+        "Elly De La Cruz",
+        "Matt McLain"
+      ],
+      "pro_top2_own": 12.268605609000002,
+      "v1_top2": [
+        "Elly De La Cruz",
+        "JJ Bleday"
+      ],
+      "v1_top2_own": 10.058707912000001,
+      "chalk_top2": [
+        "Elly De La Cruz",
+        "Sal Stewart"
+      ],
+      "chalk_top2_own": 12.313512786,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-26-26",
+      "team": "MIN",
+      "n_pro": 22,
+      "n_v1": 13,
+      "pro_top2": [
+        "Luke Keaschall",
+        "Brooks Lee"
+      ],
+      "pro_top2_own": 4.5822581265,
+      "v1_top2": [
+        "Luke Keaschall",
+        "Byron Buxton"
+      ],
+      "v1_top2_own": 2.1343119865,
+      "chalk_top2": [
+        "Luke Keaschall",
+        "Ryan Jeffers"
+      ],
+      "chalk_top2_own": 4.073071982,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-26-26",
+      "team": "ATH",
+      "n_pro": 36,
+      "n_v1": 13,
+      "pro_top2": [
+        "Nick Kurtz",
+        "Shea Langeliers"
+      ],
+      "pro_top2_own": 9.5656843115,
+      "v1_top2": [
+        "Nick Kurtz",
+        "Jeff McNeil"
+      ],
+      "v1_top2_own": 6.296096937,
+      "chalk_top2": [
+        "Nick Kurtz",
+        "Shea Langeliers"
+      ],
+      "chalk_top2_own": 9.5656843115,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-26-26",
+      "team": "WSH",
+      "n_pro": 22,
+      "n_v1": 10,
+      "pro_top2": [
+        "Nasim Nunez",
+        "Daylen Lile"
+      ],
+      "pro_top2_own": 2.740225903,
+      "v1_top2": [
+        "CJ Abrams",
+        "James Wood"
+      ],
+      "v1_top2_own": 5.832615895,
+      "chalk_top2": [
+        "James Wood",
+        "CJ Abrams"
+      ],
+      "chalk_top2_own": 5.832615895,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-26-26",
+      "team": "PHI",
+      "n_pro": 33,
+      "n_v1": 21,
+      "pro_top2": [
+        "Felix Reyes",
+        "Trea Turner"
+      ],
+      "pro_top2_own": 1.6159548670000001,
+      "v1_top2": [
+        "Trea Turner",
+        "Bryce Harper"
+      ],
+      "v1_top2_own": 1.053787931,
+      "chalk_top2": [
+        "Trea Turner",
+        "Felix Reyes"
+      ],
+      "chalk_top2_own": 1.6159548670000001,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-27-26",
+      "team": "MIN",
+      "n_pro": 49,
+      "n_v1": 22,
+      "pro_top2": [
+        "Brooks Lee",
+        "Byron Buxton"
+      ],
+      "pro_top2_own": 6.3828313325,
+      "v1_top2": [
+        "Luke Keaschall",
+        "Byron Buxton"
+      ],
+      "v1_top2_own": 3.2392268525,
+      "chalk_top2": [
+        "Brooks Lee",
+        "Byron Buxton"
+      ],
+      "chalk_top2_own": 6.3828313325,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-27-26",
+      "team": "LAA",
+      "n_pro": 99,
+      "n_v1": 26,
+      "pro_top2": [
+        "Zach Neto",
+        "Jo Adell"
+      ],
+      "pro_top2_own": 21.51007799,
+      "v1_top2": [
+        "Jo Adell",
+        "Zach Neto"
+      ],
+      "v1_top2_own": 21.51007799,
+      "chalk_top2": [
+        "Zach Neto",
+        "Jo Adell"
+      ],
+      "chalk_top2_own": 21.51007799,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-27-26",
+      "team": "CWS",
+      "n_pro": 71,
+      "n_v1": 11,
+      "pro_top2": [
+        "Miguel Vargas",
+        "Andrew Benintendi"
+      ],
+      "pro_top2_own": 17.798646984999998,
+      "v1_top2": [
+        "Munetaka Murakami",
+        "Miguel Vargas"
+      ],
+      "v1_top2_own": 13.81461585,
+      "chalk_top2": [
+        "Miguel Vargas",
+        "Andrew Benintendi"
+      ],
+      "chalk_top2_own": 17.798646984999998,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-27-26",
+      "team": "NYY",
+      "n_pro": 130,
+      "n_v1": 25,
+      "pro_top2": [
+        "Jazz Chisholm Jr.",
+        "Trent Grisham"
+      ],
+      "pro_top2_own": 19.848620305,
+      "v1_top2": [
+        "Jazz Chisholm Jr.",
+        "Trent Grisham"
+      ],
+      "v1_top2_own": 19.848620305,
+      "chalk_top2": [
+        "Trent Grisham",
+        "Jazz Chisholm Jr."
+      ],
+      "chalk_top2_own": 19.848620305,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-27-26",
+      "team": "PIT",
+      "n_pro": 44,
+      "n_v1": 6,
+      "pro_top2": [
+        "Nick Gonzales",
+        "Bryan Reynolds"
+      ],
+      "pro_top2_own": 4.9840706575,
+      "v1_top2": [
+        "Oneil Cruz",
+        "Konnor Griffin"
+      ],
+      "v1_top2_own": 1.9959631365,
+      "chalk_top2": [
+        "Brandon Lowe",
+        "Bryan Reynolds"
+      ],
+      "chalk_top2_own": 6.46263154,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-27-26",
+      "team": "CHC",
+      "n_pro": 20,
+      "n_v1": 9,
+      "pro_top2": [
+        "Michael Busch",
+        "Seiya Suzuki"
+      ],
+      "pro_top2_own": 3.2062421025,
+      "v1_top2": [
+        "Seiya Suzuki",
+        "Nico Hoerner"
+      ],
+      "v1_top2_own": 3.0367964805,
+      "chalk_top2": [
+        "Alex Bregman",
+        "Michael Busch"
+      ],
+      "chalk_top2_own": 4.584805218,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-27-26",
+      "team": "BOS",
+      "n_pro": 40,
+      "n_v1": 7,
+      "pro_top2": [
+        "Wilyer Abreu",
+        "Trevor Story"
+      ],
+      "pro_top2_own": 1.229658827,
+      "v1_top2": [
+        "Willson Contreras",
+        "Roman Anthony"
+      ],
+      "v1_top2_own": 0.4563089405,
+      "chalk_top2": [
+        "Wilyer Abreu",
+        "Jarren Duran"
+      ],
+      "chalk_top2_own": 1.3420604455,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-27-26",
+      "team": "SEA",
+      "n_pro": 155,
+      "n_v1": 14,
+      "pro_top2": [
+        "Julio Rodriguez",
+        "Josh Naylor"
+      ],
+      "pro_top2_own": 17.426761325,
+      "v1_top2": [
+        "Julio Rodriguez",
+        "Cole Young"
+      ],
+      "v1_top2_own": 13.112961732,
+      "chalk_top2": [
+        "Cal Raleigh",
+        "Julio Rodriguez"
+      ],
+      "chalk_top2_own": 18.368036145,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-27-26",
+      "team": "MIA",
+      "n_pro": 30,
+      "n_v1": 19,
+      "pro_top2": [
+        "Otto Lopez",
+        "Jakob Marsee"
+      ],
+      "pro_top2_own": 0.9476183954999999,
+      "v1_top2": [
+        "Otto Lopez",
+        "Xavier Edwards"
+      ],
+      "v1_top2_own": 1.0393638195000001,
+      "chalk_top2": [
+        "Otto Lopez",
+        "Xavier Edwards"
+      ],
+      "chalk_top2_own": 1.0393638195000001,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-27-26",
+      "team": "STL",
+      "n_pro": 34,
+      "n_v1": 6,
+      "pro_top2": [
+        "Nolan Gorman",
+        "Nathan Church"
+      ],
+      "pro_top2_own": 8.46970933,
+      "v1_top2": [
+        "Nathan Church",
+        "Nolan Gorman"
+      ],
+      "v1_top2_own": 8.46970933,
+      "chalk_top2": [
+        "Ivan Herrera",
+        "JJ Wetherholt"
+      ],
+      "chalk_top2_own": 13.130513425,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 0,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-28-26",
+      "team": "MIL",
+      "n_pro": 83,
+      "n_v1": 7,
+      "pro_top2": [
+        "Garrett Mitchell",
+        "William Contreras"
+      ],
+      "pro_top2_own": 8.259894128,
+      "v1_top2": [
+        "David Hamilton",
+        "William Contreras"
+      ],
+      "v1_top2_own": 7.554009869,
+      "chalk_top2": [
+        "Brice Turang",
+        "William Contreras"
+      ],
+      "chalk_top2_own": 11.972622888,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-28-26",
+      "team": "SEA",
+      "n_pro": 47,
+      "n_v1": 23,
+      "pro_top2": [
+        "Josh Naylor",
+        "Julio Rodriguez"
+      ],
+      "pro_top2_own": 4.4459701245000005,
+      "v1_top2": [
+        "Julio Rodriguez",
+        "Cal Raleigh"
+      ],
+      "v1_top2_own": 5.541196528,
+      "chalk_top2": [
+        "Cal Raleigh",
+        "Julio Rodriguez"
+      ],
+      "chalk_top2_own": 5.541196528,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 2
+    },
+    {
+      "slate": "4-28-26",
+      "team": "KC",
+      "n_pro": 94,
+      "n_v1": 30,
+      "pro_top2": [
+        "Bobby Witt Jr.",
+        "Lane Thomas"
+      ],
+      "pro_top2_own": 25.239798120000003,
+      "v1_top2": [
+        "Bobby Witt Jr.",
+        "Salvador Perez"
+      ],
+      "v1_top2_own": 27.005790845,
+      "chalk_top2": [
+        "Bobby Witt Jr.",
+        "Maikel Garcia"
+      ],
+      "chalk_top2_own": 28.64603818,
+      "pro_v1_overlap": 1,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-28-26",
+      "team": "CHC",
+      "n_pro": 81,
+      "n_v1": 19,
+      "pro_top2": [
+        "Nico Hoerner",
+        "Seiya Suzuki"
+      ],
+      "pro_top2_own": 12.87088438,
+      "v1_top2": [
+        "Alex Bregman",
+        "Michael Busch"
+      ],
+      "v1_top2_own": 4.9004344175,
+      "chalk_top2": [
+        "Nico Hoerner",
+        "Seiya Suzuki"
+      ],
+      "chalk_top2_own": 12.87088438,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-28-26",
+      "team": "SD",
+      "n_pro": 42,
+      "n_v1": 7,
+      "pro_top2": [
+        "Fernando Tatis Jr.",
+        "Jackson Merrill"
+      ],
+      "pro_top2_own": 10.6745974275,
+      "v1_top2": [
+        "Xander Bogaerts",
+        "Bryce Johnson"
+      ],
+      "v1_top2_own": 3.0349272645000003,
+      "chalk_top2": [
+        "Fernando Tatis Jr.",
+        "Jackson Merrill"
+      ],
+      "chalk_top2_own": 10.6745974275,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 2,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-28-26",
+      "team": "DET",
+      "n_pro": 57,
+      "n_v1": 6,
+      "pro_top2": [
+        "Jahmai Jones",
+        "Kevin McGonigle"
+      ],
+      "pro_top2_own": 13.018900365,
+      "v1_top2": [
+        "Matt Vierling",
+        "Riley Greene"
+      ],
+      "v1_top2_own": 7.9291610304999995,
+      "chalk_top2": [
+        "Kevin McGonigle",
+        "Gleyber Torres"
+      ],
+      "chalk_top2_own": 14.469673319999998,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 0
+    },
+    {
+      "slate": "4-28-26",
+      "team": "NYY",
+      "n_pro": 49,
+      "n_v1": 13,
+      "pro_top2": [
+        "Jazz Chisholm Jr.",
+        "Trent Grisham"
+      ],
+      "pro_top2_own": 5.707993618,
+      "v1_top2": [
+        "Jazz Chisholm Jr.",
+        "Trent Grisham"
+      ],
+      "v1_top2_own": 5.707993618,
+      "chalk_top2": [
+        "Jazz Chisholm Jr.",
+        "Aaron Judge"
+      ],
+      "chalk_top2_own": 6.077156695499999,
+      "pro_v1_overlap": 2,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    },
+    {
+      "slate": "4-28-26",
+      "team": "LAA",
+      "n_pro": 56,
+      "n_v1": 5,
+      "pro_top2": [
+        "Yoan Moncada",
+        "Zach Neto"
+      ],
+      "pro_top2_own": 9.374659071,
+      "v1_top2": [
+        "Mike Trout",
+        "Jorge Soler"
+      ],
+      "v1_top2_own": 7.4655150905,
+      "chalk_top2": [
+        "Zach Neto",
+        "Mike Trout"
+      ],
+      "chalk_top2_own": 9.3786872735,
+      "pro_v1_overlap": 0,
+      "pro_chalk_overlap": 1,
+      "v1_chalk_overlap": 1
+    }
+  ],
+  "aggregate": {
+    "n_cases": 136,
+    "mean_pro_v1_overlap": 1.0294117647058822,
+    "mean_pro_chalk_overlap": 1.2352941176470589,
+    "mean_v1_chalk_overlap": 0.9705882352941176,
+    "pro_top2_avg_own": 12.747779122830883,
+    "v1_top2_avg_own": 11.47790935763603,
+    "chalk_top2_avg_own": 14.351785242257353,
+    "pro_chalk_full_match_pct": 33.82352941176471,
+    "v1_chalk_full_match_pct": 16.176470588235293,
+    "pro_v1_full_match_pct": 22.794117647058822
+  }
+}

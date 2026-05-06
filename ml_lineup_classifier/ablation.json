@@ -1,0 +1,30 @@
+{
+  "aggregate": {
+    "auc": 0.7240694270903549,
+    "feature_count": 7
+  },
+  "slate_relative": {
+    "auc": 0.7257204942480696,
+    "feature_count": 12
+  },
+  "stack": {
+    "auc": 0.7331041524302478,
+    "feature_count": 19
+  },
+  "ownership_dist": {
+    "auc": 0.7338120510448347,
+    "feature_count": 24
+  },
+  "archetype": {
+    "auc": 0.7305780623538906,
+    "feature_count": 29
+  },
+  "pairwise": {
+    "auc": 0.7344017762472846,
+    "feature_count": 30
+  },
+  "position": {
+    "auc": 0.7426922882942063,
+    "feature_count": 33
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "3": {
+    "1": {
+      "label": "high-salary_eff/low-gini",
+      "centroid_z": {
+        "variance_idx": 0.35990530712173285,
+        "scoring_env": -0.006826653452754086,
+        "anchor_conc": -0.6954934934363527,
+        "pool_size": -0.17652697541797052,
+        "gini": -1.0512128078479466,
+        "salary_eff": 1.0947014618605448
+      },
+      "n_slates": 8
+    },
+    "2": {
+      "label": "high-pool_size/high-scoring_env",
+      "centroid_z": {
+        "variance_idx": -0.06117597058163743,
+        "scoring_env": 1.2201217116797904,
+        "anchor_conc": -0.15341982946931743,
+        "pool_size": 1.4133307105569304,
+        "gini": 0.7858052792003558,
+        "salary_eff": -0.8782739147060543
+      },
+      "n_slates": 5
+    },
+    "3": {
+      "label": "high-anchor_conc/low-scoring_env",
+      "centroid_z": {
+        "variance_idx": -0.23394205491505862,
+        "scoring_env": -0.5496359391615376,
+        "anchor_conc": 0.5755497358943104,
+        "pool_size": -0.514039795403717,
+        "gini": 0.40733418788925707,
+        "salary_eff": -0.3969311019412801
+      },
+      "n_slates": 11
+    }
+  },
+  "4": {
+    "1": {
+      "label": "high-variance_idx/high-salary_eff",
+      "centroid_z": {
+        "variance_idx": 2.5348744773389535,
+        "scoring_env": -0.9787331569664812,
+        "anchor_conc": -0.7584357498214773,
+        "pool_size": -1.0870345328369764,
+        "gini": -0.2030852173947225,
+        "salary_eff": 1.4855600401921012
+      },
+      "n_slates": 2
+    },
+    "2": {
+      "label": "low-gini/high-salary_eff",
+      "centroid_z": {
+        "variance_idx": -0.36508441628400745,
+        "scoring_env": 0.3171421810518216,
+        "anchor_conc": -0.674512741307978,
+        "pool_size": 0.1269755437216981,
+        "gini": -1.3339220046656879,
+        "salary_eff": 0.9644152690833594
+      },
+      "n_slates": 6
+    },
+    "3": {
+      "label": "high-pool_size/high-scoring_env",
+      "centroid_z": {
+        "variance_idx": -0.06117597058163743,
+        "scoring_env": 1.2201217116797904,
+        "anchor_conc": -0.15341982946931743,
+        "pool_size": 1.4133307105569304,
+        "gini": 0.7858052792003558,
+        "salary_eff": -0.8782739147060543
+      },
+      "n_slates": 5
+    },
+    "4": {
+      "label": "high-anchor_conc/low-scoring_env",
+      "centroid_z": {
+        "variance_idx": -0.23394205491505862,
+        "scoring_env": -0.5496359391615376,
+        "anchor_conc": 0.5755497358943104,
+        "pool_size": -0.514039795403717,
+        "gini": 0.40733418788925707,
+        "salary_eff": -0.3969311019412801
+      },
+      "n_slates": 11
+    }
+  },
+  "5": {
+    "1": {
+      "label": "high-variance_idx/high-salary_eff",
+      "centroid_z": {
+        "variance_idx": 2.5348744773389535,
+        "scoring_env": -0.9787331569664812,
+        "anchor_conc": -0.7584357498214773,
+        "pool_size": -1.0870345328369764,
+        "gini": -0.2030852173947225,
+        "salary_eff": 1.4855600401921012
+      },
+      "n_slates": 2
+    },
+    "2": {
+      "label": "low-gini/high-salary_eff",
+      "centroid_z": {
+        "variance_idx": -0.36508441628400745,
+        "scoring_env": 0.3171421810518216,
+        "anchor_conc": -0.674512741307978,
+        "pool_size": 0.1269755437216981,
+        "gini": -1.3339220046656879,
+        "salary_eff": 0.9644152690833594
+      },
+      "n_slates": 6
+    },
+    "3": {
+      "label": "high-pool_size/high-scoring_env",
+      "centroid_z": {
+        "variance_idx": -0.06117597058163743,
+        "scoring_env": 1.2201217116797904,
+        "anchor_conc": -0.15341982946931743,
+        "pool_size": 1.4133307105569304,
+        "gini": 0.7858052792003558,
+        "salary_eff": -0.8782739147060543
+      },
+      "n_slates": 5
+    },
+    "4": {
+      "label": "high-anchor_conc/low-gini",
+      "centroid_z": {
+        "variance_idx": -0.0970707483208007,
+        "scoring_env": 0.15985620134133577,
+        "anchor_conc": 2.8311717485719976,
+        "pool_size": 0.013007250820271488,
+        "gini": -0.48380544017767935,
+        "salary_eff": -0.18472347935740752
+      },
+      "n_slates": 2
+    },
+    "5": {
+      "label": "low-scoring_env/low-pool_size",
+      "centroid_z": {
+        "variance_idx": -0.2643579008248937,
+        "scoring_env": -0.7073008592732872,
+        "anchor_conc": 0.07430039974371322,
+        "pool_size": -0.63116136123127,
+        "gini": 0.6053652163485763,
+        "salary_eff": -0.444088351404363
+      },
+      "n_slates": 9
+    }
+  }
+}

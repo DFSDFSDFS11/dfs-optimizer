@@ -1,0 +1,6 @@
+feature,mean_outperformed_top01,mean_underperformed_top01,U_p_top01,r_rb_top01,mean_outperformed_top1,mean_underperformed_top1,U_p_top1,r_rb_top1,spearman_rho_vs_ratio_top01,spearman_p_vs_ratio_top01,spearman_rho_vs_ratio_top1,spearman_p_vs_ratio_top1,bonferroni_feature_threshold,bonferroni_significant,bonferroni_significant_top1
+slate_variance_index,0.0655,0.0532,0.6812,0.1667,0.0593,0.0565,0.8073,-0.0857,-0.1121,0.6228,-0.2648,0.2313,0.01,False,False
+scoring_environment,90.6021,99.0188,0.132,-0.5667,94.4611,100.4817,0.0281,-0.6571,-0.1707,0.4501,-0.4067,0.0523,0.01,False,False
+anchor_ownership,46.9167,40.186,0.1571,0.5333,46.7514,39.379,0.0218,0.6857,0.1758,0.4362,0.2116,0.3454,0.01,False,False
+player_pool_size,105.6667,153.15,0.0496,-0.7333,134.7143,154.0,0.3536,-0.2857,-0.4335,0.036,-0.0753,0.7421,0.01,False,False
+projection_concentration_gini,0.4062,0.4797,0.0253,-0.8333,0.455,0.485,0.4068,-0.2571,-0.3822,0.0714,-0.1058,0.6428,0.01,False,False

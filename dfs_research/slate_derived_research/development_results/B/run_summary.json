@@ -1,0 +1,178 @@
+[
+  {
+    "slate": "4-8-26",
+    "n": 75,
+    "elapsed": 15,
+    "elasticity": 0.08403745047967316,
+    "scoringEnv": 8.480550000000001,
+    "lambdaTeamEff": 0.6462753385345489,
+    "pBb": 0.19402750000000005,
+    "poolValid": 4021,
+    "poolTotal": 5003
+  },
+  {
+    "slate": "4-12-26",
+    "n": 75,
+    "elapsed": 27,
+    "elasticity": 0.05058748432436412,
+    "scoringEnv": 9.02386,
+    "lambdaTeamEff": 0.671224290202223,
+    "pBb": 0.22119300000000006,
+    "poolValid": 5027,
+    "poolTotal": 5043
+  },
+  {
+    "slate": "4-17-26",
+    "n": 75,
+    "elapsed": 23,
+    "elasticity": 0.06880670794523218,
+    "scoringEnv": 8.677139999999998,
+    "lambdaTeamEff": 0.6594291038777438,
+    "pBb": 0.2038569999999999,
+    "poolValid": 4617,
+    "poolTotal": 5035
+  },
+  {
+    "slate": "4-18-26",
+    "n": 75,
+    "elapsed": 21,
+    "elasticity": 0.07195160784895585,
+    "scoringEnv": 9.086066666666666,
+    "lambdaTeamEff": 0.6569841384971948,
+    "pBb": 0.22430333333333327,
+    "poolValid": 5129,
+    "poolTotal": 5129
+  },
+  {
+    "slate": "4-21-26",
+    "n": 75,
+    "elapsed": 20,
+    "elasticity": 0.11396675465681894,
+    "scoringEnv": 8.75516,
+    "lambdaTeamEff": 0.6089286764333366,
+    "pBb": 0.207758,
+    "poolValid": 5228,
+    "poolTotal": 5228
+  },
+  {
+    "slate": "4-22-26",
+    "n": 75,
+    "elapsed": 15,
+    "elasticity": 0.09642031733686912,
+    "scoringEnv": 8.956533333333333,
+    "lambdaTeamEff": 0.632866851992357,
+    "pBb": 0.21782666666666664,
+    "poolValid": 4314,
+    "poolTotal": 5072
+  },
+  {
+    "slate": "4-23-26",
+    "n": 75,
+    "elapsed": 12,
+    "elasticity": 0.09592924342370476,
+    "scoringEnv": 9.179166666666667,
+    "lambdaTeamEff": 0.6334501970740024,
+    "pBb": 0.22895833333333335,
+    "poolValid": 4575,
+    "poolTotal": 5159
+  },
+  {
+    "slate": "4-24-26",
+    "n": 75,
+    "elapsed": 17,
+    "elasticity": 0.049978614113337747,
+    "scoringEnv": 9.03706,
+    "lambdaTeamEff": 0.6715560675645735,
+    "pBb": 0.22185300000000002,
+    "poolValid": 5143,
+    "poolTotal": 5143
+  },
+  {
+    "slate": "4-25-26",
+    "n": 75,
+    "elapsed": 13,
+    "elasticity": 0.09859119576052332,
+    "scoringEnv": 9.185742857142856,
+    "lambdaTeamEff": 0.6302342744406642,
+    "pBb": 0.22928714285714277,
+    "poolValid": 4685,
+    "poolTotal": 5153
+  },
+  {
+    "slate": "4-25-26-early",
+    "n": 75,
+    "elapsed": 11,
+    "elasticity": 0.025238769860942804,
+    "scoringEnv": 8.19904,
+    "lambdaTeamEff": 0.6823309533525652,
+    "pBb": 0.179952,
+    "poolValid": 4494,
+    "poolTotal": 5121
+  },
+  {
+    "slate": "4-26-26",
+    "n": 75,
+    "elapsed": 14,
+    "elasticity": 0.04101970804217872,
+    "scoringEnv": 8.79264,
+    "lambdaTeamEff": 0.6760357327652943,
+    "pBb": 0.209632,
+    "poolValid": 4915,
+    "poolTotal": 5143
+  },
+  {
+    "slate": "4-27-26",
+    "n": 75,
+    "elapsed": 13,
+    "elasticity": 0.10039186296303726,
+    "scoringEnv": 8.635171428571429,
+    "lambdaTeamEff": 0.6279830542965277,
+    "pBb": 0.20175857142857143,
+    "poolValid": 4703,
+    "poolTotal": 5185
+  },
+  {
+    "slate": "4-28-26",
+    "n": 75,
+    "elapsed": 14,
+    "elasticity": 0.09656060184642296,
+    "scoringEnv": 8.46888,
+    "lambdaTeamEff": 0.6326993896870019,
+    "pBb": 0.193444,
+    "poolValid": 5029,
+    "poolTotal": 5029
+  },
+  {
+    "slate": "4-29-26",
+    "n": 75,
+    "elapsed": 10,
+    "elasticity": 0.1457952677681261,
+    "scoringEnv": 8.81932,
+    "lambdaTeamEff": 0.5483608446673484,
+    "pBb": 0.21096599999999996,
+    "poolValid": 4263,
+    "poolTotal": 5137
+  },
+  {
+    "slate": "5-2-26-main",
+    "n": 75,
+    "elapsed": 11,
+    "elasticity": 0.09163327278874217,
+    "scoringEnv": 8.799466666666667,
+    "lambdaTeamEff": 0.6383665300354162,
+    "pBb": 0.20997333333333337,
+    "poolValid": 4551,
+    "poolTotal": 5081
+  },
+  {
+    "slate": "5-3-26",
+    "n": 75,
+    "elapsed": 13,
+    "elasticity": 0.05776206147510006,
+    "scoringEnv": 9.255925000000001,
+    "lambdaTeamEff": 0.6670282742613527,
+    "pBb": 0.23279625000000007,
+    "poolValid": 4640,
+    "poolTotal": 5154
+  }
+]

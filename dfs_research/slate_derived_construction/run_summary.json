@@ -1,0 +1,602 @@
+[
+  {
+    "slate": "4-6-26",
+    "n": 75,
+    "elasticity": 0.14360984904312882,
+    "eta_chalk": -0.28195075478435594,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.25953680171076327
+      },
+      {
+        "name": "mid",
+        "w": 0.4531944630228345
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.28726873526640223
+      }
+    ],
+    "sigmaSlate": 0.9126292913511537,
+    "scoringEnv": 0,
+    "chalkConcentration": 4.928503002647274,
+    "nutsK": 100,
+    "frontierSize": 27
+  },
+  {
+    "slate": "4-8-26",
+    "n": 75,
+    "elasticity": 0.17671150644264363,
+    "eta_chalk": -0.11644246778678188,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.283358503918599
+      },
+      {
+        "name": "mid",
+        "w": 0.4513138023222159
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.26532769375918513
+      }
+    ],
+    "sigmaSlate": 0.9701309259542017,
+    "scoringEnv": 0,
+    "chalkConcentration": 3.7255520183887474,
+    "nutsK": 100,
+    "frontierSize": 34
+  },
+  {
+    "slate": "4-12-26",
+    "n": 75,
+    "elasticity": 0.09625840001598379,
+    "eta_chalk": -0.5187079999200811,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.22511299783354413
+      },
+      {
+        "name": "mid",
+        "w": 0.4559121317499834
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.31897487041647254
+      }
+    ],
+    "sigmaSlate": 0.9612197647584121,
+    "scoringEnv": 0,
+    "chalkConcentration": 9.825163893091277,
+    "nutsK": 100,
+    "frontierSize": 22
+  },
+  {
+    "slate": "4-14-26",
+    "n": 75,
+    "elasticity": 0.17655506762372145,
+    "eta_chalk": -0.11722466188139283,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.2832463872672042
+      },
+      {
+        "name": "mid",
+        "w": 0.4513226536367997
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.2654309590959962
+      }
+    ],
+    "sigmaSlate": 0.9127955280637393,
+    "scoringEnv": 0,
+    "chalkConcentration": 6.62568846423029,
+    "nutsK": 100,
+    "frontierSize": 20
+  },
+  {
+    "slate": "4-15-26",
+    "n": 75,
+    "elasticity": 0.07977533554726998,
+    "eta_chalk": -0.6011233222636501,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.2130329789620878
+      },
+      {
+        "name": "mid",
+        "w": 0.45686581745036153
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.3301012035875507
+      }
+    ],
+    "sigmaSlate": 0.9109193870721172,
+    "scoringEnv": 0,
+    "chalkConcentration": 6.946125791147279,
+    "nutsK": 100,
+    "frontierSize": 35
+  },
+  {
+    "slate": "4-17-26",
+    "n": 75,
+    "elasticity": 0.12079575998300286,
+    "eta_chalk": -0.3960212000849857,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.24300267526430291
+      },
+      {
+        "name": "mid",
+        "w": 0.4544997887949235
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.3024975359407736
+      }
+    ],
+    "sigmaSlate": 0.9061216474608154,
+    "scoringEnv": 0,
+    "chalkConcentration": 6.9472845408851285,
+    "nutsK": 100,
+    "frontierSize": 28
+  },
+  {
+    "slate": "4-18-26",
+    "n": 75,
+    "elasticity": 0.10418959692837401,
+    "eta_chalk": -0.47905201535812997,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.23090761667451726
+      },
+      {
+        "name": "mid",
+        "w": 0.4554546618414855
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.31363772148399727
+      }
+    ],
+    "sigmaSlate": 0.8867752487110923,
+    "scoringEnv": 0,
+    "chalkConcentration": 4.466292886168408,
+    "nutsK": 100,
+    "frontierSize": 23
+  },
+  {
+    "slate": "4-19-26",
+    "n": 75,
+    "elasticity": 0.09910358769874583,
+    "eta_chalk": -0.5044820615062708,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.22719306137309486
+      },
+      {
+        "name": "mid",
+        "w": 0.45574791620738725
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.31705902241951783
+      }
+    ],
+    "sigmaSlate": 0.8876303721353159,
+    "scoringEnv": 0,
+    "chalkConcentration": 4.7333713359935174,
+    "nutsK": 100,
+    "frontierSize": 37
+  },
+  {
+    "slate": "4-20-26",
+    "n": 75,
+    "elasticity": 0.08772492840731205,
+    "eta_chalk": -0.5613753579634397,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.21886533647065914
+      },
+      {
+        "name": "mid",
+        "w": 0.456405368173369
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.32472929535597184
+      }
+    ],
+    "sigmaSlate": 0.8853693792261683,
+    "scoringEnv": 0,
+    "chalkConcentration": 6.590516675585894,
+    "nutsK": 100,
+    "frontierSize": 35
+  },
+  {
+    "slate": "4-21-26",
+    "n": 75,
+    "elasticity": 0.15316835120308978,
+    "eta_chalk": -0.23415824398455118,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.2664359678615369
+      },
+      {
+        "name": "mid",
+        "w": 0.4526497920109313
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.28091424012753186
+      }
+    ],
+    "sigmaSlate": 0.9310896562456622,
+    "scoringEnv": 0,
+    "chalkConcentration": 5.709547503007811,
+    "nutsK": 100,
+    "frontierSize": 26
+  },
+  {
+    "slate": "4-22-26",
+    "n": 75,
+    "elasticity": 0.11634132664638336,
+    "eta_chalk": -0.41829336676808326,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.23976327972234796
+      },
+      {
+        "name": "mid",
+        "w": 0.4547555305482357
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.30548118972941635
+      }
+    ],
+    "sigmaSlate": 0.8974002203149422,
+    "scoringEnv": 0,
+    "chalkConcentration": 6.614854478637523,
+    "nutsK": 100,
+    "frontierSize": 39
+  },
+  {
+    "slate": "4-23-26",
+    "n": 75,
+    "elasticity": 0.13403751897301383,
+    "eta_chalk": -0.3298124051349309,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.252610995227246
+      },
+      {
+        "name": "mid",
+        "w": 0.45374123721890164
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.29364776755385236
+      }
+    ],
+    "sigmaSlate": 0.8881803667037786,
+    "scoringEnv": 0,
+    "chalkConcentration": 5.119403889259102,
+    "nutsK": 100,
+    "frontierSize": 31
+  },
+  {
+    "slate": "4-24-26",
+    "n": 75,
+    "elasticity": 0.05822040602069004,
+    "eta_chalk": -0.7088979698965499,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.19715945291342354
+      },
+      {
+        "name": "mid",
+        "w": 0.4581189905594666
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.34472155652710995
+      }
+    ],
+    "sigmaSlate": 0.8984236603004863,
+    "scoringEnv": 0,
+    "chalkConcentration": 8.427026097163616,
+    "nutsK": 100,
+    "frontierSize": 32
+  },
+  {
+    "slate": "4-25-26",
+    "n": 75,
+    "elasticity": 0.1107978781229278,
+    "eta_chalk": -0.4460106093853611,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.23572682521627553
+      },
+      {
+        "name": "mid",
+        "w": 0.4550741980092414
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.30919897677448305
+      }
+    ],
+    "sigmaSlate": 0.9060865274953583,
+    "scoringEnv": 0,
+    "chalkConcentration": 5.5857285338652645,
+    "nutsK": 100,
+    "frontierSize": 28
+  },
+  {
+    "slate": "4-25-26-early",
+    "n": 75,
+    "elasticity": 0.07683471483601075,
+    "eta_chalk": -0.6158264258199463,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.21087255847676437
+      },
+      {
+        "name": "mid",
+        "w": 0.45703637696236066
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.33209106456087484
+      }
+    ],
+    "sigmaSlate": 0.9048547716617026,
+    "scoringEnv": 0,
+    "chalkConcentration": 4.658128099088533,
+    "nutsK": 100,
+    "frontierSize": 21
+  },
+  {
+    "slate": "4-26-26",
+    "n": 75,
+    "elasticity": 0.0823105047312966,
+    "eta_chalk": -0.588447476343517,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.21489422769771013
+      },
+      {
+        "name": "mid",
+        "w": 0.4567188767607071
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.3283868955415828
+      }
+    ],
+    "sigmaSlate": 0.913129742922563,
+    "scoringEnv": 0,
+    "chalkConcentration": 9.25608754845615,
+    "nutsK": 100,
+    "frontierSize": 19
+  },
+  {
+    "slate": "4-27-26",
+    "n": 75,
+    "elasticity": 0.12433019493149128,
+    "eta_chalk": -0.37834902534254367,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.24557042951511832
+      },
+      {
+        "name": "mid",
+        "w": 0.45429707135406966
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.3001324991308121
+      }
+    ],
+    "sigmaSlate": 0.9007228919197151,
+    "scoringEnv": 0,
+    "chalkConcentration": 6.184281842818425,
+    "nutsK": 100,
+    "frontierSize": 23
+  },
+  {
+    "slate": "4-28-26",
+    "n": 75,
+    "elasticity": 0.09115208165852953,
+    "eta_chalk": -0.5442395917073524,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.22137610223119897
+      },
+      {
+        "name": "mid",
+        "w": 0.45620714982385274
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.32241674794494835
+      }
+    ],
+    "sigmaSlate": 0.9103553520283285,
+    "scoringEnv": 0,
+    "chalkConcentration": 5.246308412161481,
+    "nutsK": 100,
+    "frontierSize": 35
+  },
+  {
+    "slate": "4-29-26",
+    "n": 75,
+    "elasticity": 0.2022073869980701,
+    "eta_chalk": 0.011036934990350383,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.3015723293936924
+      },
+      {
+        "name": "mid",
+        "w": 0.44987586873207697
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.24855180187423073
+      }
+    ],
+    "sigmaSlate": 0.8801848816708611,
+    "scoringEnv": 0,
+    "chalkConcentration": 5.283,
+    "nutsK": 100,
+    "frontierSize": 57
+  },
+  {
+    "slate": "5-1-26",
+    "n": 75,
+    "elasticity": 0.0885133581452993,
+    "eta_chalk": -0.5574332092735035,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.2194431409670322
+      },
+      {
+        "name": "mid",
+        "w": 0.4563597520289185
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.32419710700404925
+      }
+    ],
+    "sigmaSlate": 0.9164814953439089,
+    "scoringEnv": 0,
+    "chalkConcentration": 6.256520684216908,
+    "nutsK": 100,
+    "frontierSize": 24
+  },
+  {
+    "slate": "5-2-26",
+    "n": 75,
+    "elasticity": 0.12969030148197658,
+    "eta_chalk": -0.35154849259011717,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.2494601596889812
+      },
+      {
+        "name": "mid",
+        "w": 0.45398998739297514
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.29654985291804364
+      }
+    ],
+    "sigmaSlate": 0.9290388522823546,
+    "scoringEnv": 0,
+    "chalkConcentration": 4.328060184208676,
+    "nutsK": 100,
+    "frontierSize": 25
+  },
+  {
+    "slate": "5-2-26-main",
+    "n": 75,
+    "elasticity": 0.13093350495648334,
+    "eta_chalk": -0.3453324752175833,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.2503615783057552
+      },
+      {
+        "name": "mid",
+        "w": 0.45391882276533513
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.2957195989289097
+      }
+    ],
+    "sigmaSlate": 0.889782281011464,
+    "scoringEnv": 0,
+    "chalkConcentration": 4.60644455352395,
+    "nutsK": 100,
+    "frontierSize": 33
+  },
+  {
+    "slate": "5-2-26-night",
+    "n": 75,
+    "elasticity": 0.337955085132707,
+    "eta_chalk": 0.6897754256635349,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.3966267295690791
+      },
+      {
+        "name": "mid",
+        "w": 0.44237157398138854
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.16100169644953247
+      }
+    ],
+    "sigmaSlate": 0.910584569471795,
+    "scoringEnv": 0,
+    "chalkConcentration": 2.376616652578191,
+    "nutsK": 100,
+    "frontierSize": 38
+  },
+  {
+    "slate": "5-3-26",
+    "n": 75,
+    "elasticity": 0.09050915669649212,
+    "eta_chalk": -0.5474542165175394,
+    "modeWeights": [
+      {
+        "name": "chalk-core",
+        "w": 0.22090525535980937
+      },
+      {
+        "name": "mid",
+        "w": 0.45624432194527825
+      },
+      {
+        "name": "frontier-deep",
+        "w": 0.32285042269491243
+      }
+    ],
+    "sigmaSlate": 0.9213761354199979,
+    "scoringEnv": 0,
+    "chalkConcentration": 5.685813232636332,
+    "nutsK": 100,
+    "frontierSize": 39
+  }
+]

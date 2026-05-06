@@ -423,6 +423,29 @@ export function productionSelect(
     sumProj += lu.projection;
   }
 
+  // 9b. Reclassify binFills based on actual selected lineups (not just the targeted phase).
+  // The remainder/coverage passes fill from any bin; binFills should reflect the final portfolio's
+  // ownership-bin distribution so reports match what was actually shipped.
+  const finalBinFills = new Map<string, number>();
+  for (const bin of OWNERSHIP_BINS) finalBinFills.set(bin.label, 0);
+  for (const lu of selected) {
+    const luOwn = lu.players.reduce((s, p) => s + (p.ownership || 0), 0) / lu.players.length;
+    const delta = luOwn - anchor.ownership;
+    let assigned = false;
+    for (const bin of OWNERSHIP_BINS) {
+      if (delta >= bin.deltaLo && delta < bin.deltaHi) {
+        finalBinFills.set(bin.label, (finalBinFills.get(bin.label) || 0) + 1);
+        assigned = true;
+        break;
+      }
+    }
+    if (!assigned) {
+      // Lineup own delta is < deepest bin's deltaLo (extreme contrarian, below -20 from anchor)
+      // Bucket into 'deep' as catch-all for ultra-low-ownership lineups
+      finalBinFills.set('deep', (finalBinFills.get('deep') || 0) + 1);
+    }
+  }
+
   return {
     portfolio: selected,
     anchor,
@@ -430,7 +453,7 @@ export function productionSelect(
     actualAvgOwnership: selected.length > 0 ? sumOwn / selected.length : 0,
     actualAvgProjection: selected.length > 0 ? sumProj / selected.length : 0,
     teamStackCounts: teamStackCount,
-    binFills,
+    binFills: finalBinFills,
     ownershipCeiling: useOwnCeiling ? ownCeilingStats : undefined,
   };
 }

@@ -25,7 +25,7 @@ import { exportForDraftKings, exportDetailedLineups } from '../scoring';
 const DATA_DIR = 'C:/Users/colin/dfs opto';
 const PROJ_FILE = 'nbaprojpre.csv';
 const POOL_FILES = ['ssnbapool.csv', 'ssnbapool2.csv'];
-const TARGET_COUNT = 50;
+const TARGET_COUNT = 250;
 const N = TARGET_COUNT;
 
 // NBA-specific Theory-DFS V2 params.
@@ -37,13 +37,14 @@ const TODFS_NBA_V2 = {
   OPPOSING_TEAM_BONUS: 0.03,
   TEAM_NEGATIVE_PER_EXTRA: -0.04,
 
-  // EV weights — W_CMB ZEROED OUT per empirical NBA finding.
+  // EV weights — W_CMB reduced (was 0.25 MLB / 0 NBA) per partial empirical NBA finding.
   W_PROJ: 1.0, W_LEV: 0.30, W_VAR: 0.15,
-  W_CMB: 0.0,        // <<< ZEROED — empirical NBA pros don't avoid saturated combos
+  W_CMB: 0.15,       // reduced from MLB 0.25; previously zeroed, now on at lower magnitude
   W_CEIL_EFF: 0.10,
+  TRIPLE_FREQ_CAP: 5,
 
   // Selection.
-  EXPOSURE_CAP_HITTER: 0.40,
+  EXPOSURE_CAP_HITTER: 0.50,
   BAND_HIGH_PCT: 0.20, BAND_MID_PCT: 0.60, BAND_LOW_PCT: 0.20,
   MAX_PAIRWISE_OVERLAP: 5,    // NBA roster=8, scaled overlap cap
 
@@ -94,12 +95,35 @@ async function main() {
   const candidates = Array.from(merged.values());
   console.log('  Merged: ' + candidates.length + ' unique lineups (from ' + total + ')\n');
 
+  console.log('Computing combo frequencies...');
+  const pairFreq = new Map<string, number>();
+  const tripFreq = new Map<string, number>();
+  let totalW = 0;
+  for (const lu of candidates) {
+    const w = Math.max(0.1, lu.projection || 1) ** 2;
+    totalW += w;
+    const ids = lu.players.map(p => p.id).sort();
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        pairFreq.set(ids[i] + '|' + ids[j], (pairFreq.get(ids[i] + '|' + ids[j]) || 0) + w);
+      }
+      for (let j = i + 1; j < ids.length; j++) {
+        for (let l = j + 1; l < ids.length; l++) {
+          const k = ids[i] + '|' + ids[j] + '|' + ids[l];
+          tripFreq.set(k, (tripFreq.get(k) || 0) + w);
+        }
+      }
+    }
+  }
+  for (const k of pairFreq.keys()) pairFreq.set(k, pairFreq.get(k)! / totalW);
+  for (const k of tripFreq.keys()) tripFreq.set(k, tripFreq.get(k)! / totalW);
+
   // 3. Score lineups.
-  console.log('Scoring (no combo penalty per empirical NBA finding)...');
+  console.log('Scoring (combo penalty W_CMB=' + TODFS_NBA_V2.W_CMB + ')...');
   interface S {
     lu: Lineup; primaryGameSize: number; primaryTeamSize: number; corrAdj: number;
-    logOwn: number; ppd: number; proj: number; floor: number; ceiling: number; range: number;
-    ev: number; projPct: number; ownPct: number; rangePct: number; ppdPct: number; ceilEffPct: number;
+    logOwn: number; ppd: number; uniqueness: number; proj: number; floor: number; ceiling: number; range: number;
+    ev: number; projPct: number; ownPct: number; rangePct: number; ppdPct: number; ceilEffPct: number; uniqPct: number;
   }
   const scored: S[] = [];
   for (const lu of candidates) {
@@ -138,10 +162,34 @@ async function main() {
     let ppd = 0;
     for (const p of lu.players) if (p.salary && p.projection) ppd += p.projection / (p.salary / 1000);
 
+    // Combinatorial uniqueness — raw pair/triple frequency (NBA: reduced W_CMB).
+    let uniqueness = 0;
+    const players = lu.players;
+    for (let i = 0; i < players.length; i++) {
+      for (let j = i + 1; j < players.length; j++) {
+        const k = [players[i].id, players[j].id].sort().join('|');
+        const f = pairFreq.get(k) || 1e-6;
+        uniqueness += -Math.log(f);
+      }
+    }
+    const tripFs: { key: string; f: number }[] = [];
+    for (let i = 0; i < players.length; i++) {
+      for (let j = i + 1; j < players.length; j++) {
+        for (let l = j + 1; l < players.length; l++) {
+          const tk = [players[i].id, players[j].id, players[l].id].sort().join('|');
+          tripFs.push({ key: tk, f: tripFreq.get(tk) || 1e-6 });
+        }
+      }
+    }
+    tripFs.sort((a, b) => b.f - a.f);
+    for (const t of tripFs.slice(0, TODFS_NBA_V2.TRIPLE_FREQ_CAP)) {
+      uniqueness += -Math.log(t.f);
+    }
+
     scored.push({
-      lu, primaryGameSize, primaryTeamSize, corrAdj, logOwn, ppd,
+      lu, primaryGameSize, primaryTeamSize, corrAdj, logOwn, ppd, uniqueness,
       proj: lu.projection, floor, ceiling, range: ceiling - floor,
-      ev: 0, projPct: 0, ownPct: 0, rangePct: 0, ppdPct: 0, ceilEffPct: 0,
+      ev: 0, projPct: 0, ownPct: 0, rangePct: 0, ppdPct: 0, ceilEffPct: 0, uniqPct: 0,
     });
   }
 
@@ -151,66 +199,95 @@ async function main() {
   const rangePct = rankPercentile(scored.map(s => s.range));
   const ppdPct = rankPercentile(scored.map(s => s.ppd));
   const ceilEffPct = rankPercentile(scored.map(s => s.proj > 0 ? s.ceiling / s.proj : 0));
+  const uniqPct = rankPercentile(scored.map(s => s.uniqueness));
   for (let i = 0; i < scored.length; i++) {
     scored[i].projPct = projPct[i]; scored[i].ownPct = ownPct[i];
     scored[i].rangePct = rangePct[i]; scored[i].ppdPct = ppdPct[i];
     scored[i].ceilEffPct = ceilEffPct[i];
+    scored[i].uniqPct = uniqPct[i];
   }
-  for (const s of scored) {
-    let ev = TODFS_NBA_V2.W_PROJ * s.projPct
-           + TODFS_NBA_V2.W_LEV * (1 - s.ownPct)
-           + TODFS_NBA_V2.W_VAR * s.rangePct * 0.8
-           + TODFS_NBA_V2.W_CEIL_EFF * s.ceilEffPct;
-    // W_CMB term skipped: 0 contribution.
-    if (s.ppdPct >= 1 - TODFS_NBA_V2.PPD_LINEUP_TOP_PCT) ev *= (1 - TODFS_NBA_V2.PPD_LINEUP_PENALTY);
-    s.ev = ev;
+  // 4. Pareto sweep: build portfolio at multiple W_LEV values to show projection-vs-ownership trade-off.
+  function buildPortfolio(wLev: number): { portfolio: Lineup[]; selected: S[] } {
+    for (const s of scored) {
+      let ev = TODFS_NBA_V2.W_PROJ * s.projPct
+             + wLev * (1 - s.ownPct)
+             + TODFS_NBA_V2.W_VAR * s.rangePct * 0.8
+             + TODFS_NBA_V2.W_CEIL_EFF * s.ceilEffPct
+             + TODFS_NBA_V2.W_CMB * s.uniqPct;
+      if (s.ppdPct >= 1 - TODFS_NBA_V2.PPD_LINEUP_TOP_PCT) ev *= (1 - TODFS_NBA_V2.PPD_LINEUP_PENALTY);
+      s.ev = ev;
+    }
+    const sortedHigh = [...scored].sort((a, b) => (b.projPct + b.ownPct) - (a.projPct + a.ownPct));
+    const sortedLow = [...scored].sort((a, b) => ((1 - b.projPct) + (1 - b.ownPct)) - ((1 - a.projPct) + (1 - a.ownPct)));
+    const HIGH_TARGET = Math.round(N * TODFS_NBA_V2.BAND_HIGH_PCT);
+    const LOW_TARGET = Math.round(N * TODFS_NBA_V2.BAND_LOW_PCT);
+    const MID_TARGET = N - HIGH_TARGET - LOW_TARGET;
+    const selected: S[] = [];
+    const exposure = new Map<string, number>();
+    const seen = new Set<string>();
+    function passes(s: S): boolean {
+      if (seen.has(s.lu.hash)) return false;
+      for (const p of s.lu.players) {
+        const cur = exposure.get(p.id) || 0;
+        if ((cur + 1) / N > TODFS_NBA_V2.EXPOSURE_CAP_HITTER) return false;
+      }
+      const ids = new Set(s.lu.players.map(p => p.id));
+      for (const sel of selected) {
+        let ov = 0; for (const p of sel.lu.players) if (ids.has(p.id)) ov++;
+        if (ov > TODFS_NBA_V2.MAX_PAIRWISE_OVERLAP) return false;
+      }
+      return true;
+    }
+    function add(s: S) {
+      selected.push(s); seen.add(s.lu.hash);
+      for (const p of s.lu.players) exposure.set(p.id, (exposure.get(p.id) || 0) + 1);
+    }
+    function fillBand(bandPool: S[], target: number) {
+      const sorted = [...bandPool].sort((a, b) => b.ev - a.ev);
+      let added = 0;
+      for (const s of sorted) { if (added >= target) break; if (passes(s)) { add(s); added++; } }
+      if (added < target) {
+        const old = TODFS_NBA_V2.MAX_PAIRWISE_OVERLAP;
+        (TODFS_NBA_V2 as any).MAX_PAIRWISE_OVERLAP = old + 1;
+        for (const s of sorted) { if (added >= target) break; if (passes(s)) { add(s); added++; } }
+        (TODFS_NBA_V2 as any).MAX_PAIRWISE_OVERLAP = old;
+      }
+    }
+    fillBand(sortedHigh.slice(0, Math.max(HIGH_TARGET * 5, 200)), HIGH_TARGET);
+    fillBand(scored, MID_TARGET);
+    fillBand(sortedLow.slice(0, Math.max(LOW_TARGET * 5, 200)), LOW_TARGET);
+    if (selected.length < N) {
+      const sorted = [...scored].sort((a, b) => b.ev - a.ev);
+      for (const s of sorted) { if (selected.length >= N) break; if (passes(s)) add(s); }
+    }
+    return { portfolio: selected.slice(0, N).map(s => s.lu), selected: selected.slice(0, N) };
   }
 
-  // 4. Variance bands + greedy selection.
-  const sortedHigh = [...scored].sort((a, b) => (b.projPct + b.ownPct) - (a.projPct + a.ownPct));
-  const sortedLow = [...scored].sort((a, b) => ((1 - b.projPct) + (1 - b.ownPct)) - ((1 - a.projPct) + (1 - a.ownPct)));
-  const HIGH_TARGET = Math.round(N * TODFS_NBA_V2.BAND_HIGH_PCT);
-  const LOW_TARGET = Math.round(N * TODFS_NBA_V2.BAND_LOW_PCT);
-  const MID_TARGET = N - HIGH_TARGET - LOW_TARGET;
-  const selected: S[] = [];
-  const exposure = new Map<string, number>();
-  const seen = new Set<string>();
-  function passes(s: S): boolean {
-    if (seen.has(s.lu.hash)) return false;
-    for (const p of s.lu.players) {
-      const cur = exposure.get(p.id) || 0;
-      if ((cur + 1) / N > TODFS_NBA_V2.EXPOSURE_CAP_HITTER) return false;
-    }
-    const ids = new Set(s.lu.players.map(p => p.id));
-    for (const sel of selected) {
-      let ov = 0; for (const p of sel.lu.players) if (ids.has(p.id)) ov++;
-      if (ov > TODFS_NBA_V2.MAX_PAIRWISE_OVERLAP) return false;
-    }
-    return true;
+  // === Pareto frontier sweep ===
+  const sweepValues = [0.30, 0.20, 0.15, 0.10, 0.05];
+  console.log('================================================================');
+  console.log('PARETO SWEEP — projection vs ownership trade-off');
+  console.log('================================================================');
+  console.log(`${'W_LEV'.padStart(6)} | ${'avgProj'.padStart(8)} | ${'avgOwn'.padStart(8)} | ${'avgSal'.padStart(7)} | ${'unique'.padStart(7)}`);
+  const sweepResults: { wLev: number; portfolio: Lineup[]; avgProj: number; avgOwn: number; avgSal: number }[] = [];
+  for (const wLev of sweepValues) {
+    const { portfolio: pf } = buildPortfolio(wLev);
+    const avgProj = mean(pf.map(lu => lu.projection));
+    const avgOwn = mean(pf.map(lu => lu.ownership));
+    const avgSal = pf.reduce((s, lu) => s + lu.salary, 0) / Math.max(1, pf.length);
+    const unique = new Set<string>();
+    for (const lu of pf) for (const p of lu.players) unique.add(p.id);
+    sweepResults.push({ wLev, portfolio: pf, avgProj, avgOwn, avgSal });
+    console.log(`${wLev.toFixed(2).padStart(6)} | ${avgProj.toFixed(1).padStart(8)} | ${avgOwn.toFixed(2).padStart(7)}% | $${avgSal.toFixed(0).padStart(6)} | ${String(unique.size).padStart(7)}`);
   }
-  function add(s: S) {
-    selected.push(s); seen.add(s.lu.hash);
-    for (const p of s.lu.players) exposure.set(p.id, (exposure.get(p.id) || 0) + 1);
-  }
-  function fillBand(bandPool: S[], target: number) {
-    const sorted = [...bandPool].sort((a, b) => b.ev - a.ev);
-    let added = 0;
-    for (const s of sorted) { if (added >= target) break; if (passes(s)) { add(s); added++; } }
-    if (added < target) {
-      const old = TODFS_NBA_V2.MAX_PAIRWISE_OVERLAP;
-      (TODFS_NBA_V2 as any).MAX_PAIRWISE_OVERLAP = old + 1;
-      for (const s of sorted) { if (added >= target) break; if (passes(s)) { add(s); added++; } }
-      (TODFS_NBA_V2 as any).MAX_PAIRWISE_OVERLAP = old;
-    }
-  }
-  fillBand(sortedHigh.slice(0, Math.max(HIGH_TARGET * 5, 200)), HIGH_TARGET);
-  fillBand(scored, MID_TARGET);
-  fillBand(sortedLow.slice(0, Math.max(LOW_TARGET * 5, 200)), LOW_TARGET);
-  if (selected.length < N) {
-    const sorted = [...scored].sort((a, b) => b.ev - a.ev);
-    for (const s of sorted) { if (selected.length >= N) break; if (passes(s)) add(s); }
-  }
-  const portfolio = selected.slice(0, N).map(s => s.lu);
+  console.log('');
+
+  // Selection: use W_LEV=0.15 (more projection emphasis than V1's 0.30; same setting parked
+  // as MLB V1.1 candidate which preserved tournament metrics on 24-slate dev data).
+  const SELECTED_WLEV = 0.15;
+  const chosenSweep = sweepResults.find(r => r.wLev === SELECTED_WLEV)!;
+  const portfolio = chosenSweep.portfolio;
+  console.log(`Selected for export: W_LEV=${SELECTED_WLEV} (more projection emphasis than V1's 0.30)\n`);
 
   // 5. Stats + export.
   console.log('================================================================');

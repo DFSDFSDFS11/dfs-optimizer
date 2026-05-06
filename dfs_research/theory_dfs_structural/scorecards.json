@@ -1,0 +1,454 @@
+{
+  "hermes-a": {
+    "sport": "mlb",
+    "n_slates": 18,
+    "V1_finishing_distribution": {
+      "deciles": [
+        12.070254110612854,
+        10.949177877429,
+        9.940209267563528,
+        10.31390134529148,
+        9.828101644245143,
+        8.931240657698057,
+        8.74439461883408,
+        10.089686098654708,
+        9.491778774289985,
+        9.641255605381167
+      ],
+      "top_decile_pct": 12.070254110612854,
+      "mid_decile_pct": 18.7593423019432,
+      "bot_decile_pct": 9.641255605381167,
+      "shape": "inverse-bell",
+      "strength": 2.9521674140508196,
+      "pass": true
+    },
+    "V2_top_tail_concentration": {
+      "t1": 41,
+      "t01": 5,
+      "expected_t1": 27.0,
+      "expected_t01": 2.6999999999999997,
+      "t1_x_random": 1.5185185185185186,
+      "t01_x_random": 1.851851851851852,
+      "slates_with_t01": 4,
+      "pass_t1": true,
+      "pass_t01": true,
+      "pass": true
+    },
+    "V3_mahalanobis": {
+      "applicable": true,
+      "mean_mahal": 1.951238946262927,
+      "std_mahal": 0.8410117463472282,
+      "min_mahal": 0.2823982132416665,
+      "max_mahal": 3.3696622075061784,
+      "pass": false
+    },
+    "V4_variance_bands": {
+      "high_pct": 55.00747384155456,
+      "mid_pct": 36.65919282511211,
+      "low_pct": 8.333333333333332,
+      "pass": false,
+      "note": "target \u2248 20/60/20 per Ch.8 (illustrative, not strict)"
+    },
+    "V5_archetype_adaptation": {
+      "archetypes": {
+        "large": {
+          "n_slates": 17,
+          "avg_own_pct": 0.643525246236705,
+          "avg_proj_pct": 0.708000617726125
+        },
+        "medium": {
+          "n_slates": 1,
+          "avg_own_pct": 0.6155315651517171,
+          "avg_proj_pct": 0.638038435419483
+        }
+      },
+      "own_spread": 0.027993681084987898,
+      "proj_spread": 0.06996218230664197,
+      "pass": true,
+      "note": "pass = system metrics shift > 5pp between slate-size archetypes"
+    },
+    "V6_combinatorial_uniqueness": {
+      "avg_top_pair_pct": 0.1680246913580247,
+      "over_duplicated_pair_rate": 0.0,
+      "pass": true,
+      "note": "top pair appears in 17% of lineups on avg; >85% = over-duplication"
+    }
+  },
+  "theory-dfs-mlb": {
+    "sport": "mlb",
+    "n_slates": 18,
+    "V1_finishing_distribution": {
+      "deciles": [
+        9.640341119762699,
+        8.82461994809047,
+        9.010011123470523,
+        8.75046347793845,
+        9.899888765294772,
+        10.048201705598814,
+        9.936967000370782,
+        10.233592880978867,
+        10.678531701890991,
+        12.977382276603633
+      ],
+      "top_decile_pct": 9.640341119762699,
+      "mid_decile_pct": 19.948090470893586,
+      "bot_decile_pct": 12.977382276603633,
+      "shape": "inverse-bell",
+      "strength": 2.669632925472744,
+      "pass": true
+    },
+    "V2_top_tail_concentration": {
+      "t1": 29,
+      "t01": 2,
+      "expected_t1": 27.0,
+      "expected_t01": 2.6999999999999997,
+      "t1_x_random": 1.0740740740740742,
+      "t01_x_random": 0.7407407407407408,
+      "slates_with_t01": 2,
+      "pass_t1": false,
+      "pass_t01": false,
+      "pass": false
+    },
+    "V3_mahalanobis": {
+      "applicable": true,
+      "mean_mahal": 2.2591799953480685,
+      "std_mahal": 1.803344689279402,
+      "min_mahal": 0.7221542629007428,
+      "max_mahal": 8.790333266820278,
+      "pass": false
+    },
+    "V4_variance_bands": {
+      "high_pct": 48.96296296296296,
+      "mid_pct": 30.703703703703706,
+      "low_pct": 20.333333333333332,
+      "pass": true,
+      "note": "target \u2248 20/60/20 per Ch.8 (illustrative, not strict)"
+    },
+    "V5_archetype_adaptation": {
+      "archetypes": {
+        "large": {
+          "n_slates": 17,
+          "avg_own_pct": 0.5500924906402614,
+          "avg_proj_pct": 0.6627164152769018
+        },
+        "medium": {
+          "n_slates": 1,
+          "avg_own_pct": 0.5374450219912035,
+          "avg_proj_pct": 0.5955910968945755
+        }
+      },
+      "own_spread": 0.012647468649057969,
+      "proj_spread": 0.06712531838232638,
+      "pass": true,
+      "note": "pass = system metrics shift > 5pp between slate-size archetypes"
+    },
+    "V6_combinatorial_uniqueness": {
+      "avg_top_pair_pct": 0.2551851851851852,
+      "over_duplicated_pair_rate": 0.0,
+      "pass": true,
+      "note": "top pair appears in 26% of lineups on avg; >85% = over-duplication"
+    }
+  },
+  "theory-dfs-mlb-hcombo": {
+    "sport": "mlb",
+    "n_slates": 18,
+    "V1_finishing_distribution": {
+      "deciles": [
+        9.323922734026747,
+        8.172362555720653,
+        9.212481426448738,
+        9.026745913818722,
+        9.621099554234771,
+        10.14115898959881,
+        10.326894502228825,
+        10.289747399702822,
+        11.441307578008916,
+        12.444279346210996
+      ],
+      "top_decile_pct": 9.323922734026747,
+      "mid_decile_pct": 19.762258543833582,
+      "bot_decile_pct": 12.444279346210996,
+      "shape": "inverse-bell",
+      "strength": 2.0059435364041605,
+      "pass": true
+    },
+    "V2_top_tail_concentration": {
+      "t1": 30,
+      "t01": 2,
+      "expected_t1": 27.0,
+      "expected_t01": 2.6999999999999997,
+      "t1_x_random": 1.1111111111111112,
+      "t01_x_random": 0.7407407407407408,
+      "slates_with_t01": 2,
+      "pass_t1": false,
+      "pass_t01": false,
+      "pass": false
+    },
+    "V3_mahalanobis": {
+      "applicable": true,
+      "mean_mahal": 2.2532410853441047,
+      "std_mahal": 1.6457579520552028,
+      "min_mahal": 0.8248375436915663,
+      "max_mahal": 8.206774996727495,
+      "pass": false
+    },
+    "V4_variance_bands": {
+      "high_pct": 34.96296296296296,
+      "mid_pct": 39.370370370370374,
+      "low_pct": 25.666666666666664,
+      "pass": true,
+      "note": "target \u2248 20/60/20 per Ch.8 (illustrative, not strict)"
+    },
+    "V5_archetype_adaptation": {
+      "archetypes": {
+        "large": {
+          "n_slates": 17,
+          "avg_own_pct": 0.49198699633978643,
+          "avg_proj_pct": 0.584552828220705
+        },
+        "medium": {
+          "n_slates": 1,
+          "avg_own_pct": 0.4503985072637612,
+          "avg_proj_pct": 0.5107157137145142
+        }
+      },
+      "own_spread": 0.04158848907602525,
+      "proj_spread": 0.07383711450619079,
+      "pass": true,
+      "note": "pass = system metrics shift > 5pp between slate-size archetypes"
+    },
+    "V6_combinatorial_uniqueness": {
+      "avg_top_pair_pct": 0.20444444444444446,
+      "over_duplicated_pair_rate": 0.0,
+      "pass": true,
+      "note": "top pair appears in 20% of lineups on avg; >85% = over-duplication"
+    }
+  },
+  "random-mlb": {
+    "sport": "mlb",
+    "n_slates": 18,
+    "V1_finishing_distribution": {
+      "deciles": [
+        8.023774145616642,
+        8.87815750371471,
+        9.063893016344725,
+        9.472511144130758,
+        8.952451708766716,
+        9.323922734026747,
+        10.661218424962852,
+        8.692421991084695,
+        11.292719167904904,
+        15.63893016344725
+      ],
+      "top_decile_pct": 8.023774145616642,
+      "mid_decile_pct": 18.27637444279346,
+      "bot_decile_pct": 15.63893016344725,
+      "shape": "inverse-bell",
+      "strength": 5.3863298662704295,
+      "pass": false
+    },
+    "V2_top_tail_concentration": {
+      "t1": 30,
+      "t01": 4,
+      "expected_t1": 27.0,
+      "expected_t01": 2.6999999999999997,
+      "t1_x_random": 1.1111111111111112,
+      "t01_x_random": 1.4814814814814816,
+      "slates_with_t01": 4,
+      "pass_t1": false,
+      "pass_t01": false,
+      "pass": false
+    },
+    "V3_mahalanobis": {
+      "applicable": true,
+      "mean_mahal": 2.1256219163951515,
+      "std_mahal": 1.0729063569078146,
+      "min_mahal": 0.8424237130671925,
+      "max_mahal": 4.800828860541836,
+      "pass": false
+    },
+    "V4_variance_bands": {
+      "high_pct": 26.925925925925924,
+      "mid_pct": 43.629629629629626,
+      "low_pct": 29.444444444444446,
+      "pass": true,
+      "note": "target \u2248 20/60/20 per Ch.8 (illustrative, not strict)"
+    },
+    "V5_archetype_adaptation": {
+      "archetypes": {
+        "large": {
+          "n_slates": 17,
+          "avg_own_pct": 0.49145246832260764,
+          "avg_proj_pct": 0.4902674230346642
+        },
+        "medium": {
+          "n_slates": 1,
+          "avg_own_pct": 0.48877515660402504,
+          "avg_proj_pct": 0.4834159669465547
+        }
+      },
+      "own_spread": 0.002677311718582598,
+      "proj_spread": 0.006851456088109498,
+      "pass": false,
+      "note": "pass = system metrics shift > 5pp between slate-size archetypes"
+    },
+    "V6_combinatorial_uniqueness": {
+      "avg_top_pair_pct": 0.13814814814814816,
+      "over_duplicated_pair_rate": 0.0,
+      "pass": true,
+      "note": "top pair appears in 14% of lineups on avg; >85% = over-duplication"
+    }
+  },
+  "theory-dfs-nba": {
+    "sport": "nba",
+    "n_slates": 12,
+    "V1_finishing_distribution": {
+      "deciles": [
+        9.771796372147454,
+        8.42598010532475,
+        9.479227618490345,
+        9.65476887068461,
+        9.479227618490345,
+        10.122878876535985,
+        9.713282621416033,
+        9.94733762434172,
+        11.761263897015798,
+        11.644236395552955
+      ],
+      "top_decile_pct": 9.771796372147454,
+      "mid_decile_pct": 19.60210649502633,
+      "bot_decile_pct": 11.644236395552955,
+      "shape": "inverse-bell",
+      "strength": 1.8139262726740775,
+      "pass": true
+    },
+    "V2_top_tail_concentration": {
+      "t1": 21,
+      "t01": 1,
+      "expected_t1": 18.0,
+      "expected_t01": 1.7999999999999998,
+      "t1_x_random": 1.1666666666666667,
+      "t01_x_random": 0.5555555555555556,
+      "slates_with_t01": 1,
+      "pass_t1": false,
+      "pass_t01": false,
+      "pass": false
+    },
+    "V3_mahalanobis": {
+      "applicable": false,
+      "note": "no NBA pro consensus data"
+    },
+    "V4_variance_bands": {
+      "high_pct": 33.54725787631272,
+      "mid_pct": 45.33255542590432,
+      "low_pct": 21.120186697782962,
+      "pass": true,
+      "note": "target \u2248 20/60/20 per Ch.8 (illustrative, not strict)"
+    },
+    "V5_archetype_adaptation": {
+      "archetypes": {
+        "small": {
+          "n_slates": 4,
+          "avg_own_pct": 0.5313269395934727,
+          "avg_proj_pct": 0.5562625250501002
+        },
+        "medium": {
+          "n_slates": 7,
+          "avg_own_pct": 0.510952183250964,
+          "avg_proj_pct": 0.5580783080104432
+        },
+        "large": {
+          "n_slates": 1,
+          "avg_own_pct": 0.6284168336673347,
+          "avg_proj_pct": 0.6693386773547094
+        }
+      },
+      "own_spread": 0.11746465041637066,
+      "proj_spread": 0.11307615230460921,
+      "pass": true,
+      "note": "pass = system metrics shift > 5pp between slate-size archetypes"
+    },
+    "V6_combinatorial_uniqueness": {
+      "avg_top_pair_pct": 0.21813609592370903,
+      "over_duplicated_pair_rate": 0.0,
+      "pass": true,
+      "note": "top pair appears in 22% of lineups on avg; >85% = over-duplication"
+    }
+  },
+  "random-nba": {
+    "sport": "nba",
+    "n_slates": 12,
+    "V1_finishing_distribution": {
+      "deciles": [
+        8.557046979865772,
+        7.2147651006711415,
+        8.612975391498882,
+        8.94854586129754,
+        9.563758389261745,
+        10.40268456375839,
+        10.346756152125279,
+        11.74496644295302,
+        11.6331096196868,
+        12.97539149888143
+      ],
+      "top_decile_pct": 8.557046979865772,
+      "mid_decile_pct": 19.966442953020135,
+      "bot_decile_pct": 12.97539149888143,
+      "shape": "inverse-bell",
+      "strength": 1.5659955257270681,
+      "pass": false
+    },
+    "V2_top_tail_concentration": {
+      "t1": 21,
+      "t01": 3,
+      "expected_t1": 18.0,
+      "expected_t01": 1.7999999999999998,
+      "t1_x_random": 1.1666666666666667,
+      "t01_x_random": 1.6666666666666667,
+      "slates_with_t01": 2,
+      "pass_t1": false,
+      "pass_t01": true,
+      "pass": true
+    },
+    "V3_mahalanobis": {
+      "applicable": false,
+      "note": "no NBA pro consensus data"
+    },
+    "V4_variance_bands": {
+      "high_pct": 29.61111111111111,
+      "mid_pct": 41.05555555555556,
+      "low_pct": 29.333333333333332,
+      "pass": true,
+      "note": "target \u2248 20/60/20 per Ch.8 (illustrative, not strict)"
+    },
+    "V5_archetype_adaptation": {
+      "archetypes": {
+        "small": {
+          "n_slates": 4,
+          "avg_own_pct": 0.5009853039412158,
+          "avg_proj_pct": 0.4951369405477622
+        },
+        "medium": {
+          "n_slates": 7,
+          "avg_own_pct": 0.49930909437923465,
+          "avg_proj_pct": 0.5001030632693959
+        },
+        "large": {
+          "n_slates": 1,
+          "avg_own_pct": 0.5369806279225117,
+          "avg_proj_pct": 0.5324382097528391
+        }
+      },
+      "own_spread": 0.037671533543277014,
+      "proj_spread": 0.03730126920507687,
+      "pass": false,
+      "note": "pass = system metrics shift > 5pp between slate-size archetypes"
+    },
+    "V6_combinatorial_uniqueness": {
+      "avg_top_pair_pct": 0.22444444444444445,
+      "over_duplicated_pair_rate": 0.0,
+      "pass": true,
+      "note": "top pair appears in 22% of lineups on avg; >85% = over-duplication"
+    }
+  }
+}

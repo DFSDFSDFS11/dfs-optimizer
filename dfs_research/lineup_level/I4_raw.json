@@ -1,0 +1,102 @@
+{
+  "pros_combined": {
+    "proj_std_mean": 4.627139289331439,
+    "own_std_mean": 3.5949018145019656,
+    "unique_teams_mean": 14.093363499245852,
+    "mode_team_share_mean": 0.2144283559577677,
+    "mode_team_jaccard_mean": 0.4655181337651294,
+    "overall_jaccard_mean": 0.06183055058775649
+  },
+  "aggregated": {
+    "bgreseth": {
+      "proj_std_mean": 4.898165119005129,
+      "own_std_mean": 4.211590485234998,
+      "unique_teams_mean": 14.333333333333334,
+      "mode_team_share_mean": 0.21955555555555556,
+      "mode_team_jaccard_mean": 0.49083615709829387,
+      "overall_jaccard_mean": 0.055403571428571434,
+      "n_slates": 15
+    },
+    "hermes-a": {
+      "proj_std_mean": 3.9410862330097167,
+      "own_std_mean": 3.509848518623044,
+      "unique_teams_mean": 15.166666666666666,
+      "mode_team_share_mean": 0.16887125220458554,
+      "mode_team_jaccard_mean": 0.38873930045343635,
+      "overall_jaccard_mean": 0.03898908730158731,
+      "n_slates": 18
+    },
+    "needlunchmoney": {
+      "proj_std_mean": 4.889420884118829,
+      "own_std_mean": 3.6398059039917334,
+      "unique_teams_mean": 16.466666666666665,
+      "mode_team_share_mean": 0.1257777777777778,
+      "mode_team_jaccard_mean": 0.47696978738923074,
+      "overall_jaccard_mean": 0.03481325396825397,
+      "n_slates": 15
+    },
+    "nerdytenor": {
+      "proj_std_mean": 4.553570561635481,
+      "own_std_mean": 3.700970212503025,
+      "unique_teams_mean": 15.588235294117647,
+      "mode_team_share_mean": 0.18784313725490195,
+      "mode_team_jaccard_mean": 0.39831830161065007,
+      "overall_jaccard_mean": 0.040195214752567696,
+      "n_slates": 17
+    },
+    "random-mlb": {
+      "proj_std_mean": 5.406316218414163,
+      "own_std_mean": 4.089453216877312,
+      "unique_teams_mean": 15.666666666666666,
+      "mode_team_share_mean": 0.17444444444444446,
+      "mode_team_jaccard_mean": 0.421194216289178,
+      "overall_jaccard_mean": 0.04108082010582011,
+      "n_slates": 18
+    },
+    "shaidyadvice": {
+      "proj_std_mean": 5.076805726770251,
+      "own_std_mean": 3.86668132407587,
+      "unique_teams_mean": 13.294117647058824,
+      "mode_team_share_mean": 0.2549019607843137,
+      "mode_team_jaccard_mean": 0.4480646857644077,
+      "overall_jaccard_mean": 0.06501115779645195,
+      "n_slates": 17
+    },
+    "shipmymoney": {
+      "proj_std_mean": 4.757603318446413,
+      "own_std_mean": 3.4926934327412873,
+      "unique_teams_mean": 13.647058823529411,
+      "mode_team_share_mean": 0.23490196078431372,
+      "mode_team_jaccard_mean": 0.4644732271935897,
+      "overall_jaccard_mean": 0.07394096638655466,
+      "n_slates": 17
+    },
+    "theory-dfs-mlb": {
+      "proj_std_mean": 6.458167453952546,
+      "own_std_mean": 4.879204725095069,
+      "unique_teams_mean": 14.055555555555555,
+      "mode_team_share_mean": 0.23296296296296298,
+      "mode_team_jaccard_mean": 0.45925253004197114,
+      "overall_jaccard_mean": 0.05973322310405644,
+      "n_slates": 18
+    },
+    "theory-dfs-mlb-hcombo": {
+      "proj_std_mean": 5.9295631657991725,
+      "own_std_mean": 4.704698172040976,
+      "unique_teams_mean": 15.333333333333334,
+      "mode_team_share_mean": 0.17333333333333334,
+      "mode_team_jaccard_mean": 0.4449387372579359,
+      "overall_jaccard_mean": 0.043107473544973546,
+      "n_slates": 18
+    },
+    "youdacao": {
+      "proj_std_mean": 3.5872701260125326,
+      "own_std_mean": 2.6576695284648797,
+      "unique_teams_mean": 11.23076923076923,
+      "mode_team_share_mean": 0.2635897435897436,
+      "mode_team_jaccard_mean": 0.5144466435346042,
+      "overall_jaccard_mean": 0.10161913919413923,
+      "n_slates": 13
+    }
+  }
+}
