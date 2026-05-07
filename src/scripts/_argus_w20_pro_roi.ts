@@ -2,7 +2,7 @@
  * Argus pro-consensus + ROI validation across the 16 dev slates.
  *
  * For each slate:
- *   - Load slate, run Argus selection (V1-MCP v4 + W_MULTI=0.20, pool-count field model).
+ *   - Load slate, run Argus selection (V1-MCP v3 + W_MULTI=0.40).
  *   - Compute real payout via canonical power-law schedule (FEE=$20, 88% pool,
  *     22% cash line, exponent -1.15) — same as anchor-backtest.ts.
  *   - Compute pro consensus from 150-entry-username field entries: 5 universal
@@ -210,37 +210,43 @@ function selectArgus(candidates: Lineup[], adjOwnById: Map<string, number>): S[]
   for (const k of v1Pair.keys()) v1Pair.set(k, v1Pair.get(k)! / totalW);
   for (const k of v1Trip.keys()) v1Trip.set(k, v1Trip.get(k)! / totalW);
 
-  // Argus-v4: pool-count field model.
+  // Field combo freqs.
+  const ownDecById = new Map<string, number>();
+  for (const lu of candidates) for (const p of lu.players) {
+    if (ownDecById.has(p.id)) continue;
+    const adj = adjOwnById.get(p.id);
+    const o = (adj !== undefined ? adj : (p.ownership || 0)) / 100;
+    ownDecById.set(p.id, Math.max(0, o));
+  }
   const fcPair = new Map<string, number>(); const fcTrip = new Map<string, number>();
   const fcQuad = new Map<string, number>(); const fcQuint = new Map<string, number>();
-  const P = candidates.length;
   for (const lu of candidates) {
     const ids = lu.players.map(p => p.id).sort();
     const n = ids.length;
     for (let i = 0; i < n; i++) {
+      const oi = ownDecById.get(ids[i]) || 0;
       for (let j = i + 1; j < n; j++) {
+        const oj = ownDecById.get(ids[j]) || 0;
         const k2 = ids[i] + '|' + ids[j];
-        fcPair.set(k2, (fcPair.get(k2) || 0) + 1);
+        if (!fcPair.has(k2)) fcPair.set(k2, oi * oj);
         for (let l = j + 1; l < n; l++) {
+          const ol = ownDecById.get(ids[l]) || 0;
           const k3 = ids[i] + '|' + ids[j] + '|' + ids[l];
-          fcTrip.set(k3, (fcTrip.get(k3) || 0) + 1);
+          if (!fcTrip.has(k3)) fcTrip.set(k3, oi * oj * ol);
           for (let m = l + 1; m < n; m++) {
+            const om = ownDecById.get(ids[m]) || 0;
             const k4 = ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m];
-            fcQuad.set(k4, (fcQuad.get(k4) || 0) + 1);
+            if (!fcQuad.has(k4)) fcQuad.set(k4, oi * oj * ol * om);
             for (let q = m + 1; q < n; q++) {
+              const oq = ownDecById.get(ids[q]) || 0;
               const k5 = ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m] + '|' + ids[q];
-              fcQuint.set(k5, (fcQuint.get(k5) || 0) + 1);
+              if (!fcQuint.has(k5)) fcQuint.set(k5, oi * oj * ol * om * oq);
             }
           }
         }
       }
     }
   }
-  for (const [k, c] of fcPair) fcPair.set(k, c / P);
-  for (const [k, c] of fcTrip) fcTrip.set(k, c / P);
-  for (const [k, c] of fcQuad) fcQuad.set(k, c / P);
-  for (const [k, c] of fcQuint) fcQuint.set(k, c / P);
-  const missingFreq = 0.5 / Math.max(1, P);  // Argus-v4 Laplace smoother
   function mapMedian(m: Map<string, number>): number {
     if (m.size === 0) return 1; const arr: number[] = []; for (const v of m.values()) arr.push(v);
     arr.sort((a, b) => a - b); return arr[Math.floor(arr.length / 2)] || 1;
@@ -284,16 +290,16 @@ function selectArgus(candidates: Lineup[], adjOwnById: Map<string, number>): S[]
     const ids = players.map(p => p.id).sort();
     const slots: { f: number; r: number }[] = [];
     for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
-      const f2 = fcPair.get(ids[i] + '|' + ids[j]) ?? missingFreq;
+      const f2 = fcPair.get(ids[i] + '|' + ids[j]) ?? PARAMS.FIELD_FREQ_DEFAULT;
       slots.push({ f: f2, r: f2 / med2 });
       for (let l = j + 1; l < ids.length; l++) {
-        const f3 = fcTrip.get(ids[i] + '|' + ids[j] + '|' + ids[l]) ?? missingFreq;
+        const f3 = fcTrip.get(ids[i] + '|' + ids[j] + '|' + ids[l]) ?? PARAMS.FIELD_FREQ_DEFAULT;
         slots.push({ f: f3, r: f3 / med3 });
         for (let m = l + 1; m < ids.length; m++) {
-          const f4 = fcQuad.get(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m]) ?? missingFreq;
+          const f4 = fcQuad.get(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m]) ?? PARAMS.FIELD_FREQ_DEFAULT;
           slots.push({ f: f4, r: f4 / med4 });
           for (let q = m + 1; q < ids.length; q++) {
-            const f5 = fcQuint.get(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m] + '|' + ids[q]) ?? missingFreq;
+            const f5 = fcQuint.get(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m] + '|' + ids[q]) ?? PARAMS.FIELD_FREQ_DEFAULT;
             slots.push({ f: f5, r: f5 / med5 });
           }
         }
@@ -404,7 +410,7 @@ interface SlateRow {
 }
 
 async function main() {
-  console.log('=== ARGUS pro-consensus + ROI validation, 16 dev slates ===\n');
+  console.log('=== ARGUS-W20 pro-consensus + ROI validation, 16 dev slates ===\n');
 
   const rows: SlateRow[] = [];
   for (const s of SLATES) {

@@ -1,10 +1,18 @@
 /**
- * Theory-of-DFS ARGUS Pre-Slate (parallel variant runner).
+ * Theory-of-DFS ARGUS Pre-Slate (parallel variant runner). Currently v4.
  *
  * Argus is the deployed configuration of V1-MultiComboPenalty. Codename
  * after Argus Panoptes — the all-seeing 100-eyed giant — because the
  * penalty looks at all 627 combo dimensions per lineup (sizes 2-5) and
  * catches chalk wherever it surfaces.
+ *
+ * v4 (current, 2026-05-07): replaces the broken independence field model
+ * (Adj Own product) with the SS pool-count field model. Validation across
+ * 16 dev slates showed the independence model under-predicted same-team
+ * combos by 19×–561× (sizes 2-5) and lost on Pearson(log_pred, log_actual)
+ * to the pool model on 16/16 slates at sizes 3/4/5. Pool model captures
+ * the team-stack correlation structure the field actually plays.
+ * See Stage 10 of IMPLEMENTATION_NOTES.md.
  *
  * Spec is locked in:
  *   C:/Users/colin/dfs opto/multi_combo_penalty_implementation/IMPLEMENTATION_NOTES.md
@@ -141,60 +149,52 @@ function loadAdjOwnFromProjections(projPath: string): Map<string, number> {
 /**
  * Field combo frequency precomputation (sizes 2-5, pitchers included).
  *
- * Same approach as V1-FieldCombo: for each combo present in the candidate
- * pool, field_freq = ∏ (Adj Own / 100). Combos absent from the candidate
- * pool default to FIELD_FREQ_DEFAULT at lookup time (which only affects
- * lineups outside the candidate pool — not relevant for scoring here, but
- * matches FieldCombo's defensive behavior).
+ * Argus-v4: pool-count field model. For each combo present in the candidate
+ * pool, field_freq = (# pool lineups containing combo) / pool_size. This
+ * directly captures the team-stack correlation structure that the v1-v3
+ * independence model (Adj Own product) systematically under-predicted by
+ * 19×–561× at sizes 2–5 (see Stage 10 of IMPLEMENTATION_NOTES.md).
+ *
+ * Validation result: pool model wins Pearson(log_pred, log_actual) at
+ * sizes 3/4/5 on 16/16 dev slates vs the independence model.
+ *
+ * Combos not present in the pool get FIELD_FREQ_DEFAULT at lookup time
+ * (uses 0.5 / pool_size as a Laplace-smoothed missing-combo estimate, set
+ * dynamically per slate).
  *
  * Computed ONCE per slate before the scoring loop.
  */
 function computeFieldComboFrequencies(
   candidatePool: Lineup[],
-  adjOwnById: Map<string, number>
+  _adjOwnById: Map<string, number>
 ): {
   pairFreq: Map<string, number>;
   tripleFreq: Map<string, number>;
   quadFreq: Map<string, number>;
   quintFreq: Map<string, number>;
+  poolSize: number;
 } {
-  const pairFreq = new Map<string, number>();
-  const tripleFreq = new Map<string, number>();
-  const quadFreq = new Map<string, number>();
-  const quintFreq = new Map<string, number>();
-
-  // Per-player ownership decimal cache (Adj Own / 100). Pitchers included.
-  const ownDecById = new Map<string, number>();
-  for (const lu of candidatePool) {
-    for (const p of lu.players) {
-      if (ownDecById.has(p.id)) continue;
-      const adj = adjOwnById.get(p.id);
-      const o = (adj !== undefined ? adj : (p.ownership || 0)) / 100;
-      ownDecById.set(p.id, Math.max(0, o));
-    }
-  }
+  const pairCount = new Map<string, number>();
+  const tripleCount = new Map<string, number>();
+  const quadCount = new Map<string, number>();
+  const quintCount = new Map<string, number>();
 
   for (const lu of candidatePool) {
     const ids = lu.players.map(p => p.id).sort();
     const n = ids.length;
     for (let i = 0; i < n; i++) {
-      const oi = ownDecById.get(ids[i]) || 0;
       for (let j = i + 1; j < n; j++) {
-        const oj = ownDecById.get(ids[j]) || 0;
         const k2 = ids[i] + '|' + ids[j];
-        if (!pairFreq.has(k2)) pairFreq.set(k2, oi * oj);
+        pairCount.set(k2, (pairCount.get(k2) || 0) + 1);
         for (let l = j + 1; l < n; l++) {
-          const ol = ownDecById.get(ids[l]) || 0;
           const k3 = ids[i] + '|' + ids[j] + '|' + ids[l];
-          if (!tripleFreq.has(k3)) tripleFreq.set(k3, oi * oj * ol);
+          tripleCount.set(k3, (tripleCount.get(k3) || 0) + 1);
           for (let m = l + 1; m < n; m++) {
-            const om = ownDecById.get(ids[m]) || 0;
             const k4 = ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m];
-            if (!quadFreq.has(k4)) quadFreq.set(k4, oi * oj * ol * om);
+            quadCount.set(k4, (quadCount.get(k4) || 0) + 1);
             for (let q = m + 1; q < n; q++) {
-              const oq = ownDecById.get(ids[q]) || 0;
               const k5 = ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m] + '|' + ids[q];
-              if (!quintFreq.has(k5)) quintFreq.set(k5, oi * oj * ol * om * oq);
+              quintCount.set(k5, (quintCount.get(k5) || 0) + 1);
             }
           }
         }
@@ -202,7 +202,17 @@ function computeFieldComboFrequencies(
     }
   }
 
-  return { pairFreq, tripleFreq, quadFreq, quintFreq };
+  const P = candidatePool.length;
+  const pairFreq = new Map<string, number>();
+  const tripleFreq = new Map<string, number>();
+  const quadFreq = new Map<string, number>();
+  const quintFreq = new Map<string, number>();
+  for (const [k, c] of pairCount) pairFreq.set(k, c / P);
+  for (const [k, c] of tripleCount) tripleFreq.set(k, c / P);
+  for (const [k, c] of quadCount) quadFreq.set(k, c / P);
+  for (const [k, c] of quintCount) quintFreq.set(k, c / P);
+
+  return { pairFreq, tripleFreq, quadFreq, quintFreq, poolSize: P };
 }
 
 /**
@@ -262,7 +272,8 @@ function computeMultiComboPenalty(
   tripleFreq: Map<string, number>,
   quadFreq: Map<string, number>,
   quintFreq: Map<string, number>,
-  medians: { med2: number; med3: number; med4: number; med5: number }
+  medians: { med2: number; med3: number; med4: number; med5: number },
+  missingFreq: number
 ): { penalty: number; topConcentration: number; topRatio: number; maxFreq: number } {
   const ids = lineup.players.map(p => p.id).sort();
   const n = ids.length;
@@ -273,19 +284,19 @@ function computeMultiComboPenalty(
 
   for (let i = 0; i < n; i++) {
     for (let j = i + 1; j < n; j++) {
-      const f2 = pairFreq.get(ids[i] + '|' + ids[j]) ?? ARGUS.FIELD_FREQ_DEFAULT;
+      const f2 = pairFreq.get(ids[i] + '|' + ids[j]) ?? missingFreq;
       slots.push({ f: f2, r: f2 / medians.med2 });
       if (f2 > maxFreq) maxFreq = f2;
       for (let l = j + 1; l < n; l++) {
-        const f3 = tripleFreq.get(ids[i] + '|' + ids[j] + '|' + ids[l]) ?? ARGUS.FIELD_FREQ_DEFAULT;
+        const f3 = tripleFreq.get(ids[i] + '|' + ids[j] + '|' + ids[l]) ?? missingFreq;
         slots.push({ f: f3, r: f3 / medians.med3 });
         if (f3 > maxFreq) maxFreq = f3;
         for (let m = l + 1; m < n; m++) {
-          const f4 = quadFreq.get(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m]) ?? ARGUS.FIELD_FREQ_DEFAULT;
+          const f4 = quadFreq.get(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m]) ?? missingFreq;
           slots.push({ f: f4, r: f4 / medians.med4 });
           if (f4 > maxFreq) maxFreq = f4;
           for (let q = m + 1; q < n; q++) {
-            const f5 = quintFreq.get(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m] + '|' + ids[q]) ?? ARGUS.FIELD_FREQ_DEFAULT;
+            const f5 = quintFreq.get(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m] + '|' + ids[q]) ?? missingFreq;
             slots.push({ f: f5, r: f5 / medians.med5 });
             if (f5 > maxFreq) maxFreq = f5;
           }
@@ -368,9 +379,9 @@ function computeV1Uniqueness(
 
 async function main() {
   console.log('================================================================');
-  console.log('ARGUS PRE-SLATE  (V1-MultiComboPenalty v3, W_MULTI=' + ARGUS.W_MULTI + ')');
+  console.log('ARGUS PRE-SLATE  (V1-MultiComboPenalty v4, W_MULTI=' + ARGUS.W_MULTI + ')');
   console.log('================================================================');
-  console.log('Median-rescaled multi-combo penalty (top-K=5 chalk-ratios, sizes 2-5).');
+  console.log('Pool-count field model + median-rescaled multi-combo penalty (top-K=5 chalk-ratios, sizes 2-5).');
   console.log('EV = 1.0×projPct + 0.30×(1-ownPct) + 0.15×rangePct×0.85 + 0.25×uniqPct + ' + ARGUS.W_MULTI + '×multiComboPenaltyPct.');
   console.log('V1-NoCorr W_CMB combo uniqueness PRESERVED alongside W_MULTI term.');
   console.log('Validation path: parallel live deployment, NOT backtest.');
@@ -406,20 +417,25 @@ async function main() {
   const v1Freqs = buildPairTripleFreqs(candidates);
   console.log('  Pairs:   ' + v1Freqs.pair.size + ', Triples: ' + v1Freqs.triple.size + '\n');
 
-  // Field combo frequency precomputation (sizes 2-5, pitchers included).
-  console.log('Computing field combo frequencies (sizes 2-5)...');
+  // Field combo frequency precomputation (Argus-v4: pool-count model, sizes 2-5).
+  console.log('Computing field combo frequencies (sizes 2-5, pool-count model)...');
   const t0 = Date.now();
   const fieldFreqs = computeFieldComboFrequencies(candidates, adjOwnById);
-  console.log('  Pairs:    ' + fieldFreqs.pairFreq.size);
-  console.log('  Triples:  ' + fieldFreqs.tripleFreq.size);
-  console.log('  Quads:    ' + fieldFreqs.quadFreq.size);
-  console.log('  Quintets: ' + fieldFreqs.quintFreq.size);
+  console.log('  Pool size: ' + fieldFreqs.poolSize);
+  console.log('  Pairs:     ' + fieldFreqs.pairFreq.size);
+  console.log('  Triples:   ' + fieldFreqs.tripleFreq.size);
+  console.log('  Quads:     ' + fieldFreqs.quadFreq.size);
+  console.log('  Quintets:  ' + fieldFreqs.quintFreq.size);
   console.log('  ' + ((Date.now() - t0) / 1000).toFixed(2) + 's');
 
   // Argus v3: per-size median for chalk-ratio rescaling.
   const medians = computeMediansBySize(fieldFreqs.pairFreq, fieldFreqs.tripleFreq, fieldFreqs.quadFreq, fieldFreqs.quintFreq);
   console.log('  Median freq per size: pair=' + medians.med2.toExponential(2) + ' trip=' + medians.med3.toExponential(2) +
-              ' quad=' + medians.med4.toExponential(2) + ' quint=' + medians.med5.toExponential(2) + '\n');
+              ' quad=' + medians.med4.toExponential(2) + ' quint=' + medians.med5.toExponential(2));
+
+  // Argus v4: missing-combo Laplace smoother = 0.5 / pool_size.
+  const missingFreq = 0.5 / Math.max(1, fieldFreqs.poolSize);
+  console.log('  Missing-combo freq (Laplace 0.5/P): ' + missingFreq.toExponential(2) + '\n');
 
   // Score every candidate.
   console.log('Scoring (Argus = V1-MultiComboPenalty v3, W_MULTI=' + ARGUS.W_MULTI + ')...');
@@ -473,8 +489,8 @@ async function main() {
     // V1-NoCorr existing combo uniqueness (preserved).
     const uniqueness = computeV1Uniqueness(lu, v1Freqs.pair, v1Freqs.triple, ARGUS.TRIPLE_FREQ_CAP);
 
-    // Argus v3: median-rescaled multi-combo joint concentration penalty.
-    const mc = computeMultiComboPenalty(lu, fieldFreqs.pairFreq, fieldFreqs.tripleFreq, fieldFreqs.quadFreq, fieldFreqs.quintFreq, medians);
+    // Argus v4: pool-count field model, median-rescaled, multi-combo penalty.
+    const mc = computeMultiComboPenalty(lu, fieldFreqs.pairFreq, fieldFreqs.tripleFreq, fieldFreqs.quadFreq, fieldFreqs.quintFreq, medians, missingFreq);
 
     // Leverage penalty: hitter ownership only (matches V1-NoCorr).
     let logOwn = 0;
