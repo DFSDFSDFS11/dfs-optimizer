@@ -42,13 +42,13 @@ const V1 = {
   PPD_LINEUP_PENALTY: 0.10, PPD_LINEUP_TOP_PCT: 0.10,
 };
 
-// Argus params (V1-MCP v3, W_MULTI=0.40, median-rescaled).
+// Argus params (V1-MCP v3, W_MULTI=0.20, median-rescaled).
 const MCP = {
   STACK_BONUS_PER_HITTER: 0,
   BRINGBACK_1: 0,
   BRINGBACK_2: 0,
   PITCHER_VS_HITTER_PENALTY: -0.10,
-  W_PROJ: 1.0, W_LEV: 0.30, W_VAR: 0.15, W_CMB: 0.25, W_MULTI: 0.40,
+  W_PROJ: 1.0, W_LEV: 0.30, W_VAR: 0.15, W_CMB: 0.25, W_MULTI: 0.20,
   TRIPLE_FREQ_CAP: 5,
   PPD_LINEUP_PENALTY: 0.10, PPD_LINEUP_TOP_PCT: 0.10,
   TOP_K: 5,

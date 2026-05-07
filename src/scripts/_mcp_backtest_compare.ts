@@ -55,7 +55,7 @@ const PARAMS_V1 = {
 
 const PARAMS_MCP = {
   ...PARAMS_V1,
-  W_MULTI: 0.40,             // Argus
+  W_MULTI: 0.20,             // Argus (walked back from 0.40 after pro-consensus validation)
   TOP_K: 5,
   LOG_EPSILON: 1e-12,
   FIELD_FREQ_DEFAULT: 1e-9,

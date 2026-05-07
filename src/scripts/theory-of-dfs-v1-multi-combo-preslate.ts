@@ -17,8 +17,9 @@
  *     comparable scales). Higher value = lower joint concentration =
  *     more leverage. Lower value = lineup combines multiple chalk combos.
  *   - EV gains a NEW additive term: + W_MULTI × multi_combo_penalty_pct
- *     (W_MULTI = 0.40, pre-registered after 5-6-26 evidence; see Stage 8
- *     of IMPLEMENTATION_NOTES.md).
+ *     (W_MULTI = 0.20, walked back from a brief 0.40 trial after the 16-slate
+ *     pro-consensus check showed 0.40 over-corrected away from pros — see
+ *     Stage 8/9 of IMPLEMENTATION_NOTES.md).
  *   - V1-NoCorr's existing combo uniqueness term (W_CMB × uniqPct, 0.25
  *     weight) is PRESERVED — multi-combo penalty refines selection, not
  *     replaces existing scoring.
@@ -46,7 +47,7 @@
  *
  * Pre-registered constants (DO NOT TUNE):
  *   - K = 5 (count of combos in product)
- *   - W_MULTI = 0.40
+ *   - W_MULTI = 0.20
  *   - Field freq default 1e-9, log epsilon 1e-12
  *
  * Validation path: parallel live deployment alongside V1-NoCorr over 20-30
@@ -87,7 +88,7 @@ const ARGUS = {
   W_LEV: 0.30,
   W_VAR: 0.15,
   W_CMB: 0.25,    // V1-NoCorr existing combo uniqueness — PRESERVED
-  W_MULTI: 0.40,  // multi-combo joint concentration penalty (Argus: 0.40 after 5-6-26 evidence)
+  W_MULTI: 0.20,  // multi-combo joint concentration penalty (Argus: walked back 0.40 → 0.20 after pro-consensus validation)
   // V1-NoCorr triple cap (used by existing combo uniqueness term).
   TRIPLE_FREQ_CAP: 5,
   // Exposure / portfolio caps — V1-NoCorr values preserved.
