@@ -51,6 +51,9 @@ function extractPlayerId(cell: string): string | null {
   const parenMatch = trimmed.match(/\((\d{4,})\)\s*$/);
   if (parenMatch) return parenMatch[1];
 
+  // FanDuel-style dash-separated ID, e.g. "130233-79073"
+  if (/^\d+-\d+$/.test(trimmed)) return trimmed;
+
   // Pure numeric ID
   if (/^\d{4,}$/.test(trimmed)) return trimmed;
 

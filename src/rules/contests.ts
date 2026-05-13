@@ -331,6 +331,40 @@ export const FD_NBA_CLASSIC: ContestConfig = {
 };
 
 // ============================================================
+// FANDUEL MLB CLASSIC
+// ============================================================
+
+/**
+ * FanDuel MLB Classic Rules
+ *
+ * - 9 players: P, C/1B, 2B, 3B, SS, OF, OF, OF, UTIL
+ * - $35,000 salary cap
+ * - Max 4 players per team (hitters only)
+ */
+export const FD_MLB_CLASSIC: ContestConfig = {
+  site: 'fd',
+  sport: 'mlb',
+  contestType: 'classic',
+  salaryCap: 35000,
+  salaryMin: 33000,
+  rosterSize: 9,
+  name: 'FanDuel MLB Classic',
+  maxPlayersPerTeam: 4,
+  minGames: 2,
+  positions: [
+    { name: 'P', eligible: ['P'] },
+    { name: 'C/1B', eligible: ['C', '1B'] },
+    { name: '2B', eligible: ['2B'] },
+    { name: '3B', eligible: ['3B'] },
+    { name: 'SS', eligible: ['SS'] },
+    { name: 'OF', eligible: ['OF'] },
+    { name: 'OF', eligible: ['OF'] },
+    { name: 'OF', eligible: ['OF'] },
+    { name: 'UTIL', eligible: ['C', '1B', '2B', '3B', 'SS', 'OF'] },
+  ],
+};
+
+// ============================================================
 // FANDUEL NFL CLASSIC
 // ============================================================
 
@@ -407,6 +441,11 @@ export function getContestConfig(
   // FanDuel NBA
   if (site === 'fd' && sport === 'nba' && contestType === 'classic') {
     return FD_NBA_CLASSIC;
+  }
+
+  // FanDuel MLB Classic
+  if (site === 'fd' && sport === 'mlb' && contestType === 'classic') {
+    return FD_MLB_CLASSIC;
   }
 
   // FanDuel NFL Classic
