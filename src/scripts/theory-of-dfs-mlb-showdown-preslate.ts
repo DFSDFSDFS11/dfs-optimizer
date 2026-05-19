@@ -18,8 +18,8 @@ import { getContestConfig } from '../rules';
 import { exportForDraftKings, exportDetailedLineups } from '../scoring';
 
 const DATA_DIR = 'C:/Users/colin/dfs opto';
-const PROJ_FILE = 'mlbshowdownproj.csv';
-const POOL_FILES = ['mlbshowdownpool1.csv', 'mlbshowdownpool2.csv'];
+const PROJ_FILE = process.env.MLB_SD_PROJ || 'mlbdkprojpre.csv';
+const POOL_FILES = (process.env.MLB_SD_POOLS || 'sspool1pre.csv,sspool2pre.csv').split(',');
 const TARGET_COUNT = 150;
 const N = TARGET_COUNT;
 

@@ -96,13 +96,13 @@ const ARGUS = {
   W_LEV: 0.30,
   W_VAR: 0.15,
   W_CMB: 0.25,    // V1-NoCorr existing combo uniqueness — PRESERVED
-  W_MULTI: 0.20,  // multi-combo joint concentration penalty (Argus: walked back 0.40 → 0.20 after pro-consensus validation)
+  W_MULTI: process.env.ARGUS_W_MULTI ? parseFloat(process.env.ARGUS_W_MULTI) : 0.20,  // multi-combo penalty (default 0.20; override via ARGUS_W_MULTI env)
   // V1-NoCorr triple cap (used by existing combo uniqueness term).
   TRIPLE_FREQ_CAP: 5,
   // Exposure / portfolio caps — V1-NoCorr values preserved.
-  EXPOSURE_CAP_HITTER: 0.25,
-  EXPOSURE_CAP_PITCHER: 0.45,
-  TEAM_STACK_CAP: 0.20,
+  EXPOSURE_CAP_HITTER: process.env.ARGUS_HITTER_CAP ? parseFloat(process.env.ARGUS_HITTER_CAP) : 0.25,
+  EXPOSURE_CAP_PITCHER: process.env.ARGUS_PITCHER_CAP ? parseFloat(process.env.ARGUS_PITCHER_CAP) : 0.45,
+  TEAM_STACK_CAP: process.env.ARGUS_TEAM_CAP ? parseFloat(process.env.ARGUS_TEAM_CAP) : 0.20,
   // Variance-band selection.
   BAND_HIGH_PCT: 0.20,
   BAND_MID_PCT: 0.60,

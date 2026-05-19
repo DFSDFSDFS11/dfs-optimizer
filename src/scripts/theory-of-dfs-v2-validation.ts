@@ -475,6 +475,10 @@ interface VariantOpts {
   ppdPenaltyOverride?: number;
   // V7: bring-back mandate (min lineups with BB>=1, BB>=2). If set, forces composition.
   bringBackMin?: { gte1: number; gte2: number };
+  // V1-FieldCombo: ownership-product field freq, multi-level uniqueness, max-sat penalty
+  fieldCombo?: boolean;
+  // V1-PortfolioCombo: combo-level decorrelation cap (sizes 4 and 5, pitchers included)
+  portfolioCombo?: boolean;
 }
 
 function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
@@ -500,6 +504,85 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
 
   const { pair, triple } = buildPairTripleFreqs(candidatePool);
   const scored = candidatePool.map(lu => scoreLineup(lu, pair, triple, opts.applyTypeScaling, opts.stackBonusOverride, opts.bringback1Override, opts.bringback2Override, opts.secondary4StkBonus));
+
+  // V1-FieldCombo: replace V1's pool-derived combo uniqueness with field-referenced
+  // (ownership-product) multi-level saturation across sizes 2-5, plus max-sat penalty.
+  // Pre-registered weights: COMBO_W2=0.10, W3=0.20, W4=0.30, W5=0.40; W_CMB_AVG=0.30, W_CMB_MAX=0.20
+  const fcMultiUniq: number[] = new Array(scored.length).fill(0);
+  const fcMaxSat: number[] = new Array(scored.length).fill(0);
+  if (opts.fieldCombo) {
+    // Per-player ownership decimal (Adj Own / 100). Pitchers included.
+    const ownDec = new Map<string, number>();
+    for (const lu of candidatePool) for (const p of lu.players) {
+      if (!ownDec.has(p.id)) ownDec.set(p.id, Math.max(0, (p.ownership || 0) / 100));
+    }
+    const SAT_MIN = 1e-12;
+    const FIELD_FREQ_DEFAULT = 1e-9;
+    // Build pool-observed combo freq tables (keys are sorted-id pipe joins)
+    const pairF = new Map<string, number>();
+    const tripleF = new Map<string, number>();
+    const quadF = new Map<string, number>();
+    const quintF = new Map<string, number>();
+    for (const lu of candidatePool) {
+      const ids = lu.players.map(p => p.id).sort();
+      const n = ids.length;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          const k2 = ids[i] + '|' + ids[j];
+          if (!pairF.has(k2)) pairF.set(k2, (ownDec.get(ids[i])||0) * (ownDec.get(ids[j])||0));
+          for (let l = j + 1; l < n; l++) {
+            const k3 = ids[i] + '|' + ids[j] + '|' + ids[l];
+            if (!tripleF.has(k3)) tripleF.set(k3, (ownDec.get(ids[i])||0) * (ownDec.get(ids[j])||0) * (ownDec.get(ids[l])||0));
+            for (let m = l + 1; m < n; m++) {
+              const k4 = ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m];
+              if (!quadF.has(k4)) quadF.set(k4, (ownDec.get(ids[i])||0) * (ownDec.get(ids[j])||0) * (ownDec.get(ids[l])||0) * (ownDec.get(ids[m])||0));
+              for (let q = m + 1; q < n; q++) {
+                const k5 = ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m] + '|' + ids[q];
+                if (!quintF.has(k5)) quintF.set(k5, (ownDec.get(ids[i])||0) * (ownDec.get(ids[j])||0) * (ownDec.get(ids[l])||0) * (ownDec.get(ids[m])||0) * (ownDec.get(ids[q])||0));
+              }
+            }
+          }
+        }
+      }
+    }
+    const logSafe = (x: number) => Math.log(Math.max(SAT_MIN, x));
+    for (let si = 0; si < scored.length; si++) {
+      const lu = scored[si].lu;
+      const ids = lu.players.map(p => p.id).sort();
+      const pairs: number[] = [], triples: number[] = [], quads: number[] = [], quints: number[] = [];
+      for (let i = 0; i < 10; i++) {
+        for (let j = i + 1; j < 10; j++) {
+          const k2 = ids[i] + '|' + ids[j];
+          pairs.push(pairF.get(k2) ?? FIELD_FREQ_DEFAULT);
+          for (let l = j + 1; l < 10; l++) {
+            const k3 = ids[i] + '|' + ids[j] + '|' + ids[l];
+            triples.push(tripleF.get(k3) ?? FIELD_FREQ_DEFAULT);
+            for (let m = l + 1; m < 10; m++) {
+              const k4 = ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m];
+              quads.push(quadF.get(k4) ?? FIELD_FREQ_DEFAULT);
+              for (let q = m + 1; q < 10; q++) {
+                const k5 = ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m] + '|' + ids[q];
+                quints.push(quintF.get(k5) ?? FIELD_FREQ_DEFAULT);
+              }
+            }
+          }
+        }
+      }
+      const s2 = pairs.reduce((a,b)=>a+b,0)/pairs.length;
+      const s3 = triples.reduce((a,b)=>a+b,0)/triples.length;
+      const s4 = quads.reduce((a,b)=>a+b,0)/quads.length;
+      const s5 = quints.reduce((a,b)=>a+b,0)/quints.length;
+      let mx = 0;
+      for (const v of pairs) if (v > mx) mx = v;
+      for (const v of triples) if (v > mx) mx = v;
+      for (const v of quads) if (v > mx) mx = v;
+      for (const v of quints) if (v > mx) mx = v;
+      fcMultiUniq[si] = 0.10*(-logSafe(s2)) + 0.20*(-logSafe(s3)) + 0.30*(-logSafe(s4)) + 0.40*(-logSafe(s5));
+      fcMaxSat[si] = mx;
+    }
+  }
+  const fcMultiUniqPct = opts.fieldCombo ? rankPercentile(fcMultiUniq) : null;
+  const fcMaxSatPct = opts.fieldCombo ? rankPercentile(fcMaxSat) : null;
   const projAdj = scored.map(s => s.proj * (1 + s.corrAdj));
   const projPct = rankPercentile(projAdj);
   const ownPct = rankPercentile(scored.map(s => s.logOwn));
@@ -519,12 +602,24 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
   const wProj = opts.wProjOverride !== undefined ? opts.wProjOverride : TODFS_PARAMS.W_PROJ;
   const ppdTop = opts.ppdTopPctOverride !== undefined ? opts.ppdTopPctOverride : TODFS_PARAMS.PPD_LINEUP_TOP_PCT;
   const ppdPen = opts.ppdPenaltyOverride !== undefined ? opts.ppdPenaltyOverride : TODFS_PARAMS.PPD_LINEUP_PENALTY;
-  for (const s of scored) {
-    let ev = wProj * s.projPct
-           + wLev * (1 - s.ownPct)
-           + TODFS_PARAMS.W_VAR * s.rangePct * 0.85
-           + wCmb * s.uniqPct
-           + stackChalkBonus * s.stackOwnPct;  // V3 term
+  for (let si = 0; si < scored.length; si++) {
+    const s = scored[si];
+    let ev: number;
+    if (opts.fieldCombo) {
+      // V1-FieldCombo: 0.30 × multiUniqPct − 0.20 × maxSatPct (replaces wCmb × uniqPct)
+      ev = wProj * s.projPct
+         + wLev * (1 - s.ownPct)
+         + TODFS_PARAMS.W_VAR * s.rangePct * 0.85
+         + 0.30 * (fcMultiUniqPct as number[])[si]
+         - 0.20 * (fcMaxSatPct as number[])[si]
+         + stackChalkBonus * s.stackOwnPct;
+    } else {
+      ev = wProj * s.projPct
+         + wLev * (1 - s.ownPct)
+         + TODFS_PARAMS.W_VAR * s.rangePct * 0.85
+         + wCmb * s.uniqPct
+         + stackChalkBonus * s.stackOwnPct;
+    }
     if (s.ppdPct >= 1 - ppdTop) ev *= (1 - ppdPen);
     s.ev = ev;
   }
@@ -568,6 +663,43 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
   }
   // V7: bring-back counts.
   const bbCount = { gte1: 0, gte2: 0 };
+  // V1-PortfolioCombo: combo cap tracking
+  const pcCombo4 = new Map<string, number>();
+  const pcCombo5 = new Map<string, number>();
+  let pcCap4 = Math.floor(N * 0.13);
+  let pcCap5 = Math.floor(N * 0.09);
+  function lineupCombos(players: { id: string }[]): { combos4: string[]; combos5: string[] } {
+    const ids = players.map(p => p.id).sort();
+    const c4: string[] = [];
+    const c5: string[] = [];
+    const n = ids.length;
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        for (let l = j + 1; l < n; l++) {
+          for (let m = l + 1; m < n; m++) {
+            c4.push(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m]);
+            for (let q = m + 1; q < n; q++) {
+              c5.push(ids[i] + '|' + ids[j] + '|' + ids[l] + '|' + ids[m] + '|' + ids[q]);
+            }
+          }
+        }
+      }
+    }
+    return { combos4: c4, combos5: c5 };
+  }
+  function pcViolates(s: ScoredLU): boolean {
+    if (!opts.portfolioCombo) return false;
+    const { combos4, combos5 } = lineupCombos(s.lu.players);
+    for (const c of combos4) if ((pcCombo4.get(c) || 0) + 1 > pcCap4) return true;
+    for (const c of combos5) if ((pcCombo5.get(c) || 0) + 1 > pcCap5) return true;
+    return false;
+  }
+  function pcAcceptUpdate(s: ScoredLU): void {
+    if (!opts.portfolioCombo) return;
+    const { combos4, combos5 } = lineupCombos(s.lu.players);
+    for (const c of combos4) pcCombo4.set(c, (pcCombo4.get(c) || 0) + 1);
+    for (const c of combos5) pcCombo5.set(c, (pcCombo5.get(c) || 0) + 1);
+  }
   function passes(s: ScoredLU): boolean {
     if (seen.has(s.lu.hash)) return false;
     for (const p of s.lu.players) {
@@ -602,6 +734,8 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
       if (s.bringBack < 1 && nakedCount >= maxNaked) return false;
       if (s.bringBack < 2 && lessThan2Count >= maxLessThan2) return false;
     }
+    // V1-PortfolioCombo: combo cap check (last)
+    if (pcViolates(s)) return false;
     return true;
   }
   function add(s: ScoredLU) {
@@ -610,6 +744,7 @@ function buildTheoryDfsPortfolio(sd: SlateData, opts: VariantOpts): Lineup[] {
     if (opts.stackMix) stackBucketCount[bucketOf(s)]++;
     if (s.bringBack >= 1) bbCount.gte1++;
     if (s.bringBack >= 2) bbCount.gte2++;
+    pcAcceptUpdate(s);
   }
   function fillBand(bandPool: ScoredLU[], target: number) {
     const sorted = [...bandPool].sort((a, b) => b.ev - a.ev);
@@ -827,6 +962,14 @@ async function main() {
     // V1 baseline.
     const v1Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0 });
     const v1Result = evaluatePortfolio(v1Portfolio, sd, 'theory-dfs-v1', sd.candidates.length, sd.candidates.length);
+    // V1-FieldCombo variant: ownership-product field freq, multi-level uniqueness, max-sat penalty
+    const v1FCPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, fieldCombo: true });
+    const v1FCResult = evaluatePortfolio(v1FCPortfolio, sd, 'theory-dfs-v1-fc', sd.candidates.length, sd.candidates.length);
+    allResults.push(v1FCResult);
+    // V1-PortfolioCombo variant: combo cap during selection (sizes 4 + 5, pitchers included)
+    const v1PCPortfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, portfolioCombo: true });
+    const v1PCResult = evaluatePortfolio(v1PCPortfolio, sd, 'theory-dfs-v1-pc', sd.candidates.length, sd.candidates.length);
+    allResults.push(v1PCResult);
     // V1.1 W_LEV sweep portfolios (built early so dump can reference them).
     const vLev20Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wLevOverride: 0.20 });
     const vLev15Portfolio = buildTheoryDfsPortfolio(sd, { applyTypeScaling: false, topNFilter: 0, wLevOverride: 0.15 });

@@ -1,0 +1,46 @@
+{
+  "3": {
+    "representative": "own_bot3_sum",
+    "members": [
+      "h_proj_mean",
+      "h_proj_excess_vs_slate_mean",
+      "h_proj_sum",
+      "h_ceil85_sum",
+      "ceil99_sum",
+      "proj_per_dollar",
+      "proj_mean",
+      "proj_sum",
+      "std_sum",
+      "std_mean",
+      "own_bot3_sum",
+      "ceil95_sum"
+    ]
+  },
+  "2": {
+    "representative": "proj_min",
+    "members": [
+      "proj_bot3_sum",
+      "proj_min",
+      "h_proj_min"
+    ]
+  },
+  "1": {
+    "representative": "pos_proj_zscore_sum",
+    "members": [
+      "dev_sum_under",
+      "pair_freq_mean",
+      "pair_freq_sum",
+      "dev_mean",
+      "dev_sum",
+      "player_freq_sum",
+      "pos_proj_zscore_sum",
+      "dev_abs_sum"
+    ]
+  },
+  "4": {
+    "representative": "proj_vs_slate_p50",
+    "members": [
+      "proj_vs_slate_p50"
+    ]
+  }
+}

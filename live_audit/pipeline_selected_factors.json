@@ -1,0 +1,196 @@
+{
+  "final_factors": [
+    {
+      "factor": "pos_proj_zscore_sum",
+      "dev_ic": 0.09189950531871925,
+      "sign_stable": 0.6363636363636364,
+      "early_ic": 0.0238124596672629,
+      "late_ic": 0.14863871002826617,
+      "status": "emerging"
+    },
+    {
+      "factor": "dev_sum_under",
+      "dev_ic": 0.10661830518047616,
+      "sign_stable": 0.6363636363636364,
+      "early_ic": 0.059635751456692934,
+      "late_ic": 0.14577043328362885,
+      "status": "emerging"
+    },
+    {
+      "factor": "own_bot3_sum",
+      "dev_ic": 0.07910408659048211,
+      "sign_stable": 0.5454545454545454,
+      "early_ic": 0.0010368656268628872,
+      "late_ic": 0.1441601040601648,
+      "status": "emerging"
+    },
+    {
+      "factor": "h_proj_mean",
+      "dev_ic": 0.1258171740902982,
+      "sign_stable": 0.45454545454545453,
+      "early_ic": 0.10597029310059933,
+      "late_ic": 0.14235624158171387,
+      "status": "emerging"
+    },
+    {
+      "factor": "h_proj_excess_vs_slate_mean",
+      "dev_ic": 0.12581640617646772,
+      "sign_stable": 0.45454545454545453,
+      "early_ic": 0.1059691264257963,
+      "late_ic": 0.14235580596869388,
+      "status": "emerging"
+    },
+    {
+      "factor": "h_proj_sum",
+      "dev_ic": 0.125815320679,
+      "sign_stable": 0.45454545454545453,
+      "early_ic": 0.1059684176500593,
+      "late_ic": 0.1423544065364506,
+      "status": "emerging"
+    },
+    {
+      "factor": "pair_freq_sum",
+      "dev_ic": 0.10588759603970144,
+      "sign_stable": 0.6363636363636364,
+      "early_ic": 0.06995300108401013,
+      "late_ic": 0.13583309183611084,
+      "status": "emerging"
+    },
+    {
+      "factor": "pair_freq_mean",
+      "dev_ic": 0.10588770860678198,
+      "sign_stable": 0.6363636363636364,
+      "early_ic": 0.06995357653844252,
+      "late_ic": 0.13583281866373156,
+      "status": "emerging"
+    },
+    {
+      "factor": "player_freq_sum",
+      "dev_ic": 0.09666362892080635,
+      "sign_stable": 0.5454545454545454,
+      "early_ic": 0.051257349581578696,
+      "late_ic": 0.1345021950368294,
+      "status": "emerging"
+    },
+    {
+      "factor": "dev_mean",
+      "dev_ic": 0.09806217630679787,
+      "sign_stable": 0.7272727272727273,
+      "early_ic": 0.05771924884677323,
+      "late_ic": 0.13168128252348504,
+      "status": "emerging"
+    },
+    {
+      "factor": "dev_sum",
+      "dev_ic": 0.09806217630679787,
+      "sign_stable": 0.7272727272727273,
+      "early_ic": 0.05771924884677323,
+      "late_ic": 0.13168128252348504,
+      "status": "emerging"
+    },
+    {
+      "factor": "proj_vs_slate_p50",
+      "dev_ic": 0.08120373629696817,
+      "sign_stable": 0.5454545454545454,
+      "early_ic": 0.023713837761699563,
+      "late_ic": 0.12911198507635865,
+      "status": "emerging"
+    },
+    {
+      "factor": "proj_mean",
+      "dev_ic": 0.08120156552439632,
+      "sign_stable": 0.5454545454545454,
+      "early_ic": 0.023709062062041507,
+      "late_ic": 0.12911198507635865,
+      "status": "emerging"
+    },
+    {
+      "factor": "proj_sum",
+      "dev_ic": 0.08119903705338877,
+      "sign_stable": 0.5454545454545454,
+      "early_ic": 0.023706548817571747,
+      "late_ic": 0.12910944391656962,
+      "status": "emerging"
+    },
+    {
+      "factor": "proj_per_dollar",
+      "dev_ic": 0.08170366789874885,
+      "sign_stable": 0.5454545454545454,
+      "early_ic": 0.030659894526568744,
+      "late_ic": 0.12424014570889896,
+      "status": "emerging"
+    },
+    {
+      "factor": "proj_min",
+      "dev_ic": 0.11163433080583994,
+      "sign_stable": 0.8181818181818182,
+      "early_ic": 0.09738842097967775,
+      "late_ic": 0.12350592232764178,
+      "status": "emerging"
+    },
+    {
+      "factor": "h_proj_min",
+      "dev_ic": 0.11082016624116414,
+      "sign_stable": 0.8181818181818182,
+      "early_ic": 0.09746419939004435,
+      "late_ic": 0.1219501386170973,
+      "status": "emerging"
+    },
+    {
+      "factor": "h_ceil85_sum",
+      "dev_ic": 0.10046025165330494,
+      "sign_stable": 0.45454545454545453,
+      "early_ic": 0.07590456049740102,
+      "late_ic": 0.12092332761655818,
+      "status": "emerging"
+    },
+    {
+      "factor": "proj_bot3_sum",
+      "dev_ic": 0.11622662905188973,
+      "sign_stable": 0.7272727272727273,
+      "early_ic": 0.12341741532380905,
+      "late_ic": 0.11023430715862363,
+      "status": "stable"
+    },
+    {
+      "factor": "dev_abs_sum",
+      "dev_ic": 0.0863092132979598,
+      "sign_stable": 0.6363636363636364,
+      "early_ic": 0.059722414526901746,
+      "late_ic": 0.1084648789405082,
+      "status": "emerging"
+    },
+    {
+      "factor": "ceil95_sum",
+      "dev_ic": 0.07792058426131178,
+      "sign_stable": 0.5454545454545454,
+      "early_ic": 0.044856223446557916,
+      "late_ic": 0.10547421827360666,
+      "status": "emerging"
+    },
+    {
+      "factor": "ceil99_sum",
+      "dev_ic": 0.08535764047165745,
+      "sign_stable": 0.5454545454545454,
+      "early_ic": 0.06283095557133327,
+      "late_ic": 0.10412987788859428,
+      "status": "emerging"
+    },
+    {
+      "factor": "std_sum",
+      "dev_ic": 0.0798778256590198,
+      "sign_stable": 0.45454545454545453,
+      "early_ic": 0.06285201473645333,
+      "late_ic": 0.09406600142782517,
+      "status": "emerging"
+    },
+    {
+      "factor": "std_mean",
+      "dev_ic": 0.07987781954430494,
+      "sign_stable": 0.45454545454545453,
+      "early_ic": 0.06285200315229438,
+      "late_ic": 0.09406599987098041,
+      "status": "emerging"
+    }
+  ]
+}

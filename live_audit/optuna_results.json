@@ -1,0 +1,17 @@
+{
+  "best_wfa_auc": 0.6506543049631676,
+  "best_params": {
+    "learning_rate": 0.012011697403498703,
+    "max_depth": 8,
+    "min_child_weight": 75,
+    "subsample": 0.7980678064449945,
+    "colsample_bytree": 0.5517167532493208,
+    "gamma": 0.5883442501081217,
+    "reg_alpha": 0.8593345712000591,
+    "reg_lambda": 1.3414633238121334,
+    "pos_weight_mult": 0.5342327447109914
+  },
+  "best_iter": 293,
+  "baseline_v2_auc": 0.6285,
+  "n_trials": 100
+}

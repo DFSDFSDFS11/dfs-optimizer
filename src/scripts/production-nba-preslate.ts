@@ -39,7 +39,7 @@ import { precomputeComboFrequencies } from '../selection/combo-leverage';
 const DATA_DIR = 'C:/Users/colin/dfs opto';
 const PROJ_FILE = 'nbaprojpre.csv';
 const POOL_FILES = ['ssnbapool.csv', 'ssnbapool2.csv'];
-const TARGET_COUNT = 50;
+const TARGET_COUNT = process.env.NBA_TARGET_COUNT ? parseInt(process.env.NBA_TARGET_COUNT, 10) : 50;
 
 // ============ PEGASUS-NBA CONFIG ============
 // 5K-pool sweep winner: most profitable slates (6/12) + best median slate pay.
@@ -48,7 +48,7 @@ const PEGASUS_NBA_LAMBDA    = 0.05;
 const PEGASUS_NBA_GAMMA     = 5;
 const PEGASUS_NBA_TEAM_CAP  = 0.16;       // tighter; cosmetic on NBA
 const PEGASUS_NBA_MIN_STACK = 2;          // NBA mini-stack — 2-player team coupling
-const PEGASUS_NBA_MAX_EXPOSURE = 0.35;  // loosened from sweep's 0.21 — small slates need diversity headroom
+const PEGASUS_NBA_MAX_EXPOSURE = process.env.NBA_MAX_EXPOSURE ? parseFloat(process.env.NBA_MAX_EXPOSURE) : 0.35;
 const PEGASUS_NBA_CORNER    = true;
 const PEGASUS_NBA_PROJ_FLOOR = 0.76;      // sweep value — 0.85 mandate breaks bin fill given deep-heavy allocation
 const PEGASUS_NBA_COMBO_POWER = 2;

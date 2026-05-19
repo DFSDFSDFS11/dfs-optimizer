@@ -1,0 +1,9 @@
+{
+  "wfa_mse_reg": 0.08260654878281995,
+  "wfa_auc_clf": 0.6121747995103601,
+  "reg_best_iter": 18,
+  "clf_best_iter": 79,
+  "n_dev": 213405,
+  "n_wfa": 146908,
+  "n_hold": 117526
+}

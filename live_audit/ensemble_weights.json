@@ -1,0 +1,10 @@
+{
+  "best_weights": {
+    "B_top01": 0.0,
+    "C_top1": 0.4,
+    "D_top5": 0.6
+  },
+  "ensemble_wfa_auc_top1": 0.6264828320484239,
+  "single_C_top1_auc": 0.6214355281688856,
+  "delta": 0.005047303879538334
+}

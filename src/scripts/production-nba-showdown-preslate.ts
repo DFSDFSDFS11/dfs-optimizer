@@ -24,9 +24,9 @@ import { exportForDraftKings, exportDetailedLineups } from '../scoring';
 import { productionSelect } from '../selection/production-selector';
 
 const DATA_DIR = 'C:/Users/colin/dfs opto';
-const PROJ_FILE = 'nbashowdownproj.csv';
-const POOL_FILES = ['nbashowdownpool.csv', 'nbashowdownpool2.csv'];
-const TARGET_COUNT = 150;
+const PROJ_FILE = process.env.NBASD_PROJ || 'nbashowdownproj.csv';
+const POOL_FILES = (process.env.NBASD_POOLS || 'nbashowdownpool.csv,nbashowdownpool2.csv').split(',').map(s => s.trim());
+const TARGET_COUNT = process.env.NBASD_TARGET ? parseInt(process.env.NBASD_TARGET, 10) : 150;
 const GAMMA = 4;
 
 const OUTPUT_FILE = path.join(DATA_DIR, `production_nba_showdown_preslate_${TARGET_COUNT}.csv`);

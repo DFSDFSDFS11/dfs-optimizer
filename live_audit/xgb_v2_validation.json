@@ -1,0 +1,12 @@
+{
+  "wfa_ndcg_150_rank": 0.06405651524643066,
+  "wfa_auc_top1": 0.6285216215032892,
+  "wfa_mse_log_payout": 0.10663575989681287,
+  "wfa_spearman_rank": -0.08472193173889928,
+  "wfa_spearman_clf": -0.005502175744309753,
+  "wfa_spearman_lp": -0.0058689462088340385,
+  "rank_best_iter": 0,
+  "clf_best_iter": 186,
+  "lp_best_iter": 18,
+  "feature_count": 125
+}

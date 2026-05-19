@@ -1,0 +1,8 @@
+{
+  "mean_exp_auc": 0.6069382723865945,
+  "mean_roll_auc": 0.6200042786000456,
+  "mean_rolling_advantage": 0.013066006213451022,
+  "rolling_wins": 8,
+  "n_val_slates": 16,
+  "window_size": 8
+}
